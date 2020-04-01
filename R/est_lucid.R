@@ -29,10 +29,12 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   switch_Y <- family.list$f.switch
   # check missing pattern
   ind.NA <- Ind.NA(Z)
-  NA.Z <- which(is.na(Z), arr.ind = TRUE)
-  mu.Z <- colMeans(Z, na.rm = TRUE)
-  Z[NA.Z] <- mu.Z[NA.Z[, 2]] # initialize imputation
-  Z[ind.NA == 3, ] <- NA
+  if(sum(ind.NA == 1) != N){
+    # NA.Z <- which(is.na(Z), arr.ind = TRUE)
+    Z <- imputeData(Z) # initialize imputation
+    Z[ind.NA == 3, ] <- NA
+  }
+
   
   #### conduct the EM algorithm ####
   tot.itr <- 0; convergence <- FALSE
@@ -66,9 +68,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       }
       
       # I step
-      if(sum(ind.NA == 2) != 0){
-        Z <- Istep_Z(Z = Z, r = res.r, init.mu = mu.Z, ind.na = ind.NA, all.na = NA.Z)
-      }
+      # if(sum(ind.NA == 2) != 0 && itr != 1){
+      #   Z <- Istep_Z(Z = Z, r = res.r, est.mu = res.mu, ind.na = ind.NA, all.na = NA.Z)
+      # }
       
       # M step
       invisible(capture.output(new.beta <- Mstep_G(G = G, r = res.r, selectG = tune$Select_G, penalty = tune$Rho_G, dimG = dimG, K = K)))
@@ -155,15 +157,15 @@ Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
 }
 
 ####### I step: impute missing values in Z #######
-Istep_Z <- function(Z, r, init.mu, ind.na, all.na){
-  n <- nrow(Z)
-  m <- dim(Z)
-  zr <- r[ind.na != 3, ]
-  weight <- colSums(zr) / n
-  Z[all.na] <- sum(weight * init.mu)
-  Z[ind.na == 3, ] <- NA
-  return(Z)
-}
+# Istep_Z <- function(Z, r, est.mu, ind.na, all.na){
+#   n <- nrow(Z)
+#   m <- dim(Z)
+#   zr <- colMeans(r[ind.na != 3, ])
+#   impute <- as.vector(zr) %*% as.matrix(est.mu)
+#   Z[all.na] <- impute[all.na[, 2]]
+#   Z[ind.na == 3, ] <- NA
+#   return(Z)
+# }
 
 ####### M step: update the parameters #######
 Mstep_G <- function(G, r, selectG, penalty, dimG, K){
