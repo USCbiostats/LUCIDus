@@ -29,7 +29,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   switch_Y <- family.list$f.switch
   # check missing pattern
   ind.NA <- Ind.NA(Z)
-  if(sum(ind.NA == 1) != N){
+  if(sum(ind.NA == 2) != 0){
     # NA.Z <- which(is.na(Z), arr.ind = TRUE)
     Z <- imputeData(Z) # initialize imputation
     Z[ind.NA == 3, ] <- NA
