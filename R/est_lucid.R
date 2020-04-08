@@ -7,12 +7,13 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   dimCoG <- ifelse(is.null(CoG), 0, ncol(CoG)); dimCoY <- ifelse(is.null(CoY), 0, ncol(CoY))
   if(is.null(colnames(G))){
     Gnames <- paste0("G", 1:dimG)
-  } else Gnames <- colnames(G)
+  } else {Gnames <- colnames(G)}
   if(is.null(colnames(Z))){
     Znames <- paste0("Z", 1:dimZ)
-  } else Znames <- colnames(Z)
-  Ynames <- ifelse(is.null(colnames(Y)),
-                   "Outcome", colnames(Y));
+  } else {Znames <- colnames(Z)}
+  if(is.null(colnames(Y))){
+    Ynames <- "outcome"
+  } else {Ynames <- colnames(Y)}
   CoGnames <- colnames(CoG); CoYnames <- colnames(CoY)
   G <- cbind(G, CoG)
   if(!(is.matrix(G) && is.matrix(Z) && is.matrix(Y))){
@@ -20,7 +21,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   }
   if(!is.null(CoY)){
     if(!is.matrix(CoY)){
-      stop("covariates should be in the form of matrix")
+      stop("input data should be in the form of matrix")
     }
   }
   family.list <- switch(family, normal = normal(K = K, dimCoY), 
@@ -117,6 +118,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   res.loglik <- sum(log(rowSums(sapply(1:N, function(x) return(res.r[x, ] * res.likelihood[x, ])))))
   pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
+  colnames(pars$beta) <- c("intercept", Gnames)
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
                   K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.model = model.best, likelihood = res.loglik, post.p = res.r, family = family)
   class(results) <- c("lucid")
@@ -245,6 +247,7 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
 ####### print, S3 #######
 print.lucid <- function(x){
   cat("An object estimated by LUCID model", "\n")
+  cat("Outcome type:", x$family, "\n")
   cat("Number of clusters:", "K =", x$K, "\n")
   cat("Variance-Covariance structure for biomarkers:", x$Z.model, "model")
 }

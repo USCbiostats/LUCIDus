@@ -6,7 +6,7 @@ plot.lucid <- function(x){
   dimZ <- length(var.names$Znames)
   valueGtoX <- as.vector(t(x$pars$beta[, -1]))
   valueXtoZ <- as.vector(t(x$pars$mu))
-  valueXtoY <- as.vector(x$pars$gamma$beta)
+  valueXtoY <- as.vector(x$pars$gamma$beta)[1:K]
   GtoX <- data.frame(source = rep(x$var.names$Gnames, K),
                      target = paste0("Latent Cluster", as.vector(sapply(1:K, function(x) rep(x, dimG)))),
                      value = abs(valueGtoX),
