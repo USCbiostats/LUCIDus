@@ -19,6 +19,9 @@ plot.lucid <- function(x){
                      target = rep(var.names$Ynames, K),
                      value = abs(valueXtoY),
                      group = as.factor(valueXtoY > 0))
+  if(x$family == "binary"){
+    XtoY$value <- exp(valueXtoY)
+  }
   links <- rbind(GtoX, XtoZ, XtoY)
   nodes <- data.frame(name = unique(c(as.character(links$source), as.character(links$target))),
                       group = as.factor(c(rep("exposure", dimG), 
@@ -30,7 +33,7 @@ plot.lucid <- function(x){
   p <- sankeyNetwork(Links = links, Nodes = nodes,
                      Source = "IDsource", Target = "IDtarget",
                      Value = "value", NodeID = "name",
-                     colourScale=my_color, LinkGroup="group", NodeGroup="group",
-                     sinksRight=FALSE, fontSize = 7)
+                     colourScale = my_color, LinkGroup ="group", NodeGroup ="group",
+                     sinksRight = FALSE, fontSize = 7)
   p
 }

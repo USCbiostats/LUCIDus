@@ -1,5 +1,5 @@
 # control parameters for EM algorithm
-def.control <- function(tol = 1e-4,
+def.control <- function(tol = 1e-3,
                         max_itr = 1000,
                         max_tot.itr = 10000){
   structure(list(tol = tol,

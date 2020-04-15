@@ -1,6 +1,6 @@
 ####### main function: conducting EM algorithm #######
 est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal", 
-                      useY = TRUE, control = def.control(), tune = def.tune()){
+                      useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL){
   #### pre-processing ####
   # check data format
   N <- nrow(Y); dimG <- ncol(G); dimZ <- ncol(Z); 
@@ -45,7 +45,11 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
     res.beta <- matrix(data = runif(K * (dimG + dimCoG + 1)), nrow = K) 
     res.beta[1, ] <- 0
     invisible(capture.output(mclust.fit <- Mclust(Z[ind.NA != 3, ], G = K)))
-    model.best <- mclust.fit$modelName
+    if(is.null(Z.var.str)){
+      model.best <- mclust.fit$modelName
+    } else{
+      model.best <- Z.var.str
+    }
     res.mu <- t(mclust.fit$parameters$mean) 
     res.sigma <- mclust.fit$parameters$variance$sigma 
     res.gamma <- family.list$initial.gamma(K, dimCoY)
@@ -62,10 +66,10 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
                               G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, useY = useY, dimCoY = dimCoY, ind.na = ind.NA)
       res.r <- new.likelihood / rowSums(new.likelihood)
       if(!all(is.finite(res.r))){
-        cat("iteration", tot.itr,": failed: invalid r, try another seed", "\n")
+        cat("iteration", itr,": failed: invalid r, try another seed", "\n")
         break
       } else{
-        cat("iteration", tot.itr,": E-step finished.", "\n")
+        cat("iteration", itr,": E-step finished.", "\n")
       }
       
       # I step
@@ -97,7 +101,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
           res.gamma <- new.gamma
         }
         new.loglik <- sum(log(rowSums(sapply(1:N, function(x) return(res.r[x, ] * new.likelihood[x, ])))))
-        cat("iteration", tot.itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
+        cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
         if(abs(res.loglik - new.loglik) < control$tol){
           convergence <- TRUE
           cat("Success: LUCID converges!", "\n")
@@ -120,7 +124,8 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
-                  K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.model = model.best, likelihood = res.loglik, post.p = res.r, family = family)
+                  K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik, post.p = res.r, family = family,
+                  par.control = control, par.tune = tune)
   class(results) <- c("lucid")
   return(results)
 }
@@ -249,5 +254,5 @@ print.lucid <- function(x){
   cat("An object estimated by LUCID model", "\n")
   cat("Outcome type:", x$family, "\n")
   cat("Number of clusters:", "K =", x$K, "\n")
-  cat("Variance-Covariance structure for biomarkers:", x$Z.model, "model")
+  cat("Variance-Covariance structure for biomarkers:", x$Z.var.str, "model")
 }
