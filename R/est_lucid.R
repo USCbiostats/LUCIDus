@@ -1,4 +1,39 @@
-####### main function: conducting EM algorithm #######
+#' @title  Estimate latent unknown clusters with multi-omics data
+#' 
+#' @description This function estimates the latent clusters by integrating genetic features/environmental exposures, biomarkers with/without the outcome of interest. Variable selection is available for analyzing the high-dimensional data.
+#'
+#' @param G Genetic features/environmental exposures, a \code{\link{matrix}}.
+#' @param Z Biomarkers/other omics data, a \code{\link{matrix}}.
+#' @param Y Disease outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.
+#' @param CoG Optional, matrix. Covariates to be adjusted for estimating the latent cluster.
+#' @param CoY Optional, matrix. Covariates to be adjusted for estimating the outcome.
+#' @param K Number of latent clusters.
+#' @param family Type of outcome Y. It should be choose from "normal", "binary".
+#' @param useY Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.
+#' @param control A list of tolerance parameters used by EM algorithm. See \code{\link{def_control}}.
+#' @param tune A list of tuning parameters used by variable selection procedure. See \code{\link{def_tune}}
+#' @param Z.var.str The variance-covariance structure for the biomarkers. See \code{\link{mclustModelNames}} for details.
+#'
+#' @return A list which contains the several features of LUCID, including:
+#' \item{pars}{Estimates of parameters of LUCID, including beta(estimates of genetic feature/environmental exposure), mu(estimates of cluster-specific biomarker means), sigma(estimates of the cluster-specific biomarker variance-covariance matrix) and gamma(estimates of cluster-specific effect and covariates effect related to the outcome)}
+#' \item{K}{Number of latent cluster}
+#' \item{Z.var.str}{The model used to estimate the cluster-specific variance-covariance matrix, for further details, see \code{\link{mclust}}}
+#' \item{likelihood}{The log likelihood of the LUCID model}
+#' \item{post.p}{Predicted probability of belonging to each latent cluster}
+#' @importFrom nnet multinom
+#' @importFrom mclust dmvnorm
+#' @importFrom mclust Mclust
+#' @importFrom mclust mstep
+#' @importFrom glmnet glmnet
+#' @importFrom glasso glasso
+#' @importFrom lbfgs lbfgs
+#' @export
+#' @author Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
+#' @references
+#' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
+#' @examples
+#' 
+
 est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal", 
                       useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL){
   #### pre-processing ####
@@ -80,7 +115,11 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       # M step
       invisible(capture.output(new.beta <- Mstep_G(G = G, r = res.r, selectG = tune$Select_G, penalty = tune$Rho_G, dimG = dimG, K = K)))
       new.mu.sigma <- Mstep_Z(Z = Z, r = res.r, selectZ = tune$Select_Z, penalty.mu = tune$Rho_Z_CovMu, penalty.cov = tune$Rho_Z_InvCov,
-                              model.name = model.best, K = K, ind.na = ind.NA)
+                              model.name = model.best, K = K, ind.na = ind.NA, mu = res.mu)
+      if(is.null(new.mu.sigma$mu)){
+        print("variable selection failed, restart lucid")
+        break
+      }
       if(useY){
         new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames)
         check.gamma <- is.finite(unlist(new.gamma))
@@ -95,7 +134,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
         break
       } else{
         res.beta <- new.beta
-        res.mu <- t(new.mu.sigma$mu)
+        res.mu <- new.mu.sigma$mu
         res.sigma <- new.mu.sigma$sigma
         if(useY){
           res.gamma <- new.gamma
@@ -197,57 +236,67 @@ Mstep_G <- function(G, r, selectG, penalty, dimG, K){
 
 
 Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
-                    model.name, K, ind.na){
+                    model.name, K, ind.na, mu){
+  dz <- Z[ind.na != 3, ]
+  dr <- r[ind.na != 3, ]
+  Q <- ncol(Z)
+  new_sigma <- array(rep(0, Q^2 * K), dim = c(Q, Q, K))
+  new_mu <- matrix(rep(0, Q * K), nrow = K)
   if(selectZ) {
     k <- 1
-    while(k <= K && !breakdown){
+    while(k <= K){
       #estimate E(S_k) to be used by glasso
-      Z_mu <- t(t(Z)-mu[k,])
-      E_S <- (matrix(colSums(r[,k]*t(apply(Z_mu,1,function(x) return(x%*%t(x))))),Q,Q))/sum(r[,k])
+      Z_mu <- t(t(dz) - mu[k, ])
+      E_S <- (matrix(colSums(dr[, k] * t(apply(Z_mu, 1, function(x) return(x %*% t(x))))), Q, Q)) / sum(dr[, k])
       #use glasso and E(S_k) to estimate new_sigma and new_sigma_inv
-      try_glasso <- try(l_cov <- glasso(E_S,Rho_Z_InvCov))
-      if("try-error" %in% class(try_glasso)){
-        breakdown <- TRUE
-        print(paste(itr,": glasso failed"))
+      l_cov <- try(glasso(E_S, penalty.cov))
+      if("try-error" %in% class(l_cov)){
+        print(paste("glasso failed, restart lucid"))
+        break
       }
       else{
-        new_sigma[[k]] <- l_cov$w
+        new_sigma[, , k] <- l_cov$w
         new_sigma_inv <- l_cov$wi
         new_sigma_est <- l_cov$w
-        #use lbfgs to estimate mu with L1 penalty
-        fn <- function(a){
-          mat <- Z
-          cov_inv <- new_sigma_inv
-          cov <- new_sigma_est
-          Mu <- cov%*%a
-          return(sum(r[,k]*apply(mat,1,function(v) return(t(v-Mu)%*%cov_inv%*%(v-Mu)))))
-        }
-        
-        gr <- function(a){
-          mat <- Z
-          cov <- new_sigma_est
-          Mu <- cov%*%a
-          return(2.0*apply(r[,k]*t(apply(mat,1,function(v) return(Mu-v))),2,sum))
-        }
-        
-        try_optim_mu <- try(lbfgs(call_eval=fn,call_grad = gr, vars = rep(0,Q), invisible=1, orthantwise_c = Rho_Z_CovMu))
-        
+        try_optim_mu <- try(lbfgs(call_eval = fn, call_grad = gr,
+                                  mat = dz, mat2 = dr, k = k,  cov_inv = new_sigma_inv, cov = new_sigma_est,
+                                  vars = rep(0, Q), invisible = 1, orthantwise_c = penalty.mu))
         if("try-error" %in% class(try_optim_mu)){
-          breakdown <- TRUE
+          break
         }
         else{
-          new_mu[k,] <- new_sigma[[k]]%*%(try_optim_mu$par)
+          new_mu[k, ] <- new_sigma[, , k] %*% (try_optim_mu$par)
         }
       }
       k <- k + 1
     }
+    if("try-error" %in% class(l_cov)){
+      return(structure(list(mu = NULL,
+                            sigma = NULL)))
+    } else{
+      return(structure(list(mu = new_mu,
+                            sigma = new_sigma)))
+    }
   }
   else{
-    z.fit <- mstep(modelName = model.name, data = Z[ind.na != 3, ], z = r[ind.na != 3, ])
-    return(structure(list(mu = z.fit$parameters$mean,
+    z.fit <- mstep(modelName = model.name, data = dz, z = dr)
+    return(structure(list(mu = t(z.fit$parameters$mean),
                           sigma = z.fit$parameters$variance$sigma)))
   }
 }
+# use lbfgs to estimate mu with L1 penalty
+fn <- function(a, mat, mat2, cov_inv, cov, k){
+  Mu <- cov %*% a
+  tar <- sum(mat2[, k] * apply(mat, 1, function(v) return(t(v - Mu) %*% cov_inv %*% (v - Mu))))
+  return(tar)
+}
+
+gr <- function(a, mat, mat2, cov_inv, cov, k){
+  Mu <- cov %*% a
+  return(2 * apply(mat2[, k] * t(apply(mat, 1, function(v) return(Mu - v))), 2, sum))
+}
+
+
 
 ####### print, S3 #######
 print.lucid <- function(x){

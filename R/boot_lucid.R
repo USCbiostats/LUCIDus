@@ -1,3 +1,19 @@
+#' @title Bootstrap 
+#' 
+#' @description 
+#'
+#' @param G 
+#' @param Z 
+#' @param Y 
+#' @param CoG 
+#' @param CoY 
+#' @param model 
+#' @param R 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100){
   dimG <- ncol(G); dimZ <- ncol(Z); dimCoY <- ncol(CoY); dimCoG  <- ncol(CoG); K <- model$K
   alldata <- as.data.frame(cbind(G, Z, Y, CoG, CoY))
