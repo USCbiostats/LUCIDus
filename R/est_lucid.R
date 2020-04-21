@@ -15,7 +15,7 @@
 #' @param Z.var.str The variance-covariance structure for the biomarkers. See \code{\link{mclustModelNames}} for details.
 #'
 #' @return A list which contains the several features of LUCID, including:
-#' \item{pars}{Estimates of parameters of LUCID, including beta(estimates of genetic feature/environmental exposure), mu(estimates of cluster-specific biomarker means), sigma(estimates of the cluster-specific biomarker variance-covariance matrix) and gamma(estimates of cluster-specific effect and covariates effect related to the outcome)}
+#' \item{pars}{Estimates of parameters of LUCID, including beta (estimates of genetic feature/environmental exposure), mu (estimates of cluster-specific biomarker means), sigma (estimates of the cluster-specific biomarker variance-covariance matrix) and gamma(estimates of cluster-specific effect and covariates effect related to the outcome)}
 #' \item{K}{Number of latent cluster}
 #' \item{Z.var.str}{The model used to estimate the cluster-specific variance-covariance matrix, for further details, see \code{\link{mclust}}}
 #' \item{likelihood}{The log likelihood of the LUCID model}
@@ -162,9 +162,14 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)
+  colnames(pars$mu) <- Znames
+  tt1 <- apply(pars$beta[, -1], 2, range)
+  selectG <- abs(tt1[2, ] - tt1[1, ]) > 0.001
+  tt2 <- apply(pars$mu, 2, range)
+  selectZ <- abs(tt1[2, ] - tt1[1, ]) > 0.001
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
                   K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik, post.p = res.r, family = family,
-                  par.control = control, par.tune = tune)
+                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ))
   class(results) <- c("lucid")
   return(results)
 }
@@ -223,8 +228,8 @@ Mstep_G <- function(G, r, selectG, penalty, dimG, K){
       print(paste(tot.itr,": lasso failed"))
     }
     else{
-      new.beta[,1] <- tryLasso$a0
-      new.beta[,-1] <- t(matrix(unlist(lapply(tryLasso$beta, function(x) return(x[,1]))), ncol = K))
+      new.beta[, 1] <- tryLasso$a0
+      new.beta[, -1] <- t(matrix(unlist(lapply(tryLasso$beta, function(x) return(x[,1]))), ncol = K))
     }
   }
   else{

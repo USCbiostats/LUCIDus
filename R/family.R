@@ -1,4 +1,4 @@
-####### families: record parameters, likelihood #######
+
 normal <- function(K, ...){
   n.par <- 2 * K # number of parameters
   # initialize EM

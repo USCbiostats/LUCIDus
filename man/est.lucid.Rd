@@ -43,7 +43,7 @@ est.lucid(
 }
 \value{
 A list which contains the several features of LUCID, including:
-\item{pars}{Estimates of parameters of LUCID, including beta(estimates of genetic feature/environmental exposure), mu(estimates of cluster-specific biomarker means), sigma(estimates of the cluster-specific biomarker variance-covariance matrix) and gamma(estimates of cluster-specific effect and covariates effect related to the outcome)}
+\item{pars}{Estimates of parameters of LUCID, including beta (estimates of genetic feature/environmental exposure), mu (estimates of cluster-specific biomarker means), sigma (estimates of the cluster-specific biomarker variance-covariance matrix) and gamma(estimates of cluster-specific effect and covariates effect related to the outcome)}
 \item{K}{Number of latent cluster}
 \item{Z.var.str}{The model used to estimate the cluster-specific variance-covariance matrix, for further details, see \code{\link{mclust}}}
 \item{likelihood}{The log likelihood of the LUCID model}

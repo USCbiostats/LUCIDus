@@ -7,23 +7,32 @@
 boot.lucid(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100)
 }
 \arguments{
-\item{G}{}
+\item{G}{Genetic features/environmental exposures, a \code{\link{matrix}}.}
 
-\item{Z}{}
+\item{Z}{Biomarkers/other omics data, a \code{\link{matrix}}.}
 
-\item{Y}{}
+\item{Y}{Disease outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.}
 
-\item{CoG}{}
+\item{CoG}{Optional, matrix. Covariates to be adjusted for estimating the latent cluster.}
 
-\item{CoY}{}
+\item{CoY}{Optional, matrix. Covariates to be adjusted for estimating the outcome.}
 
-\item{model}{}
+\item{model}{A LUCID model fitted by \code{\link{est.lucid}}.}
 
-\item{R}{}
+\item{R}{Number of boostrap iterations.}
 }
 \value{
 
 }
 \description{
+This function provides SEs of parameter estimates from a LUCID model through bootstrap method.
+}
+\examples{
 
+}
+\references{
+Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
+}
+\author{
+Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
 }
