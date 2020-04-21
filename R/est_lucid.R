@@ -32,8 +32,9 @@
 #' @references
 #' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
 #' @examples
-#' 
-
+#' set.seed(10)
+#' fit1 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary")
+#' fit2 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary", tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, Select_G = TRUE, Rho_G = 0.02))
 est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal", 
                       useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL){
   #### pre-processing ####
@@ -163,10 +164,18 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)
   colnames(pars$mu) <- Znames
-  tt1 <- apply(pars$beta[, -1], 2, range)
-  selectG <- abs(tt1[2, ] - tt1[1, ]) > 0.001
-  tt2 <- apply(pars$mu, 2, range)
-  selectZ <- abs(tt1[2, ] - tt1[1, ]) > 0.001
+  if(tune$Select_G == TRUE){
+    tt1 <- apply(pars$beta[, -1], 2, range)
+    selectG <- abs(tt1[2, ] - tt1[1, ]) > 0.001
+  } else{
+    selectG <- rep(TRUE, dimG)
+  }
+  if(tune$Select_Z == TRUE){
+    tt2 <- apply(pars$mu, 2, range)
+    selectZ <- abs(tt2[2, ] - tt2[1, ]) > 0.001
+  } else{
+    selectZ <- rep(TRUE, dimZ)
+  }
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
                   K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik, post.p = res.r, family = family,
                   par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ))
@@ -302,8 +311,17 @@ gr <- function(a, mat, mat2, cov_inv, cov, k){
 }
 
 
+#' print a lucid object
+#' @description Print a summary of the results for a LUCID model.
+#' @param x fitted \code{lucid} object
+#'
+#' @export
+#'
+#' @examples
+#' set.seed(10)
+#' fit1 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary")
+#' print(fit1)
 
-####### print, S3 #######
 print.lucid <- function(x){
   cat("An object estimated by LUCID model", "\n")
   cat("Outcome type:", x$family, "\n")

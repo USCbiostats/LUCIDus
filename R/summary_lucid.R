@@ -41,6 +41,14 @@ summary.lucid <- function(x, boot.se = NULL){
 
 
 
+#' print a sumlucid object
+#'
+#' @param x A sumlucid object returned by \code{summary.lucid}
+#'
+#' @export
+#'
+#' @examples
+#' 
 print.sumlucid <- function(x){
   K <- x$K
   beta <- x$beta

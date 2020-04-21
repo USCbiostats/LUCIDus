@@ -2,7 +2,7 @@
 % Please edit documentation in R/boot_lucid.R
 \name{boot.lucid}
 \alias{boot.lucid}
-\title{Bootstrap}
+\title{Bootstrap method of inference for LUCID}
 \usage{
 boot.lucid(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100)
 }
@@ -28,7 +28,8 @@ boot.lucid(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100)
 This function provides SEs of parameter estimates from a LUCID model through bootstrap method.
 }
 \examples{
-
+fit1 <- est.lucid(G = G, Z = Z, Y = Y, CoY = CovY, K = 2, family = "binary", useY = FALSE, tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, Select_G = TRUE, Rho_G = 0.02))
+boot1 <- boot.lucid(G = G, Z = Z, Y = Y, CoY = CovY, model = fit1, R = 50)
 }
 \references{
 Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.

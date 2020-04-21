@@ -1,4 +1,4 @@
-#' @title Bootstrap 
+#' @title Bootstrap method of inference for LUCID
 #' 
 #' @description This function provides SEs of parameter estimates from a LUCID model through bootstrap method.
 #'
@@ -10,9 +10,9 @@
 #' @param model A LUCID model fitted by \code{\link{est.lucid}}.
 #' @param R Number of boostrap iterations.
 #' @return A list of estimates with thier 95 percent CI.
-#' \item{Beta}{Estimates, SE and 95% CI of genetic effects/environmental exposure (and effects of covariates, if included), matrix}
+#' \item{Beta}{Estimates, SE and 95% CI of genetic effects/environmental exposure, and effects of covariates if included, matrix}
 #' \item{Mu}{Estimates, SE and 95% CI of cluster-specific biomarker means, matrix}
-#' \item{Gamma}{Estimates, SE and 95% CI of cluster-specific disease risk (and effects of covariates, if included), matrix}
+#' \item{Gamma}{Estimates, SE and 95% CI of cluster-specific disease risk, and effects of covariates if included, matrix}
 #' @export
 #' @import boot
 #' @import parallel
@@ -20,7 +20,8 @@
 #' @references
 #' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
 #' @examples
-#' 
+#' fit1 <- est.lucid(G = G, Z = Z, Y = Y, CoY = CovY, K = 2, family = "binary", useY = FALSE, tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, Select_G = TRUE, Rho_G = 0.02))
+#' boot1 <- boot.lucid(G = G, Z = Z, Y = Y, CoY = CovY, model = fit1, R = 50)
 boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100){
   ss <- model$select
   G <- G[, ss$selectG]
