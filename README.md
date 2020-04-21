@@ -29,7 +29,7 @@ You can install the development version from
 # devtools::install_github("Yinqi93/LUCIDus")
 ```
 
-## Fitting the latent cluster models
+## Example
 
 ``` r
 library(LUCIDus2)
@@ -41,14 +41,12 @@ achieve variable selection by setting tuning parameters in `def.lucid`.
 The model outputs can be summarized and visualized using `summary` and
 `plot` respectively. Predictions could be made with `pred`.
 
-### Example
-
 Estimating latent clusters with multi-omics data, missing values in
 biomarker data are allowed, and information in the outcome of interest
 can be integrated. For illustration, we use a testing dataset with 10
 genetic features (5 causal) and 10 biomarkers (5 causal)
 
-#### Integrative clustering without feature selection
+### Integrative clustering without feature selection
 
 First, fit the model with `est.lucid`.
 
@@ -73,7 +71,7 @@ plot(myfit)
 
 ![](man/figures/Sankey1.png)
 
-#### Integrative clustering with feature selection
+### Integrative clustering with feature selection
 
 Run LUCID with tuning parameters and select informative features
 
@@ -95,8 +93,9 @@ myfit3 <- est.lucid(G = G1[, selectG], Z = Z1[, selectZ], Y = Y1, CoY = CovY, K 
 plot(myfit3)
 ```
 
-![](man/figures/Sankey2.png) \#\#\#\# Bootstrap method to obtain SEs for
-LUCID parameter estimates
+![](man/figures/Sankey2.png)
+
+### Bootstrap method to obtain SEs for LUCID parameter estimates
 
 ``` r
 set.seed(10)
