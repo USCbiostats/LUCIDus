@@ -2,16 +2,15 @@
 % Please edit documentation in R/summary_lucid.R
 \name{print.sumlucid}
 \alias{print.sumlucid}
-\title{print a sumlucid object}
+\title{Print the output of LUCID in a nicer table}
 \usage{
-\method{print}{sumlucid}(x)
+\method{print}{sumlucid}(x, ...)
 }
 \arguments{
-\item{x}{A sumlucid object returned by \code{summary.lucid}}
+\item{x}{An object returaned by \code{summary.lucid}}
+
+\item{...}{Other paramters to be passed to \code{print}}
 }
 \description{
-print a sumlucid object
-}
-\examples{
-
+Print the output of LUCID in a nicer table
 }

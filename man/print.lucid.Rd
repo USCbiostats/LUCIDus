@@ -2,18 +2,15 @@
 % Please edit documentation in R/est_lucid.R
 \name{print.lucid}
 \alias{print.lucid}
-\title{print a lucid object}
+\title{Print the output of \code{est.lucid}}
 \usage{
-\method{print}{lucid}(x)
+\method{print}{lucid}(x, ...)
 }
 \arguments{
-\item{x}{fitted \code{lucid} object}
+\item{x}{An object of LUCID model, returned by \code{est.lucid}}
+
+\item{...}{Other arguments to be passed to \code{print}}
 }
 \description{
-Print a summary of the results for a LUCID model.
-}
-\examples{
-set.seed(10)
-fit1 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary")
-print(fit1)
+Print the output of \code{est.lucid}
 }

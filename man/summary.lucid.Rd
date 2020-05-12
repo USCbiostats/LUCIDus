@@ -4,12 +4,14 @@
 \alias{summary.lucid}
 \title{Summarize the results of LUCID model}
 \usage{
-\method{summary}{lucid}(x, boot.se = NULL)
+\method{summary}{lucid}(object, boot.se = NULL, ...)
 }
 \arguments{
-\item{x}{A model fitted by \code{\link{est.lucid}}}
+\item{object}{A model fitted by \code{\link{est.lucid}}}
 
 \item{boot.se}{A object returned by \code{\link{boot.lucid}}, which contains the bootstrap standard error}
+
+\item{...}{Other paramters to be passed to \code{summary}}
 }
 \value{
 A list with class "sumlucid", which contains the following object
@@ -26,7 +28,14 @@ A list with class "sumlucid", which contains the following object
 Summarize the results of LUCID model
 }
 \examples{
-
+\dontrun{
+fit1 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary", useY = FALSE)
+summary(fit1)
+fit2 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary", useY = FALSE,
+ tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
+ Select_G = TRUE, Rho_G = 0.02)) 
+summary(fit2)
+}
 }
 \references{
 Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.

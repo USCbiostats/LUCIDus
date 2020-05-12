@@ -35,9 +35,9 @@ est.lucid(
 
 \item{useY}{Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.}
 
-\item{control}{A list of tolerance parameters used by EM algorithm. See \code{\link{def_control}}.}
+\item{control}{A list of tolerance parameters used by EM algorithm. See \code{\link{def.control}}.}
 
-\item{tune}{A list of tuning parameters used by variable selection procedure. See \code{\link{def_tune}}}
+\item{tune}{A list of tuning parameters used by variable selection procedure. See \code{\link{def.tune}}}
 
 \item{Z.var.str}{The variance-covariance structure for the biomarkers. See \code{\link{mclustModelNames}} for details.}
 }
@@ -53,9 +53,13 @@ A list which contains the several features of LUCID, including:
 This function estimates the latent clusters by integrating genetic features/environmental exposures, biomarkers with/without the outcome of interest. Variable selection is available for analyzing the high-dimensional data.
 }
 \examples{
+\dontrun{
 set.seed(10)
 fit1 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary")
-fit2 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary", tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, Select_G = TRUE, Rho_G = 0.02))
+fit2 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary", 
+  tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
+  Select_G = TRUE, Rho_G = 0.02))
+}
 }
 \references{
 Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.

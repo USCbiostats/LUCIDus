@@ -1,13 +1,13 @@
-Package: LUCIDus2
+Package: LUCIDus
 Type: Package
 Title: Latent Unknown Clustering with Integrated Data
-Version: 1.0.0
+Version: 1.1.0
 Author: Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
 Maintainer: Yinqi Zhao <yinqiz@usc.edu>
 Description: An implementation for the 'LUCID' method to jointly estimate latent unknown clusters/subgroups with integrated data. 
   An EM algorithm is used to obtain the latent cluster assignment and model parameter estimates. 
   Feature selection is achieved by applying the regularization method.
-Depends: R (>= 3.6.2)
+Depends: R (>= 3.6.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

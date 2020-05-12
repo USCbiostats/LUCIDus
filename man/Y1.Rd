@@ -14,7 +14,6 @@ A set with 3000 rows and 1 variable:
 Y1
 }
 \description{
-A simulated dataset containing one of the components to run est_lucid,
-plot_lucid, and tune_lucid. The variables are as follows:
+A simulated dataset containing one of the components to run lucid. The variables are as follows:
 }
 \keyword{datasets}

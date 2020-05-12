@@ -1,7 +1,7 @@
 #' Visualize the LUCID model through a Sankey diagram
 #' This function generates a Sankey diagram for the results of integrative clustering based on an \code{lucid} object
 #' @param x A model fitted by \code{\link{est.lucid}}
-#'
+#' @param ... Other parameters to be passed to \code{plot}
 #' @return A DAG graph created by \code{\link{sankeyNetwork}}
 #' @import networkD3
 #' @export
@@ -10,8 +10,11 @@
 #' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
 #'
 #' @examples
-#' 
-plot.lucid <- function(x){
+#' \dontrun{
+#' fit1 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary")
+#' plot(fit1)
+#' }
+plot.lucid <- function(x, ...){
   K <- x$K
   var.names <- x$var.names
   pars <- x$pars

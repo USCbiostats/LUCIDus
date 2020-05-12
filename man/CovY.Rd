@@ -3,9 +3,9 @@
 \docType{data}
 \name{CovY}
 \alias{CovY}
-\title{Covariate Set in the X->Y path}
+\title{Covariates Set 1}
 \format{
-A set with 3000 rows and 5 variables:
+A set with 3000 rows and 2 continuous variable:
 \describe{
   \item{CovY1, CovY2}{Two continuous covariates}
 }
@@ -14,7 +14,6 @@ A set with 3000 rows and 5 variables:
 CovY
 }
 \description{
-A simulated dataset containing one of the optional components to run est_lucid,
-plot_lucid, and tune_lucid. The variables are as follows:
+A simulated dataset containing covariates included in the X->Y analysis. The variables are as follows:
 }
 \keyword{datasets}

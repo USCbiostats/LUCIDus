@@ -1,7 +1,8 @@
 #' Summarize the results of LUCID model
 #'
-#' @param x A model fitted by \code{\link{est.lucid}}
+#' @param object A model fitted by \code{\link{est.lucid}}
 #' @param boot.se A object returned by \code{\link{boot.lucid}}, which contains the bootstrap standard error
+#' @param ... Other paramters to be passed to \code{summary}
 #' @return A list with class "sumlucid", which contains the following object
 #' \item{Beta}{Estimates of genetic/environmental effects (and effect of covariates if included), matrix}
 #' \item{Mu}{Estimates of cluster-specific biomarker means, matrix}
@@ -17,22 +18,37 @@
 #' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
 #' 
 #' @examples
-#' 
-summary.lucid <- function(x, boot.se = NULL){
-  s1 <- x$select$selectG
-  s2 <- x$select$selectZ
+#' \dontrun{
+#' fit1 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary", useY = FALSE)
+#' summary(fit1)
+#' fit2 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary", useY = FALSE,
+#'  tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
+#'  Select_G = TRUE, Rho_G = 0.02)) 
+#' summary(fit2)
+#' }
+
+summary.lucid <- function(object, boot.se = NULL, ...){
+  s1 <- object$select$selectG
+  s2 <- object$select$selectZ
   nG <- sum(s1)
   nZ <- sum(s2)
-  K <- x$K
-  npars <- (nG + 1) * (K - 1) + (nZ * K + nZ * (nZ + 1) / 2 * K) + K * 2
-  BIC <- -2 * x$likelihood + npars * log(nrow(x$post.p))
-  results <- list(beta = x$pars$beta[, c(TRUE, s1)],
-                    mu = x$pars$mu[, s2],
-                    gamma = x$pars$gamma,
-                    family = x$family,
+  K <- object$K
+  gamma <- object$pars$gamma
+  if(object$family == "normal"){
+    nY <- length(gamma$beta) + length(gamma$sigma)
+  }
+  if(object$family == "binary"){
+    nY <- length(gamma$beta)
+  }
+  npars <- (nG + 1) * (K - 1) + (nZ * K + nZ * (nZ + 1) / 2 * K) + nY
+  BIC <- -2 * object$likelihood + npars * log(nrow(object$post.p))
+  results <- list(beta = object$pars$beta[, c(TRUE, s1)],
+                    mu = object$pars$mu[, s2],
+                    gamma = object$pars$gamma,
+                    family = object$family,
                     K = K,
                     BIC = BIC,
-                  loglik = x$likelihood,
+                  loglik = object$likelihood,
                   boot.se = boot.se)
   class(results) <- "sumlucid"
   return(results)
@@ -40,16 +56,13 @@ summary.lucid <- function(x, boot.se = NULL){
 
 
 
-
-#' print a sumlucid object
+#' Print the output of LUCID in a nicer table
 #'
-#' @param x A sumlucid object returned by \code{summary.lucid}
-#'
+#' @param x An object returaned by \code{summary.lucid}
+#' @param ... Other paramters to be passed to \code{print}
 #' @export
 #'
-#' @examples
-#' 
-print.sumlucid <- function(x){
+print.sumlucid <- function(x, ...){
   K <- x$K
   beta <- x$beta
   dim1 <- ncol(beta) - 1
@@ -69,7 +82,8 @@ print.sumlucid <- function(x){
   }
   cat("\n")
   cat("(3) E: the odds ratio of being assigned to each latent cluster for each exposure \n")
-  g.or <- data.frame(original = as.vector(beta[2:K, 2:ncol(beta)]))
+  dd <- as.matrix(as.data.frame(beta)[2:K, 2:ncol(beta)])
+  g.or <- data.frame(original = unlist(split(dd, row(dd))))
   rownames(g.or) <- paste0(colnames(beta)[-1], ".cluster", sapply(2:K, function(x) return(rep(x, dim1))))
   if(is.null(x$boot.se)){
     g.or$OR <- exp(g.or$original)
@@ -82,13 +96,16 @@ print.sumlucid <- function(x){
 }
 
 
-f.normal <- function(x, K){
+f.normal <- function(x, K, se){
   gamma <- x$beta
   sigma <- x$sigma
-  cat("(1) Y: the mean expression and the variance of Y for each latent cluster \n")
+  cat("(1) Y (normal outcome): the mean and the sd of the Gaussian mixture Y for each latent cluster \n")
   y <- matrix(c(gamma, sigma), ncol = 2)
   row.names(y) <- paste0("cluster", 1:K)
-  colnames(y) <- c("mean", "variance")
+  colnames(y) <- c("mu", "sd")
+  if(!is.null(se)){
+    gamma <- cbind(y, se[, 2:4])
+  }
   print(y)
 }
 

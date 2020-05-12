@@ -10,8 +10,8 @@
 #' @param K Number of latent clusters.
 #' @param family Type of outcome Y. It should be choose from "normal", "binary".
 #' @param useY Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.
-#' @param control A list of tolerance parameters used by EM algorithm. See \code{\link{def_control}}.
-#' @param tune A list of tuning parameters used by variable selection procedure. See \code{\link{def_tune}}
+#' @param control A list of tolerance parameters used by EM algorithm. See \code{\link{def.control}}.
+#' @param tune A list of tuning parameters used by variable selection procedure. See \code{\link{def.tune}}
 #' @param Z.var.str The variance-covariance structure for the biomarkers. See \code{\link{mclustModelNames}} for details.
 #'
 #' @return A list which contains the several features of LUCID, including:
@@ -21,20 +21,24 @@
 #' \item{likelihood}{The log likelihood of the LUCID model}
 #' \item{post.p}{Predicted probability of belonging to each latent cluster}
 #' @importFrom nnet multinom
-#' @importFrom mclust dmvnorm
-#' @importFrom mclust Mclust
-#' @importFrom mclust mstep
+#' @import mclust
 #' @importFrom glmnet glmnet
 #' @importFrom glasso glasso
 #' @importFrom lbfgs lbfgs
+#' @import stats
+#' @import utils
 #' @export
 #' @author Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
 #' @references
 #' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
 #' @examples
+#' \dontrun{
 #' set.seed(10)
 #' fit1 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary")
-#' fit2 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary", tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, Select_G = TRUE, Rho_G = 0.02))
+#' fit2 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary", 
+#'   tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
+#'   Select_G = TRUE, Rho_G = 0.02))
+#' }
 est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal", 
                       useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL){
   #### pre-processing ####
@@ -140,7 +144,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
         if(useY){
           res.gamma <- new.gamma
         }
-        new.loglik <- sum(log(rowSums(sapply(1:N, function(x) return(res.r[x, ] * new.likelihood[x, ])))))
+        new.loglik <- sum(log(rowSums(new.likelihood)))
         cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
         if(abs(res.loglik - new.loglik) < control$tol){
           convergence <- TRUE
@@ -159,7 +163,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
                           G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA)
   res.r <- new.likelihood / rowSums(new.likelihood)
   
-  res.loglik <- sum(log(rowSums(sapply(1:N, function(x) return(res.r[x, ] * res.likelihood[x, ])))))
+  res.loglik <- sum(log(rowSums(new.likelihood)))
   pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)
@@ -178,7 +182,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   }
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
                   K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik, post.p = res.r, family = family,
-                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ))
+                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY)
   class(results) <- c("lucid")
   return(results)
 }
@@ -198,7 +202,7 @@ Ind.NA <- function(Z){
 
 ####### E step: calculate the likelihood #######
 Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
-                  G, Z, Y, family.list, K, N, useY, ind.na, ...){
+                  G, Z, Y = NULL, family.list, K, N, useY, ind.na, ...){
   pXgG <- pZgX <- pYgX <- matrix(rep(1, N * K), nrow = N)
   if(!is.null(beta)){
     xb <- exp(cbind(rep(1, N), G) %*% t(beta))
@@ -206,7 +210,7 @@ Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
   }
   if(!is.null(mu)){
     for (i in 1:K) {
-      pZgX[ind.na != 3, i] <- dmvnorm(Z[ind.na != 3, ], mu[i,], sigma[, , i])
+      pZgX[ind.na != 3, i] <- dmvnorm(Z[ind.na != 3, ], mu[i,], round(sigma[, , i], 9))
     }
   }
   if(useY){
@@ -234,7 +238,7 @@ Mstep_G <- function(G, r, selectG, penalty, dimG, K){
     tryLasso <- try(glmnet(as.matrix(G), as.matrix(r), family = "multinomial", lambda = penalty))
     if("try-error" %in% class(tryLasso)){
       breakdown <- TRUE
-      print(paste(tot.itr,": lasso failed"))
+      print(paste("lasso failed"))
     }
     else{
       new.beta[, 1] <- tryLasso$a0
@@ -243,7 +247,7 @@ Mstep_G <- function(G, r, selectG, penalty, dimG, K){
   }
   else{
     beta.multilogit <- multinom(as.matrix(r) ~ as.matrix(G))
-    new.beta[-1,] <- coef(beta.multilogit)
+    new.beta[-1, ] <- coef(beta.multilogit)
   }
   return(new.beta)
 }
@@ -311,18 +315,15 @@ gr <- function(a, mat, mat2, cov_inv, cov, k){
 }
 
 
-#' print a lucid object
-#' @description Print a summary of the results for a LUCID model.
-#' @param x fitted \code{lucid} object
+
+
+#' Print the output of \code{est.lucid}
 #'
+#' @param x An object of LUCID model, returned by \code{est.lucid}
+#' @param ... Other arguments to be passed to \code{print}
 #' @export
 #'
-#' @examples
-#' set.seed(10)
-#' fit1 <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary")
-#' print(fit1)
-
-print.lucid <- function(x){
+print.lucid <- function(x, ...){
   cat("An object estimated by LUCID model", "\n")
   cat("Outcome type:", x$family, "\n")
   cat("Number of clusters:", "K =", x$K, "\n")
