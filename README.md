@@ -19,35 +19,46 @@ papaer](https://doi.org/10.1093/bioinformatics/btz667))
 
 <img src="man/figures/DAG.png" width="50%" />
 
-Let \(\mathbf{G}\) be a \(n \times p\) matrix with columns representing
-genetic features/environmental exposures, and rows being the
-observations; \(\mathbf{Z}\) be a \(n \times m\) matrix of standardized
-biomarkers and \(\mathbf{Y}\) be a \(n\)-dimensional vector of disease
-outcome. By the DAG graph, it is further assumed that all three
-components above are linked by a categorical latent cluster variable
-\(\mathbf{X}\) of \(K\) classes and with the conditional independence
-implied by the DAG, the general joint likelihood of the LUCID model can
-be formalized into  where \(\mathbf{\Theta}\) is a generic notation
-standing for parameters associated with each probability model.
-Additionally, we assume \(\mathbf{X}\) follows a multinomial
-distribution conditioning on \(\mathbf{G}\), \(\mathbf{Z}\) follows a
-multivariate normal distribution conditioning on \(\mathbf{X}\) and
-\(\mathbf{Y}\) follows a normal/Bernoulli (depending on the specific
-data structure of disease outcome) distribution conditioning on
-\(\mathbf{X}\). Therefore, the equation above can be finalized as  where
-\(S\) denotes the softmax function and \(\phi\) denotes the probability
+Let G be a n by p matrix with columns representing genetic
+features/environmental exposures, and rows being the observations; Z be
+a n by m matrix of standardized biomarkers and Y be a n-dimensional
+vector of disease outcome. By the DAG graph, it is further assumed that
+all three components above are linked by a categorical latent cluster
+variable X of K classes and with the conditional independence implied by
+the DAG, the general joint likelihood of the LUCID model can be
+formalized into
+
+<img src="man/figures/equation1.png" width="50%" />
+
+where Theta is a generic notation standing for parameters associated
+with each probability model. Additionally, we assume X follows a
+multinomial distribution conditioning on G, Z follows a multivariate
+normal distribution conditioning on X and Y follows a normal/Bernoulli
+(depending on the specific data structure of disease outcome)
+distribution conditioning on X. Therefore, the equation above can be
+finalized as
+
+<img src="man/figures/equation2.png" width="40%" />
+
+where S denotes the softmax function and phi denotes the probability
 density function (pdf) of the multivariate normal distribution.
 
 To obtain the maximum likelihood estimates (MLE) of the model
-parameters, an EM algorithm is applied to handle the latent variable
-\(\mathbf{X}\). Denote the observed data as \(\mathbf{D}\), then the
-posterior probability of observation \(i\) being assigned to latent
-cluster \(j\) is expressed as  and the expectation of the complete log
-likelihood can be written as  At each iteration, in the E-step, compute
-the expectation of the complete data log likelihood by plugging in the
-posterior probability and then in the M-step, update the parameters by
-maximizing the expected complete likelihood function. Detailed
-derivations of the EM algorithm for LUDID can be found elsewhere.
+parameters, an EM algorithm is applied to handle the latent variable X.
+Denote the observed data as D, then the posterior probability of
+observation i being assigned to latent cluster j is expressed as
+
+<img src="man/figures/equation3.png" width="35%" />
+
+and the expectation of the complete log likelihood can be written as
+
+<img src="man/figures/equation4.png" width="60%" />
+
+At each iteration, in the E-step, compute the expectation of the
+complete data log likelihood by plugging in the posterior probability
+and then in the M-step, update the parameters by maximizing the expected
+complete likelihood function. Detailed derivations of the EM algorithm
+for LUDID can be found elsewhere.
 
 ## Installation
 

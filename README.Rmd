@@ -23,34 +23,32 @@ Multi-omics data combined with the phenotypic trait are integrated by jointly mo
 knitr::include_graphics("man/figures/DAG.png")
 ```
 
-Let $\mathbf{G}$ be a $n \times p$ matrix with columns representing genetic features/environmental exposures, and rows being the observations; $\mathbf{Z}$ be a $n \times m$ matrix of standardized biomarkers and $\mathbf{Y}$ be a $n$-dimensional vector of disease outcome. By the DAG graph, it is further assumed that all three components above are linked by a categorical latent cluster variable $\mathbf{X}$ of $K$ classes and with the conditional independence implied by the DAG, the general joint likelihood of the LUCID model can be formalized into
-\begin{equation}
-    \begin{aligned}
-    l(\mathbf{\Theta}) & = \sum_{i = 1}^n\log f(\mathbf{Z}_i, Y_i|\mathbf{G_i}; \mathbf{\Theta}) \\
-        & = \sum_{i = 1}^n \log \sum_{j = 1}^K f(\mathbf{Z}_i|X_i = j; \mathbf{\Theta}_j) f(Y_i|X_i = j; \mathbf{\Theta}_j) f(X_i = j|\mathbf{G}_i; \mathbf{\Theta}_j)
-    \end{aligned}
-\end{equation}
-where $\mathbf{\Theta}$ is a generic notation standing for parameters associated with each probability model. Additionally, we assume $\mathbf{X}$ follows a multinomial distribution conditioning on $\mathbf{G}$, $\mathbf{Z}$ follows a multivariate normal distribution conditioning on $\mathbf{X}$ and $\mathbf{Y}$ follows a normal/Bernoulli (depending on the specific data structure of disease outcome) distribution conditioning on $\mathbf{X}$. Therefore, the equation above can be finalized as
-\begin{equation}
-    \begin{aligned}
-         l(\mathbf{\Theta}) = \sum_{i = 1}^n \log \sum_{j = 1}^k S(\mathbf{G}_i; \boldsymbol{\beta}_j) \phi(\mathbf{Z}_i; \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)f(Y_i;\mathbf{\Theta}_j)
-    \end{aligned}
-\end{equation}
-where $S$ denotes the softmax function and $\phi$ denotes the probability density function (pdf) of the multivariate normal distribution.
+Let G be a n by p matrix with columns representing genetic features/environmental exposures, and rows being the observations; Z be a n by m matrix of standardized biomarkers and Y be a n-dimensional vector of disease outcome. By the DAG graph, it is further assumed that all three components above are linked by a categorical latent cluster variable X of K classes and with the conditional independence implied by the DAG, the general joint likelihood of the LUCID model can be formalized into
 
-To obtain the maximum likelihood estimates (MLE) of the model parameters, an EM algorithm is applied to handle the latent variable $\mathbf{X}$. Denote the observed data as $\mathbf{D}$, then the posterior probability of observation $i$ being assigned to latent cluster $j$ is expressed as
-\begin{equation}
-    \begin{aligned}
-        r_{ij} & = P(X_i = j|\mathbf{D}, \mathbf{\Theta}) \\
-            & = \frac{S(\mathbf{G}_i; \boldsymbol{\beta}_j) \phi(\mathbf{Z}_i; \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)f(Y_i;\mathbf{\Theta}_j)}{\sum_{j = 1}^k S(\mathbf{G}_i; \boldsymbol{\beta}_j) \phi(\mathbf{Z}_i; \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)f(Y_i;\mathbf{\Theta}_j)}
-    \end{aligned}
-\end{equation}
+```{r echo=FALSE, out.width="50%"}
+knitr::include_graphics("man/figures/equation1.png")
+```
+
+where Theta is a generic notation standing for parameters associated with each probability model. Additionally, we assume X follows a multinomial distribution conditioning on G, Z follows a multivariate normal distribution conditioning on X and Y follows a normal/Bernoulli (depending on the specific data structure of disease outcome) distribution conditioning on X. Therefore, the equation above can be finalized as
+
+```{r echo=FALSE, out.width="40%"}
+knitr::include_graphics("man/figures/equation2.png")
+```
+
+where S denotes the softmax function and phi denotes the probability density function (pdf) of the multivariate normal distribution.
+
+To obtain the maximum likelihood estimates (MLE) of the model parameters, an EM algorithm is applied to handle the latent variable X. Denote the observed data as D, then the posterior probability of observation i being assigned to latent cluster j is expressed as
+
+```{r echo=FALSE, out.width="35%"}
+knitr::include_graphics("man/figures/equation3.png")
+```
+
 and the expectation of the complete log likelihood can be written as
-\begin{equation}
-    \begin{aligned}
-        Q(\mathbf{\Theta}) = \sum_{i = 1}^n\sum_{j = 1}^k r_{ij}\log\frac{S(\mathbf{G}_i; \boldsymbol{\beta}_j)}{r_{ij}} + \sum_{i = 1}^n\sum_{j = 1}^k r_{ij}\log\frac{\phi(\mathbf{Z}_i; \boldsymbol{\mu}_j), \boldsymbol{\Sigma}_j}{r_{ij}} + \sum_{i = 1}^n\sum_{j = 1}^k r_{ij}\log\frac{f(Y_i; \boldsymbol{\Theta}_j)}{r_{ij}}
-    \end{aligned}
-\end{equation}
+
+```{r echo=FALSE, out.width="60%"}
+knitr::include_graphics("man/figures/equation4.png")
+```
+
 At each iteration, in the E-step, compute the expectation of the complete data log likelihood by plugging in the posterior probability and then in the M-step, update the parameters by maximizing the expected complete likelihood function. Detailed derivations of the EM algorithm for LUDID can be found elsewhere.
 
 
