@@ -11,13 +11,43 @@ Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic
 Traits](https://doi.org/10.1093/bioinformatics/btz667)” published by the
 *Bioinformatics*.
 
-## Citation
+Multi-omics data combined with the phenotypic trait are integrated by
+jointly modeling their relationships through a latent cluster variable,
+which is illustrated by the directed acyclic graph (DAG) below. (A
+screenshot from [LUCID
+papaer](https://doi.org/10.1093/bioinformatics/btz667))
 
-Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi,
-Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown
-Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits,
-Bioinformatics, , btz667,
-<https://doi.org/10.1093/bioinformatics/btz667>
+<img src="man/figures/DAG.png" width="50%" />
+
+Let \(\mathbf{G}\) be a \(n \times p\) matrix with columns representing
+genetic features/environmental exposures, and rows being the
+observations; \(\mathbf{Z}\) be a \(n \times m\) matrix of standardized
+biomarkers and \(\mathbf{Y}\) be a \(n\)-dimensional vector of disease
+outcome. By the DAG graph, it is further assumed that all three
+components above are linked by a categorical latent cluster variable
+\(\mathbf{X}\) of \(K\) classes and with the conditional independence
+implied by the DAG, the general joint likelihood of the LUCID model can
+be formalized into  where \(\mathbf{\Theta}\) is a generic notation
+standing for parameters associated with each probability model.
+Additionally, we assume \(\mathbf{X}\) follows a multinomial
+distribution conditioning on \(\mathbf{G}\), \(\mathbf{Z}\) follows a
+multivariate normal distribution conditioning on \(\mathbf{X}\) and
+\(\mathbf{Y}\) follows a normal/Bernoulli (depending on the specific
+data structure of disease outcome) distribution conditioning on
+\(\mathbf{X}\). Therefore, the equation above can be finalized as  where
+\(S\) denotes the softmax function and \(\phi\) denotes the probability
+density function (pdf) of the multivariate normal distribution.
+
+To obtain the maximum likelihood estimates (MLE) of the model
+parameters, an EM algorithm is applied to handle the latent variable
+\(\mathbf{X}\). Denote the observed data as \(\mathbf{D}\), then the
+posterior probability of observation \(i\) being assigned to latent
+cluster \(j\) is expressed as  and the expectation of the complete log
+likelihood can be written as  At each iteration, in the E-step, compute
+the expectation of the complete data log likelihood by plugging in the
+posterior probability and then in the M-step, update the parameters by
+maximizing the expected complete likelihood function. Detailed
+derivations of the EM algorithm for LUDID can be found elsewhere.
 
 ## Installation
 
@@ -25,8 +55,8 @@ You can install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-# devtools::install_github("Yinqi93/LUCIDus")
+install.packages("devtools")
+devtools::install_github("Yinqi93/LUCIDus")
 ```
 
 ## Example
@@ -56,20 +86,24 @@ myfit <- est.lucid(G = G1,Z = Z1,Y = Y1, CoY = CovY, K = 2, family = "binary")
 myfit
 ```
 
-![](man/figures/fit1.png) Check the model features.
+<img src="man/figures/fit1.png" width="80%" />
+
+Check the model features.
 
 ``` r
 summary(myfit)
 ```
 
-A summary of results start with this: ![](man/figures/sum1.png) Then
-visualize the results with Sankey diagram using `plot_lucid()`
+A summary of results start with this:
+<img src="man/figures/sum1.png" width="80%" />
+
+Then visualize the results with Sankey diagram using `plot_lucid()`
 
 ``` r
 plot(myfit)
 ```
 
-![](man/figures/Sankey1.png)
+<img src="man/figures/Sankey1.png" width="50%" />
 
 ### Integrative clustering with feature selection
 
@@ -93,7 +127,7 @@ myfit3 <- est.lucid(G = G1[, selectG], Z = Z1[, selectZ], Y = Y1, CoY = CovY, K 
 plot(myfit3)
 ```
 
-![](man/figures/Sankey2.png)
+<img src="man/figures/Sankey2.png" width="50%" />
 
 ### Bootstrap method to obtain SEs for LUCID parameter estimates
 
@@ -104,7 +138,7 @@ summary(myfit3, boot.se = myboot)
 ```
 
 A detailed summary with 95% CI is provided as below.
-![](man/figures/sum2.png)
+<img src="man/figures/sum2.png" width="80%" />
 
 For more details, see documentations for each function in the R package.
 
@@ -125,7 +159,7 @@ repository.
 
 ## Authors
 
-  - **Yinqi Zhao**
+  - Yinqi Zhao
 
 ## License
 
