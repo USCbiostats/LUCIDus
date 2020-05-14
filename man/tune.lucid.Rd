@@ -42,7 +42,7 @@ tune.lucid(
 \item{Rho_Z_CovMu}{Numeric sequence, Lasso type penalty for the product of covariance matrix and mean of Z}
 }
 \value{
-A list. Containing model BICs of differenct combination of tuning parameters.
+A list. Containing model BICs of different combination of tuning parameters.
 }
 \description{
 Grid search for tuning parameters to fit the LUCID model

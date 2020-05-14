@@ -7,7 +7,7 @@
 def.control(tol = 0.001, max_itr = 1000, max_tot.itr = 10000)
 }
 \arguments{
-\item{tol}{Convergence critiera for the EM algorithm. Default is 0.001.}
+\item{tol}{Convergence critieria for the EM algorithm. Default is 0.001.}
 
 \item{max_itr}{Maximum number of iterations in each try of fitting process, integer, default is 1000.}
 

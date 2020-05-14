@@ -12,7 +12,7 @@
 #' @param Rho_Z_InvCov Numeric sequence, Lasso type penalty for the inverse covariance structure of Z.
 #' @param Rho_Z_CovMu Numeric sequence, Lasso type penalty for the product of covariance matrix and mean of Z
 #'
-#' @return A list. Containing model BICs of differenct combination of tuning parameters.
+#' @return A list. Containing model BICs of different combination of tuning parameters.
 #' @export
 #'
 #' @examples

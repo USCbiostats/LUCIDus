@@ -15,7 +15,7 @@ Multi-omics data combined with the phenotypic trait are integrated by
 jointly modeling their relationships through a latent cluster variable,
 which is illustrated by the directed acyclic graph (DAG) below. (A
 screenshot from [LUCID
-papaer](https://doi.org/10.1093/bioinformatics/btz667))
+paper](https://doi.org/10.1093/bioinformatics/btz667))
 
 <img src="man/figures/DAG.png" width="50%" />
 

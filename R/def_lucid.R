@@ -1,6 +1,6 @@
 #' Control parameters for EM algorithm
 #' 
-#' @param tol Convergence critiera for the EM algorithm. Default is 0.001.
+#' @param tol Convergence critieria for the EM algorithm. Default is 0.001.
 #' @param max_itr Maximum number of iterations in each try of fitting process, integer, default is 1000.
 #' @param max_tot.itr Maximum number of total iterations, integer, default is 10000.
 #'

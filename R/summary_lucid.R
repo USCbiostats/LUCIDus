@@ -2,7 +2,7 @@
 #'
 #' @param object A model fitted by \code{\link{est.lucid}}
 #' @param boot.se A object returned by \code{\link{boot.lucid}}, which contains the bootstrap standard error
-#' @param ... Other paramters to be passed to \code{summary}
+#' @param ... Other parameters to be passed to \code{summary}
 #' @return A list with class "sumlucid", which contains the following object
 #' \item{Beta}{Estimates of genetic/environmental effects (and effect of covariates if included), matrix}
 #' \item{Mu}{Estimates of cluster-specific biomarker means, matrix}
@@ -58,8 +58,8 @@ summary.lucid <- function(object, boot.se = NULL, ...){
 
 #' Print the output of LUCID in a nicer table
 #'
-#' @param x An object returaned by \code{summary.lucid}
-#' @param ... Other paramters to be passed to \code{print}
+#' @param x An object returned by \code{summary.lucid}
+#' @param ... Other parameters to be passed to \code{print}
 #' @export
 #'
 print.sumlucid <- function(x, ...){

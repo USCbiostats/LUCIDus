@@ -7,9 +7,9 @@
 \method{print}{sumlucid}(x, ...)
 }
 \arguments{
-\item{x}{An object returaned by \code{summary.lucid}}
+\item{x}{An object returned by \code{summary.lucid}}
 
-\item{...}{Other paramters to be passed to \code{print}}
+\item{...}{Other parameters to be passed to \code{print}}
 }
 \description{
 Print the output of LUCID in a nicer table

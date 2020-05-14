@@ -67,7 +67,7 @@ The new version of *LUCIDus* package (ver 2.0.0) updates all the functions in th
 |-------|------|
 | `est.lucid()`|Estimate latent clusters using multi-omics data with/without the outcome of interest, and producing an lucid object; missing values in biomarker data (Z) are allowed| 
 |`boot.lucid()`|Inference about the parameters of LUCID model based on bootstrap resampling method|   
-|`summary()`|Summarize the results of LUCID model estiamted by `est.lucid()`. It presents the results in a nice table with detailed explaination for parameters| 
+|`summary()`|Summarize the results of LUCID model estimated by `est.lucid()`. It presents the results in a nice table with detailed explanation for parameters| 
 |`plot()`|Use a Sankey diagram to visualize the LUCID model|
 |`predict()`|Predict the outcome based on a fitted LUCID model given new genetic data and biomarkers|
 
@@ -112,7 +112,7 @@ knitr::include_graphics("fig3.png")
 ```
 
 ### Variable Selection Procedure
-As we can see from the table and the Sankey diagram, many genetic effects and biomarker effects are almost 0. To follow the principle of parsimony, it's reasonable to conduct a variable selction prodecure to achieve a simpler model. There are 3 tuning parameters in the variable selection. `Rho_G` is the penalty for genetic features and `Rho_InvCov` and `Rho_CovMu` are the penalties for biomarkers. To choose the best combination of tuning parameters, we perform a grid search and use BIC to identify the optimal choice. Here is an example of search 18 combinations.
+As we can see from the table and the Sankey diagram, many genetic effects and biomarker effects are almost 0. To follow the principle of parsimony, it's reasonable to conduct a variable selection proedcure to achieve a simpler model. There are 3 tuning parameters in the variable selection. `Rho_G` is the penalty for genetic features and `Rho_InvCov` and `Rho_CovMu` are the penalties for biomarkers. To choose the best combination of tuning parameters, we perform a grid search and use BIC to identify the optimal choice. Here is an example of search 18 combinations.
 ```{r eval=FALSE}
 set.seed(2)
 tune.par <- tune.lucid(G = G2, Z = Z2, Y = Y2, family = "normal", K = 2,
@@ -143,12 +143,12 @@ knitr::include_graphics("fig5.png")
 Not all the non-significant variables are selected. In practice, we could try slightly increase the penalties to achieve better variable selection results.
 
 ### Inference on Parameters
-It's hard to dervie the asymptotic distribution of the estimates of LUCID. Thus we use a bootstrap method to do inference on parameters. It is realized by the function `boot.lucid`. Let's try bootstrap on model 1.
+It's hard to derive the asymptotic distribution of the estimates of LUCID. Thus we use a bootstrap method to do inference on parameters. It is realized by the function `boot.lucid`. Let's try bootstrap on model 1.
 ```{r eval=FALSE}
 boot <- boot.lucid(G = G2, Z = Z2, Y = Y2, model = fit1, R = 100)
 ```
 
-We can add boostrap SE and 95% CI to the summary talbe by specifying the option `se`.
+We can add boostrap SE and 95% CI to the summary table by specifying the option `se`.
 ```{r eval = FALSE}
 summary(fit1, se = boot)
 ```

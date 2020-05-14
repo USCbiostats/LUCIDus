@@ -11,7 +11,7 @@
 
 \item{boot.se}{A object returned by \code{\link{boot.lucid}}, which contains the bootstrap standard error}
 
-\item{...}{Other paramters to be passed to \code{summary}}
+\item{...}{Other parameters to be passed to \code{summary}}
 }
 \value{
 A list with class "sumlucid", which contains the following object
