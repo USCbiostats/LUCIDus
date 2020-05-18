@@ -19,7 +19,7 @@ boot.lucid(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = detectCores())
 
 \item{model}{A LUCID model fitted by \code{\link{est.lucid}}.}
 
-\item{R}{Number of boostrap iterations.}
+\item{R}{Number of bootstrap iterations.}
 
 \item{n}{Number of CPU cores to be used in the bootstrap}
 }

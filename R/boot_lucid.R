@@ -8,7 +8,7 @@
 #' @param CoG Optional, matrix. Covariates to be adjusted for estimating the latent cluster.
 #' @param CoY Optional, matrix. Covariates to be adjusted for estimating the outcome.
 #' @param model A LUCID model fitted by \code{\link{est.lucid}}.
-#' @param R Number of boostrap iterations.
+#' @param R Number of bootstrap iterations.
 #' @param n Number of CPU cores to be used in the bootstrap
 #' 
 #' @return A list of estimates with their 95 percent CI.

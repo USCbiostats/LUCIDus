@@ -58,7 +58,7 @@ At each iteration, in the E-step, compute the expectation of the
 complete data log likelihood by plugging in the posterior probability
 and then in the M-step, update the parameters by maximizing the expected
 complete likelihood function. Detailed derivations of the EM algorithm
-for LUDID can be found elsewhere.
+for LUCID can be found elsewhere.
 
 ## Installation
 
