@@ -1,7 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## Introduction
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/LUCIDus?color=green)](https://cran.r-project.org/package=LUCIDus)
+![](https://cranlogs.r-pkg.org/badges/grand-total/LUCIDus?color=blue)
+![](https://cranlogs.r-pkg.org/badges/LUCIDus?color=yellow)
+![](https://cranlogs.r-pkg.org/badges/last-week/LUCIDus?color=red) \#\#
+Introduction
 
 The LUCIDus R package is an integrative tool to obtain a joint
 estimation of latent or unknown clusters/subgroups with multi-omics data
