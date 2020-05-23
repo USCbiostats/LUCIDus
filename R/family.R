@@ -29,9 +29,11 @@ normal <- function(K, ...){
     colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
     Yfit <- glm(as.formula(paste("Y ~", paste(colnames(Set0)[-1], collapse = " + "))), data = Set0, family = gaussian)
     beta <- summary(Yfit)$coefficients[, 1]
-    mu <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
-    sigma <- sqrt(colSums(r * apply(matrix(mu), 1, function(x){(x - Y)^2})) / colSums(r))
-    return(structure(list(beta = mu,
+    beta[2:K] <- beta[1] + beta[2:K]
+    sigma <- rep(sd(residuals(Yfit)), K)
+    # mu <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
+    # sigma <- sqrt(colSums(r * apply(matrix(mu), 1, function(x){(x - Y)^2})) / colSums(r))
+    return(structure(list(beta = beta,
                           sigma = sigma)))
   }
   # switch function, rearrange the parameters

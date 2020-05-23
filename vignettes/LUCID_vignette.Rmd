@@ -1,6 +1,6 @@
 ---
 title: "LUCIDus: Latent Unknown Clustering with Integrated Data"
-author: "Yinqi Zhao"
+author: "Yinqi Zhao, David Conti"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -265,6 +265,5 @@ summary(fit1, boot.se = boot)
 
 ## Acknowledgments
 - Cheng Peng, Ph.D.
-- David V. Conti, Ph.D.
 - Zhao Yang, Ph.D.
 - USC IMAGE Group^[Supported by the National Cancer Institute at the National Institutes of Health Grant P01 CA196569]

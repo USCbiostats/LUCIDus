@@ -83,10 +83,10 @@ print.sumlucid <- function(x, ...){
   cat("\n")
   cat("(3) E: the odds ratio of being assigned to each latent cluster for each exposure \n")
   dd <- as.matrix(as.data.frame(beta)[2:K, 2:ncol(beta)])
-  g.or <- data.frame(original = unlist(split(dd, row(dd))))
+  g.or <- data.frame(beta = unlist(split(dd, row(dd))))
   rownames(g.or) <- paste0(colnames(beta)[-1], ".cluster", sapply(2:K, function(x) return(rep(x, dim1))))
   if(is.null(x$boot.se)){
-    g.or$OR <- exp(g.or$original)
+    g.or$OR <- exp(g.or$beta)
     print(g.or)
   } else{
     bb <- x$boot.se$beta
@@ -98,13 +98,12 @@ print.sumlucid <- function(x, ...){
 
 f.normal <- function(x, K, se){
   gamma <- x$beta
-  sigma <- x$sigma
-  cat("(1) Y (normal outcome): the mean and the sd of the Gaussian mixture Y for each latent cluster \n")
-  y <- matrix(c(gamma, sigma), ncol = 2)
-  row.names(y) <- paste0("cluster", 1:K)
-  colnames(y) <- c("mu", "sd")
+  cat("(1) Y (normal outcome): the mean of latent cluster and covariates effect of the Gaussian mixture model\n")
+  y <- as.data.frame(gamma)
+  row.names(y)[1:K] <- paste0("cluster", 1:K)
+  colnames(y) <- "beta"
   if(!is.null(se)){
-    gamma <- cbind(y, se[, 2:4])
+    y <- cbind(y, se[, 2:4])
   }
   print(y)
 }

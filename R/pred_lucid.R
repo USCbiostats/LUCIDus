@@ -42,11 +42,10 @@ predict.lucid <- function(object, newG, newZ, newCoG = NULL, newCoY = NULL, ...)
   }
   mu <- sapply(1:n, function(x) return(pars$gamma$beta[pred.x[x]] + e.cov[x]))
   if(object$family == "normal"){
-    pred.y <- sapply(1:n, function(x) return(rnorm(1, mean = mu[x], sd = pars$gamma$sigma[pred.x[x]])))
+    pred.y <- mu
   }
   if(object$family == "binary"){
-    p <- exp(mu) / (1 + exp(mu))
-    pred.y <- sapply(1:n, function(x) return(rbinom(1, 1, prob = p[x])))
+    pred.y <- exp(mu) / (1 + exp(mu))
   }
   return(list(pred.x = pred.x, pred.y = pred.y))
 }
