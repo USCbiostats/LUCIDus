@@ -176,7 +176,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   }
   if(tune$Select_Z == TRUE){
     tt2 <- apply(pars$mu, 2, range)
-    selectZ <- abs(tt2[2, ] - tt2[1, ]) > 0.001
+    selectZ <- abs(tt2[2, ] - tt2[1, ]) != 0
   } else{
     selectZ <- rep(TRUE, dimZ)
   }
@@ -260,42 +260,63 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
   Q <- ncol(Z)
   new_sigma <- array(rep(0, Q^2 * K), dim = c(Q, Q, K))
   new_mu <- matrix(rep(0, Q * K), nrow = K)
-  if(selectZ) {
-    k <- 1
-    while(k <= K){
-      #estimate E(S_k) to be used by glasso
-      Z_mu <- t(t(dz) - mu[k, ])
-      E_S <- (matrix(colSums(dr[, k] * t(apply(Z_mu, 1, function(x) return(x %*% t(x))))), Q, Q)) / sum(dr[, k])
-      #use glasso and E(S_k) to estimate new_sigma and new_sigma_inv
-      l_cov <- try(glasso(E_S, penalty.cov))
-      if("try-error" %in% class(l_cov)){
-        print(paste("glasso failed, restart lucid"))
-        break
-      }
-      else{
-        new_sigma[, , k] <- l_cov$w
-        new_sigma_inv <- l_cov$wi
-        new_sigma_est <- l_cov$w
-        try_optim_mu <- try(lbfgs(call_eval = fn, call_grad = gr,
-                                  mat = dz, mat2 = dr, k = k,  cov_inv = new_sigma_inv, cov = new_sigma_est,
-                                  vars = rep(0, Q), invisible = 1, orthantwise_c = penalty.mu))
-        if("try-error" %in% class(try_optim_mu)){
-          break
-        }
-        else{
-          new_mu[k, ] <- new_sigma[, , k] %*% (try_optim_mu$par)
-        }
-      }
-      k <- k + 1
+  if(selectZ){
+    n <- nrow(dz)
+    res.sigma <- rep(0, Q)
+    for(i in 1:Q){
+      res.sigma[i] <- sum(sapply(1:K, function(k){
+        z1 <- dr[, k] * (dz[, i] - mu[k, i])^2
+        return(sum(z1) / n)
+      }))
     }
-    if("try-error" %in% class(l_cov)){
-      return(structure(list(mu = NULL,
-                            sigma = NULL)))
-    } else{
-      return(structure(list(mu = new_mu,
-                            sigma = new_sigma)))
+    for(i in 1:K){
+      diag(new_sigma[, , i]) <- res.sigma
     }
+    rZ <- t(dr) %*% dz
+    mu <- t(sapply(1:K, function(x){rZ[x, ] / colSums(dr)[x]}))
+    shrink <- penalty.mu / colSums(dr) %*% t(res.sigma)
+    ind <- (abs(mu) - shrink) > 0
+    shrink.mu <- sign(mu) * (abs(mu) - shrink)
+    new_mu[ind] <- shrink.mu[ind]
+    return(structure(list(mu = new_mu,
+                          sigma = new_sigma)))
   }
+  # if(selectZ) {
+  #   k <- 1
+  #   while(k <= K){
+  #     #estimate E(S_k) to be used by glasso
+  #     Z_mu <- t(t(dz) - mu[k, ])
+  #     E_S <- (matrix(colSums(dr[, k] * t(apply(Z_mu, 1, function(x) return(x %*% t(x))))), Q, Q)) / sum(dr[, k])
+  #     #use glasso and E(S_k) to estimate new_sigma and new_sigma_inv
+  #     l_cov <- try(glasso(E_S, penalty.cov))
+  #     if("try-error" %in% class(l_cov)){
+  #       print(paste("glasso failed, restart lucid"))
+  #       break
+  #     }
+  #     else{
+  #       new_sigma[, , k] <- l_cov$w
+  #       new_sigma_inv <- l_cov$wi
+  #       new_sigma_est <- l_cov$w
+  #       try_optim_mu <- try(lbfgs(call_eval = fn, call_grad = gr,
+  #                                 mat = dz, mat2 = dr, k = k,  cov_inv = new_sigma_inv, cov = new_sigma_est,
+  #                                 vars = rep(0, Q), invisible = 1, orthantwise_c = penalty.mu))
+  #       if("try-error" %in% class(try_optim_mu)){
+  #         break
+  #       }
+  #       else{
+  #         new_mu[k, ] <- new_sigma[, , k] %*% (try_optim_mu$par)
+  #       }
+  #     }
+  #     k <- k + 1
+  #   }
+  #   if("try-error" %in% class(l_cov)){
+  #     return(structure(list(mu = NULL,
+  #                           sigma = NULL)))
+  #   } else{
+  #     return(structure(list(mu = new_mu,
+  #                           sigma = new_sigma)))
+  #   }
+  # }
   else{
     z.fit <- mstep(modelName = model.name, data = dz, z = dr)
     return(structure(list(mu = t(z.fit$parameters$mean),
