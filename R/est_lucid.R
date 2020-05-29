@@ -71,7 +71,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   # check missing pattern
   ind.NA <- Ind.NA(Z)
   if(sum(ind.NA == 2) != 0){
-    # NA.Z <- which(is.na(Z), arr.ind = TRUE)
+    NA.Z <- which(is.na(Z))
     Z <- imputeData(Z) # initialize imputation
     Z[ind.NA == 3, ] <- NA
   }
@@ -113,9 +113,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       }
       
       # I step
-      # if(sum(ind.NA == 2) != 0 && itr != 1){
-      #   Z <- Istep_Z(Z = Z, r = res.r, est.mu = res.mu, ind.na = ind.NA, all.na = NA.Z)
-      # }
+      if(sum(ind.NA == 2) != 0 && itr != 1){
+        Z <- Istep_Z(Z = Z, r = res.r, est.mu = res.mu, ind.na = ind.NA, all.na = NA.Z)
+      }
       
       # M step
       invisible(capture.output(new.beta <- Mstep_G(G = G, r = res.r, selectG = tune$Select_G, penalty = tune$Rho_G, dimG = dimG, K = K)))
@@ -220,16 +220,13 @@ Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
   return (likelihood)
 }
 
-####### I step: impute missing values in Z #######
-# Istep_Z <- function(Z, r, est.mu, ind.na, all.na){
-#   n <- nrow(Z)
-#   m <- dim(Z)
-#   zr <- colMeans(r[ind.na != 3, ])
-#   impute <- as.vector(zr) %*% as.matrix(est.mu)
-#   Z[all.na] <- impute[all.na[, 2]]
-#   Z[ind.na == 3, ] <- NA
-#   return(Z)
-# }
+###### I step: impute missing values in Z #######
+Istep_Z <- function(Z, r, est.mu, ind.na, all.na){
+  impute <- r %*% as.matrix(est.mu)
+  Z[all.na] <- impute[all.na]
+  Z[ind.na == 3, ] <- NA
+  return(Z)
+}
 
 ####### M step: update the parameters #######
 Mstep_G <- function(G, r, selectG, penalty, dimG, K){
