@@ -3,8 +3,6 @@
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/LUCIDus?color=green)](https://cran.r-project.org/package=LUCIDus)
 ![](https://cranlogs.r-pkg.org/badges/grand-total/LUCIDus?color=blue)
-![](https://cranlogs.r-pkg.org/badges/LUCIDus?color=yellow)
-![](https://cranlogs.r-pkg.org/badges/last-week/LUCIDus?color=red)
 
 ## Introduction
 
