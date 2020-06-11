@@ -105,6 +105,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       new.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                               G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, useY = useY, dimCoY = dimCoY, ind.na = ind.NA)
       res.r <- new.likelihood / rowSums(new.likelihood)
+      res.r[is.na(res.r[1, ]), ] <- 1/K
       if(!all(is.finite(res.r))){
         cat("iteration", itr,": failed: invalid r, try another seed", "\n")
         break
