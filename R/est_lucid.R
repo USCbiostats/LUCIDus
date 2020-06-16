@@ -172,13 +172,16 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   colnames(pars$mu) <- Znames
   if(tune$Select_G == TRUE){
     tt1 <- apply(pars$beta[, -1], 2, range)
-    selectG <- abs(tt1[2, ] - tt1[1, ]) > 0.001
+    selectG <- abs(tt1[2, ] - tt1[1, ]) != 0
   } else{
     selectG <- rep(TRUE, dimG)
   }
   if(tune$Select_Z == TRUE){
-    tt2 <- apply(pars$mu, 2, range)
-    selectZ <- abs(tt2[2, ] - tt2[1, ]) > 0.001
+    tt2 <- sapply(1:K, function(x) {
+      pars$mu[x, ] %*% solve(pars$sigma[[x]])
+    })
+    tt2 <- apply(tt2, 1, range)
+    selectZ <- abs(tt2[1, ] - tt2[2, ]) != 0
   } else{
     selectZ <- rep(TRUE, dimZ)
   }
