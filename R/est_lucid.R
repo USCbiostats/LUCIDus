@@ -261,63 +261,42 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
   Q <- ncol(Z)
   new_sigma <- array(rep(0, Q^2 * K), dim = c(Q, Q, K))
   new_mu <- matrix(rep(0, Q * K), nrow = K)
-  if(selectZ){
-    n <- nrow(dz)
-    res.sigma <- rep(0, Q)
-    for(i in 1:Q){
-      res.sigma[i] <- sum(sapply(1:K, function(k){
-        z1 <- dr[, k] * (dz[, i] - mu[k, i])^2
-        return(sum(z1) / n)
-      }))
+  if(selectZ) {
+    k <- 1
+    while(k <= K){
+      #estimate E(S_k) to be used by glasso
+      Z_mu <- t(t(dz) - mu[k, ])
+      E_S <- matrix(colSums(dr[, k] * t(apply(Z_mu, 1, function(x) return(x %*% t(x))))), Q, Q) / sum(dr[, k])
+      #use glasso and E(S_k) to estimate new_sigma and new_sigma_inv
+      l_cov <- try(glasso(E_S, penalty.cov))
+      if("try-error" %in% class(l_cov)){
+        print(paste("glasso failed, restart lucid"))
+        break
+      }
+      else{
+        new_sigma[, , k] <- l_cov$w
+        # function to calculate mean
+        new_mu[k, ] <- est.mu(j = k, rho = penalty.mu, z = dz, r = dr, mu = mu[k, ], wi = l_cov$wi)
+        # try_optim_mu <- try(lbfgs(call_eval = fn, call_grad = gr,
+        #                           mat = dz, mat2 = dr, k = k,  cov_inv = new_sigma_inv, cov = new_sigma_est,
+        #                           vars = rep(0, Q), invisible = 1, orthantwise_c = penalty.mu))
+        # if("try-error" %in% class(try_optim_mu)){
+        #   break
+        # }
+        # else{
+        #   new_mu[k, ] <- new_sigma[, , k] %*% (try_optim_mu$par)
+        # }
+      }
+      k <- k + 1
     }
-    for(i in 1:K){
-      diag(new_sigma[, , i]) <- res.sigma
+    if("try-error" %in% class(l_cov)){
+      return(structure(list(mu = NULL,
+                            sigma = NULL)))
+    } else{
+      return(structure(list(mu = new_mu,
+                            sigma = new_sigma)))
     }
-    rZ <- t(dr) %*% dz
-    mu <- t(sapply(1:K, function(x){rZ[x, ] / colSums(dr)[x]}))
-    shrink <- penalty.mu / colSums(dr) %*% t(res.sigma)
-    ind <- (abs(mu) - shrink) > 0
-    shrink.mu <- sign(mu) * (abs(mu) - shrink)
-    new_mu[ind] <- shrink.mu[ind]
-    return(structure(list(mu = new_mu,
-                          sigma = new_sigma)))
   }
-  # if(selectZ) {
-  #   k <- 1
-  #   while(k <= K){
-  #     #estimate E(S_k) to be used by glasso
-  #     Z_mu <- t(t(dz) - mu[k, ])
-  #     E_S <- (matrix(colSums(dr[, k] * t(apply(Z_mu, 1, function(x) return(x %*% t(x))))), Q, Q)) / sum(dr[, k])
-  #     #use glasso and E(S_k) to estimate new_sigma and new_sigma_inv
-  #     l_cov <- try(glasso(E_S, penalty.cov))
-  #     if("try-error" %in% class(l_cov)){
-  #       print(paste("glasso failed, restart lucid"))
-  #       break
-  #     }
-  #     else{
-  #       new_sigma[, , k] <- l_cov$w
-  #       new_sigma_inv <- l_cov$wi
-  #       new_sigma_est <- l_cov$w
-  #       try_optim_mu <- try(lbfgs(call_eval = fn, call_grad = gr,
-  #                                 mat = dz, mat2 = dr, k = k,  cov_inv = new_sigma_inv, cov = new_sigma_est,
-  #                                 vars = rep(0, Q), invisible = 1, orthantwise_c = penalty.mu))
-  #       if("try-error" %in% class(try_optim_mu)){
-  #         break
-  #       }
-  #       else{
-  #         new_mu[k, ] <- new_sigma[, , k] %*% (try_optim_mu$par)
-  #       }
-  #     }
-  #     k <- k + 1
-  #   }
-  #   if("try-error" %in% class(l_cov)){
-  #     return(structure(list(mu = NULL,
-  #                           sigma = NULL)))
-  #   } else{
-  #     return(structure(list(mu = new_mu,
-  #                           sigma = new_sigma)))
-  #   }
-  # }
   else{
     z.fit <- mstep(modelName = model.name, data = dz, z = dr)
     return(structure(list(mu = t(z.fit$parameters$mean),
@@ -325,18 +304,41 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
   }
 }
 # use lbfgs to estimate mu with L1 penalty
-fn <- function(a, mat, mat2, cov_inv, cov, k){
-  Mu <- cov %*% a
-  tar <- sum(mat2[, k] * apply(mat, 1, function(v) return(t(v - Mu) %*% cov_inv %*% (v - Mu))))
-  return(tar)
+# fn <- function(a, mat, mat2, cov_inv, cov, k){
+#   Mu <- cov %*% a
+#   tar <- sum(mat2[, k] * apply(mat, 1, function(v) return(t(v - Mu) %*% cov_inv %*% (v - Mu))))
+#   return(tar)
+# }
+# 
+# gr <- function(a, mat, mat2, cov_inv, cov, k){
+#   Mu <- cov %*% a
+#   return(2 * apply(mat2[, k] * t(apply(mat, 1, function(v) return(Mu - v))), 2, sum))
+# }
+
+# estimate the penalized mean
+est.mu <- function(j, rho, z, r, mu, wi){
+  p <- ncol(z)
+  res.mu <- rep(0, p)
+  mu1 <- sapply(1:p, function(x){
+    q1 <- t(t(z) - mu) %*% wi[x, ]
+    q2 <- q1 + wi[x, x] * z[, x] - wi[x, x] * (z[, x] - mu[x])
+    return(abs(sum(q2 * r[, j])) <= rho)
+  })
+  mu2 <- sapply(1:p, function(x){
+    a <- sum(r[, j] * rowSums(t(wi[x, ] * t(z))))
+    b <- sum(r[, j]) * (sum(wi[x, ] * mu) - wi[x, x] * mu[x])
+    t1 <- (a - b + rho) / (sum(r[, j]) * wi[x, x]) # mu < 0
+    t2 <- (a - b - rho) / (sum(r[, j]) * wi[x, x]) # mu > 0
+    if(t1 < 0){
+      res <- t1
+    } else{
+      res <- t2
+    }
+    return(res)
+  })
+  res.mu[!mu1] <- mu2[!mu1]
+  return(res.mu)
 }
-
-gr <- function(a, mat, mat2, cov_inv, cov, k){
-  Mu <- cov %*% a
-  return(2 * apply(mat2[, k] * t(apply(mat, 1, function(v) return(Mu - v))), 2, sum))
-}
-
-
 
 
 #' Print the output of \code{est.lucid}
