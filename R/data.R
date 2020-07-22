@@ -1,75 +1,23 @@
-#' Genetic Features Set 1
+#' @title simulated dataset 1
 #'
-#' A simulated dataset containing one of the components to run lucid. The variables are as follows:
-#'
-#' @format A set with 3000 rows and 10 variables:
+#' @description A simulated dataset for integrated clustering with normal outcome. The data is simulated under cluster number K = 2.
+#' @format A matrix of 22 columns, which are
 #' \describe{
-#'   \item{CG1 - CG5}{Causal SNPs}
-#'   \item{NG1 - NG5}{Null SNPs}
+#'   \item{G1 - G10}{Genetic features, G1 to G5 are causal genes contributed to clustering, with OR = 2; G6 to G10 are null genes that is not related to clustering}
+#'   \item{Z1 - Z10}{Biomarkers, Z1 to Z5 are causal biomarkers with delta Z = 4 between 2 clusters, Z6 to Z10 are noises with delta Z = 0. All biomarkers are assumed to be independent with each other}
+#'   \item{Y}{Outcome of interest, which follows 2 normal distribution with N(-1, 1) and N(1, 1)}
+#'   \item{X}{Latent cluster assignment for each observation}
 #' }
-"G1"
+"sim1"
 
-#' Biomarker Set 1
+#' @title simulated dataset 2
 #'
-#' A simulated dataset containing one of the components to run lucid. The variables are as follows:
-#'
-#' @format A set with 3000 rows and 4 variables:
+#' @description A simulated dataset for integrated clustering with binary outcome. The data is simulated under cluster number K = 2.
+#' @format A matrix of 22 columns, which are
 #' \describe{
-#'   \item{CZ1 - CZ5}{Causal biomarkers}
-#'   \item{NZ1 - NZ5}{Null biomarkers}
+#'   \item{G1 - G10}{Genetic features, G1 to G5 are causal genes contributed to clustering, with OR = 2; G6 to G10 are null genes that is not related to clustering}
+#'   \item{Z1 - Z10}{Biomarkers, Z1 to Z5 are causal biomarkers with delta Z = 4 between 2 clusters, Z6 to Z10 are noises with delta Z = 0. All biomarkers are assumed to be independent with each other}
+#'   \item{Y}{Outcome of interest, the odds ratio of the cluster is 2}
+#'   \item{X}{Latent cluster assignment for each observation}
 #' }
-"Z1"
-
-
-#' Outcome Set 1
-#'
-#' A simulated dataset containing one of the components to run lucid. The variables are as follows:
-#'
-#' @format A set with 3000 rows and 1 variable:
-#' \describe{
-#'   \item{Y1}{A binary outcome}
-#' }
-"Y1"
-
-#' Genetic Features Set 2
-#'
-#' A simulated dataset containing one of the components to run lucid. The variables are as follows:
-#'
-#' @format A set with 3000 rows and 10 variables:
-#' \describe{
-#'   \item{CG1 - CG5}{Causal SNPs}
-#'   \item{NG1 - NG5}{Null SNPs}
-#' }
-"G2"
-
-#' Biomarker Set 2
-#'
-#' A simulated dataset containing one of the components to run lucid. The variables are as follows:
-#'
-#' @format A set with 3000 rows and 4 variables:
-#' \describe{
-#'   \item{CZ1 - CZ5}{Causal biomarkers}
-#'   \item{NZ1 - NZ5}{Null biomarkers}
-#' }
-"Z2"
-
-
-#' Outcome Set 2
-#'
-#' A simulated dataset containing one of the components to run lucid. The variables are as follows:
-#'
-#' @format A set with 3000 rows and 1 variable:
-#' \describe{
-#'   \item{Y2}{A continuous outcome}
-#' }
-"Y2"
-
-#' Covariates Set 1
-#'
-#' A simulated dataset containing covariates included in the X->Y analysis. The variables are as follows:
-#'
-#' @format A set with 3000 rows and 2 continuous variable:
-#' \describe{
-#'   \item{CovY1, CovY2}{Two continuous covariates}
-#' }
-"CovY"
+"sim2"

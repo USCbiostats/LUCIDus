@@ -5,18 +5,19 @@
 #' @param newZ A new data set of biomarkers
 #' @param newCoG Optional. A new data set of covariates included in the G->X analysis
 #' @param newCoY Optional. A new data set of covariates included in the X->Y analysis
+#' @param response Report the posterior distribution of cluster assignment (and the probability of binary outcome), default is TRUE
 #' @param ... Other parameters to be passed to \code{predict}
 #' @return A list contains predicted latent cluster and outcome for each observation
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' index <- sample(1:3000, 200)
-#' fit <- est.lucid(G = G1[-index, ], Z = Z1[-index, ], Y = as.matrix(Y1[-index, ]))
-#' pred <- predict(object = fit, newG = G1[index, ], newZ = Z1[index, ])
+#' index <- sample(1:2000, 200)
+#' fit <- est.lucid(G = sim1[-index, 1:10], Z = sim1[-index, 11:20], Y = as.matrix(sim1[-index, 21]))
+#' pred <- predict(object = fit, newG = sim1[index, 1:10], newZ = sim1[index, 11:20])
 #' }
 
-predict.lucid <- function(object, newG, newZ, newCoG = NULL, newCoY = NULL, ...){
+predict.lucid <- function(object, newG, newZ, newCoG = NULL, newCoY = NULL, response = TRUE, ...){
   n <- nrow(newG)
   gamma <- object$pars$gamma
   G <- cbind(newG, newCoG)
@@ -34,7 +35,7 @@ predict.lucid <- function(object, newG, newZ, newCoG = NULL, newCoY = NULL, ...)
                         binary = binary(K = K, dimCoY))
   res <- Estep(beta = pars$beta, mu = pars$mu, sigma = sigma.array, gamma = pars$gamma,
                G = G, Z = Z, CoY = CoY, family.list, K = object$K, N = n, itr = 2, dimCoY = dimCoY, useY = FALSE, ind.na = ind.na)
-  post.p <- res / rowSums(res) # posterior probablity
+  post.p <- res / rowSums(res) # posterior probability
   pred.x <- sapply(1:n, function(x) return(nnet::which.is.max(post.p[x, ])))
   e.cov <- rep(0, n)
   if(!is.null(newCoY)){
@@ -46,6 +47,12 @@ predict.lucid <- function(object, newG, newZ, newCoG = NULL, newCoY = NULL, ...)
   }
   if(object$family == "binary"){
     pred.y <- exp(mu) / (1 + exp(mu))
+    if(response == TRUE){
+      pred.y <- as.numeric(pred.y > 0.5)
+    }
+  }
+  if(response == FALSE){
+    pred.x <-  post.p
   }
   return(list(pred.x = pred.x, pred.y = pred.y))
 }

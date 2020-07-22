@@ -4,7 +4,7 @@
 \alias{predict.lucid}
 \title{Predict the outcome based on a fitted LUCID model}
 \usage{
-\method{predict}{lucid}(object, newG, newZ, newCoG = NULL, newCoY = NULL, ...)
+\method{predict}{lucid}(object, newG, newZ, newCoG = NULL, newCoY = NULL, response = TRUE, ...)
 }
 \arguments{
 \item{object}{A model fitted and returned by \code{\link{est.lucid}}}
@@ -16,6 +16,8 @@
 \item{newCoG}{Optional. A new data set of covariates included in the G->X analysis}
 
 \item{newCoY}{Optional. A new data set of covariates included in the X->Y analysis}
+
+\item{response}{Report the posterior distribution of cluster assignment (and the probability of binary outcome), default is TRUE}
 
 \item{...}{Other parameters to be passed to \code{predict}}
 }

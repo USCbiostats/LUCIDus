@@ -20,7 +20,7 @@
 #' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
 #' @examples
 #' \dontrun{
-#' fit1 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary")
+#' fit1 <- est.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]), K = 2, family = "binary")
 #' chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 #' if (nzchar(chk) && chk == "TRUE") {
 #'  # use 2 cores in CRAN/Travis/AppVeyor
@@ -28,7 +28,7 @@
 #' } else {
 #'  num_workers <- parallel::detectCores()
 #' }
-#' boot1 <- boot.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, model = fit1, R = 100, n = num_workers)
+#' boot1 <- boot.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]), model = fit1, R = 100, n = num_workers)
 #' }
 boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = detectCores()){
   ss <- model$select
