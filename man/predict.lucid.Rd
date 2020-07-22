@@ -29,8 +29,8 @@ Predict the outcome based on a fitted LUCID model
 }
 \examples{
 \dontrun{
-index <- sample(1:3000, 200)
-fit <- est.lucid(G = G1[-index, ], Z = Z1[-index, ], Y = as.matrix(Y1[-index, ]))
-pred <- predict(object = fit, newG = G1[index, ], newZ = Z1[index, ])
+index <- sample(1:2000, 200)
+fit <- est.lucid(G = sim1[-index, 1:10], Z = sim1[-index, 11:20], Y = as.matrix(sim1[-index, 21]))
+pred <- predict(object = fit, newG = sim1[index, 1:10], newZ = sim1[index, 11:20])
 }
 }

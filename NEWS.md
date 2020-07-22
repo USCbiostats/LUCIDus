@@ -1,4 +1,12 @@
-# LUCIDus 2.0.1
+# LUCIDus 2.1.0
+## New features
+A new variable selection framework is applied to LUCID. 
+* A lasso type penalty is applied on the mean of biomarkers
+* A glasso method is applied on the variance-covariance structure to achieve sparsity covariance matrix
+* We apply a new variable selection criteria, which takes both mean and coviarnce matrix of biomarkers into account.
+
+## Other changes
+* Fix bugs in `pred.lucid()`. Now it can predict both latent cluster and the outcome.
 
 
 

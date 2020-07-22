@@ -31,7 +31,8 @@ This function provides SEs of parameter estimates from a LUCID model through boo
 }
 \examples{
 \dontrun{
-fit1 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary")
+fit1 <- est.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]), 
+K = 2, family = "binary")
 chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 if (nzchar(chk) && chk == "TRUE") {
  # use 2 cores in CRAN/Travis/AppVeyor
@@ -39,7 +40,8 @@ if (nzchar(chk) && chk == "TRUE") {
 } else {
  num_workers <- parallel::detectCores()
 }
-boot1 <- boot.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, model = fit1, R = 100, n = num_workers)
+boot1 <- boot.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]),
+ model = fit1, R = 100, n = num_workers)
 }
 }
 \references{
