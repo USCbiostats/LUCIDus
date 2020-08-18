@@ -32,30 +32,42 @@
 #' boot1 <- boot.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]),
 #'  model = fit1, R = 100, n = num_workers)
 #' }
-boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = detectCores()){
+boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = detectCores(), Zdiff = FALSE){
   ss <- model$select
   G <- as.matrix(G[, ss$selectG])
   Z <- as.matrix(Z[, ss$selectZ])
   dimG <- ncol(G); dimZ <- ncol(Z); dimCoY <- ncol(CoY); dimCoG  <- ncol(CoG); K <- model$K
   alldata <- as.data.frame(cbind(G, Z, Y, CoG, CoY))
   bootstrap <- boot(data = alldata, statistic = lucid_par, R = R, parallel = "multicore", ncpus = n,
-                    dimG = dimG, dimZ = dimZ, dimCoY = dimCoY, dimCoG = dimCoG, model = model)
+                    dimG = dimG, dimZ = dimZ, dimCoY = dimCoY, dimCoG = dimCoG, model = model, Zdiff = Zdiff)
   sd <- sapply(1:length(bootstrap$t0), function(x) sd(bootstrap$t[, x]))
-  model.par <- c(model$pars$beta[-1, c(FALSE, ss$selectG)], as.vector(t(model$pars$mu[, ss$selectZ])), model$pars$gamma$beta)
+  if(Zdiff == FALSE){
+    model.par <- c(model$pars$beta[-1, c(FALSE, ss$selectG)], as.vector(t(model$pars$mu[, ss$selectZ])), model$pars$gamma$beta)
+  } else {
+    z.range0 <- apply(model$pars$mu[, ss$selectZ], 2, range)
+    z.diff0 <- abs(z.range0[1, ] - z.range0[2, ])
+    model.par <- c(model$pars$beta[-1, c(FALSE, ss$selectG)], z.diff0, model$pars$gamma$beta)
+  }
   dd <- data.frame(original = model.par, sd = sd, 
                    lower = model.par - 1.96 * sd, upper = model.par + 1.96 * sd)
   beta <- dd[1:((K - 1) * dimG), ]
   row.names(beta) <- paste0(colnames(G), ".cluster", 2:K)
-  mu <- dd[((K - 1) * dimG + 1): ((K - 1) * dimG + K * dimZ), ]
-  row.names(mu) <- paste0(rep(colnames(Z), K), ".cluster", sapply(1:K, function(x) rep(x, dimZ)))
-  gamma <- dd[-(1:((K - 1) * dimG + K * dimZ)), ]
+  if(Zdiff == FALSE){
+    mu <- dd[((K - 1) * dimG + 1): ((K - 1) * dimG + K * dimZ), ]
+    row.names(mu) <- paste0(rep(colnames(Z), K), ".cluster", sapply(1:K, function(x) rep(x, dimZ)))
+    gamma <- dd[-(1:((K - 1) * dimG + K * dimZ)), ]
+  } else {
+    mu <- dd[((K - 1) * dimG + 1): ((K - 1) * dimG + dimZ), ]
+    row.names(mu) <- paste0(colnames(Z), ".range")
+    gamma <- dd[-(1:((K - 1) * dimG + dimZ)), ]
+  }
   row.names(gamma) <- c("reference", paste0("cluster", 2:K), colnames(CoY))
   return(structure(list(beta = beta, mu = mu, gamma = gamma, t = bootstrap$t)))
 }
 
 
 
-lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model) {
+lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model, Zdiff) {
   d <- data[indices, ]
   G <- as.matrix(d[, 1:dimG])
   Z <- as.matrix(d[, (dimG + 1):(dimG + dimZ)])
@@ -82,9 +94,17 @@ lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model) {
     if("try-error" %in% class(try_lucid)){
       next
     } else{
-      par_lucid <- c(try_lucid$pars$beta[-1, -1],
-                     as.vector(t(try_lucid$pars$mu)),
-                     try_lucid$pars$gamma$beta)
+      if(Zdiff == FALSE){
+        par_lucid <- c(try_lucid$pars$beta[-1, -1],
+                       as.vector(t(try_lucid$pars$mu)),
+                       try_lucid$pars$gamma$beta)
+      } else{
+        z.range <- apply(try_lucid$pars$mu, 2, range)
+        z.diff <- abs(z.range[1, ] - z.range[2, ])
+        par_lucid <- c(try_lucid$pars$beta[-1, -1], 
+                       as.vector(z.diff),
+                       try_lucid$pars$gamma$beta)
+      }
       converge <- TRUE
     }
   }

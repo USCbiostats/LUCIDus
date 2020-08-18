@@ -4,7 +4,17 @@
 \alias{boot.lucid}
 \title{Bootstrap method of inference for LUCID}
 \usage{
-boot.lucid(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = detectCores())
+boot.lucid(
+  G,
+  Z,
+  Y,
+  CoG = NULL,
+  CoY = NULL,
+  model,
+  R = 100,
+  n = detectCores(),
+  Zdiff = FALSE
+)
 }
 \arguments{
 \item{G}{Genetic features/environmental exposures, a \code{\link{matrix}}.}
