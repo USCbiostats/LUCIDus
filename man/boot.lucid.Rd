@@ -32,6 +32,8 @@ boot.lucid(
 \item{R}{Number of bootstrap iterations.}
 
 \item{n}{Number of CPU cores to be used in the bootstrap}
+
+\item{Zdiff}{Whether conduct inference based on the range of Z or not. Default is FALSE.}
 }
 \value{
 A list of estimates with their 95 percent CI.

@@ -10,6 +10,7 @@
 #' @param model A LUCID model fitted by \code{\link{est.lucid}}.
 #' @param R Number of bootstrap iterations.
 #' @param n Number of CPU cores to be used in the bootstrap
+#' @param Zdiff Whether conduct inference based on the range of Z or not. Default is FALSE.
 #' 
 #' @return A list of estimates with their 95 percent CI.
 #' @export
