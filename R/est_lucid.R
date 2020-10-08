@@ -42,7 +42,7 @@
 #' Select_G = TRUE, Rho_G = 0.02))
 #' }
 est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal", 
-                      useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL){
+                      useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL, lambda_G = 0){
   #### pre-processing ####
   # check data format
   N <- nrow(Y); dimG <- ncol(G); dimZ <- ncol(Z); 
@@ -80,7 +80,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
 
   
   #### conduct the EM algorithm ####
-  tot.itr <- 0; convergence <- FALSE
+  tot.itr <- 0; convergence <- FALSE; 
   while(!convergence && tot.itr <= control$max_tot.itr){
     # initialize EM algorithm 
     cat("initialize the LUCID ...", "\n")
@@ -97,7 +97,10 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
     res.gamma <- family.list$initial.gamma(K, dimCoY)
     res.loglik <- -Inf
     itr <- 0
-
+    # store and track the value of beta estiamte
+    iss1 <- res.beta[-1, ]
+    iss1.r <- NULL
+    
     while(!convergence && itr <= control$max_itr){
       itr <- itr + 1
       tot.itr <- tot.itr + 1
@@ -121,7 +124,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       }
       
       # M step
-      invisible(capture.output(new.beta <- Mstep_G(G = G, r = res.r, selectG = tune$Select_G, penalty = tune$Rho_G, dimG = dimG, K = K)))
+      invisible(capture.output(new.beta <- Mstep_G(G = G, r = res.r, selectG = tune$Select_G, penalty1 = tune$Rho_G, penalty2 = lambda_G, dimG = dimG, K = K)))
       new.mu.sigma <- Mstep_Z(Z = Z, r = res.r, selectZ = tune$Select_Z, penalty.mu = tune$Rho_Z_CovMu, penalty.cov = tune$Rho_Z_InvCov,
                               model.name = model.best, K = K, ind.na = ind.NA, mu = res.mu)
       if(is.null(new.mu.sigma$mu)){
@@ -147,6 +150,10 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
         if(useY){
           res.gamma <- new.gamma
         }
+        ######### issue 1
+        iss1 <- rbind(iss1, res.beta[-1, ])
+        iss1.r <- rbind(iss1.r, summary(res.r[, 1]))
+        #########
         new.loglik <- sum(log(rowSums(new.likelihood)))
         cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
         if(abs(res.loglik - new.loglik) < control$tol){
@@ -196,7 +203,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   }
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
                   K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik, post.p = res.r, family = family,
-                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY)
+                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY, 
+                  iss1 = iss1, # track beta
+                  iss1.r = iss1.r) # track post p
   class(results) <- c("lucid")
   return(results)
 }
@@ -246,10 +255,10 @@ Istep_Z <- function(Z, r, est.mu, ind.na, all.na){
 }
 
 ####### M step: update the parameters #######
-Mstep_G <- function(G, r, selectG, penalty, dimG, K){
+Mstep_G <- function(G, r, selectG, penalty1, penalty2, dimG, K){
   new.beta <- matrix(rep(0, K * (dimG + 1)), nrow = K)
   if(selectG){
-    tryLasso <- try(glmnet(as.matrix(G), as.matrix(r), family = "multinomial", lambda = penalty))
+    tryLasso <- try(glmnet(as.matrix(G), as.matrix(r), family = "multinomial", lambda = penalty1, alpha = 0))
     if("try-error" %in% class(tryLasso)){
       breakdown <- TRUE
       print(paste("lasso failed"))
@@ -260,8 +269,12 @@ Mstep_G <- function(G, r, selectG, penalty, dimG, K){
     }
   }
   else{
-    beta.multilogit <- multinom(as.matrix(r) ~ as.matrix(G))
-    new.beta[-1, ] <- coef(beta.multilogit)
+    # beta.multilogit <- multinom(as.matrix(r) ~ as.matrix(G))
+    # new.beta[-1, ] <- coef(beta.multilogit)
+    beta.multilogit <- glmnet(x = as.matrix(G), y = as.matrix(r), family = "multinomial", alpha = 0, lambda = penalty2)
+    betas <- coef(beta.multilogit)
+    ref <- betas[[1]]@x
+    new.beta[-1, ] <- t(sapply(2:K, function(x) betas[[x]]@x - ref))
   }
   return(new.beta)
 }

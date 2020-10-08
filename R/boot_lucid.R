@@ -91,7 +91,7 @@ lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model, Zdiff) {
                                CoY = CoY, 
                                CoG = CoG,
                                family = model$family, control = model$par.control,
-                               Z.var.str = model$Z.var.str, K = model$K))
+                               Z.var.str = model$Z.var.str, K = model$K, tune = model$par.tune))
     if("try-error" %in% class(try_lucid)){
       next
     } else{

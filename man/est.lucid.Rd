@@ -15,7 +15,8 @@ est.lucid(
   useY = TRUE,
   control = def.control(),
   tune = def.tune(),
-  Z.var.str = NULL
+  Z.var.str = NULL,
+  lambda_G = 0
 )
 }
 \arguments{
