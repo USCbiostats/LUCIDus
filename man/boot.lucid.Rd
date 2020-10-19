@@ -13,7 +13,8 @@ boot.lucid(
   model,
   R = 100,
   n = detectCores(),
-  Zdiff = FALSE
+  Zdiff = FALSE,
+  penalty = 0
 )
 }
 \arguments{
