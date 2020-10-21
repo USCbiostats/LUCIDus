@@ -25,17 +25,17 @@ normal <- function(K, ...){
   }
   # update parameters for M step
   f.maxY <- function(Y, r, CoY, K, CoYnames){
-    if(!is.null(CoY)){
+    # if(!is.null(CoY)){
       Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
       Yfit <- glm(as.formula(paste("Y ~", paste(colnames(Set0)[-1], collapse = " + "))), data = Set0, family = gaussian)
       beta <- summary(Yfit)$coefficients[, 1]
       beta[2:K] <- beta[1] + beta[2:K]
       sigma <- rep(sd(residuals(Yfit)), K)
-    } else{
-      beta <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
-      sigma <- sqrt(colSums(r * apply(matrix(beta), 1, function(x){(x - Y)^2})) / colSums(r))
-    }
+    # } else{
+    #   beta <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
+    #   sigma <- sqrt(colSums(r * apply(matrix(beta), 1, function(x){(x - Y)^2})) / colSums(r))
+    # }
     return(structure(list(beta = beta,
                           sigma = sigma)))
   }
@@ -94,7 +94,9 @@ binary <- function(K, ...){
     Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
     colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
     Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family ="binomial")
-    beta <- c(0, coef(Yfit)[-1])
+    beta <- coef(Yfit)
+    beta[2:K] <- beta[1] + beta[2:K] # log odds for each latent cluster
+    # beta <- c(0, coef(Yfit)[-1])
     return(structure(list(beta = beta,
                           sigma = NULL)))
   }
@@ -107,8 +109,10 @@ binary <- function(K, ...){
     for (i in 1:K) {
       var[[i]] <- sigma[, , i]
     }
-    gamma$beta[1:K] <- (gamma$beta[1:K] - gamma$beta[1:K][index == 1])[index]
-    names(gamma$beta)[1:K] <- paste0("LC", 1:K)
+    ref <- gamma$beta[1:K][index == 1]
+    gamma$beta[1:K] <- (gamma$beta[1:K] - ref)[index]
+    gamma$beta[1] <- ref
+    names(gamma$beta)[1:K] <- c("LC1(reference)", paste0("LC", 2:K))
     return(structure(list(beta = beta, 
                           mu = mu,
                           sigma = var,

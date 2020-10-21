@@ -56,9 +56,9 @@ This function estimates the latent clusters by integrating genetic features/envi
 \examples{
 \dontrun{
 set.seed(10)
-fit1 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as,matrix(sim1[, 21]), 
+fit1 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as.matrix(sim1[, 21]), 
 K = 2, family = "binary")
-fit2 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as,matrix(sim1[, 21]), 
+fit2 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as.matrix(sim1[, 21]), 
 K = 2, family = "binary", 
 tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
 Select_G = TRUE, Rho_G = 0.02))
