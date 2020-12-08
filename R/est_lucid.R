@@ -7,6 +7,7 @@
 #' @param Y Disease outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.
 #' @param CoG Optional, matrix. Covariates to be adjusted for estimating the latent cluster.
 #' @param CoY Optional, matrix. Covariates to be adjusted for estimating the outcome.
+#' @param Tr Optional, vector. Variables having interaction with the latent cluster
 #' @param K Number of latent clusters.
 #' @param family Type of outcome Y. It should be choose from "normal", "binary".
 #' @param useY Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.
@@ -41,7 +42,7 @@
 #' tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
 #' Select_G = TRUE, Rho_G = 0.02))
 #' }
-est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal", 
+est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family = "normal", 
                       useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL, lambda_G = 0){
   #### pre-processing ####
   # check data format
@@ -56,6 +57,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   if(is.null(colnames(Y))){
     Ynames <- "outcome"
   } else {Ynames <- colnames(Y)}
+  if(!is.null(Tr)){
+    colnames(Tr) <- "Tr"
+  }
   CoGnames <- colnames(CoG); CoYnames <- colnames(CoY)
   G <- cbind(G, CoG)
   if(!(is.matrix(G) && is.matrix(Z) && is.matrix(Y))){
@@ -132,7 +136,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
         break
       }
       if(useY){
-        new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames)
+        new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames, Tr = Tr)
         check.gamma <- is.finite(unlist(new.gamma))
       }
       
@@ -167,14 +171,14 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   
   #### summarize the results ####
   if(!useY){
-    res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames)
+    res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames, Tr = Tr)
   }
   res.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                           G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA)
   res.r <- new.likelihood / rowSums(new.likelihood)
   
   res.loglik <- sum(log(rowSums(new.likelihood)))
-  pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
+  pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K, Tr = Tr)
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)
   colnames(pars$mu) <- Znames
@@ -258,7 +262,7 @@ Istep_Z <- function(Z, r, est.mu, ind.na, all.na){
 Mstep_G <- function(G, r, selectG, penalty1, penalty2, dimG, K){
   new.beta <- matrix(rep(0, K * (dimG + 1)), nrow = K)
   if(selectG){
-    tryLasso <- try(glmnet(as.matrix(G), as.matrix(r), family = "multinomial", lambda = penalty1, alpha = 0))
+    tryLasso <- try(glmnet(as.matrix(G), as.matrix(r), family = "multinomial", lambda = penalty1, alpha = 1))
     if("try-error" %in% class(tryLasso)){
       breakdown <- TRUE
       print(paste("lasso failed"))
