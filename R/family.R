@@ -25,7 +25,7 @@ normal <- function(K, ...){
   }
   # update parameters for M step
   f.maxY <- function(Y, r, CoY, K, CoYnames, Tr){
-
+      
       Set0 <- as.data.frame(cbind(Y, r[, -1], CoY, Tr))
       Trnames <- colnames(Tr)
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames, Trnames)
@@ -39,11 +39,11 @@ normal <- function(K, ...){
       beta <- summary(Yfit)$coefficients[, 1]
       beta[2:K] <- beta[1] + beta[2:K]
       sigma <- rep(sd(residuals(Yfit)), K)
-    # if(!is.null(CoY)){
-    # } else{
-    #   beta <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
-    #   sigma <- sqrt(colSums(r * apply(matrix(beta), 1, function(x){(x - Y)^2})) / colSums(r))
-    # }
+      
+
+      # beta <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
+      # sigma <- sqrt(colSums(r * apply(matrix(beta), 1, function(x){(x - Y)^2})) / colSums(r))
+
     return(structure(list(beta = beta,
                           sigma = sigma)))
   }

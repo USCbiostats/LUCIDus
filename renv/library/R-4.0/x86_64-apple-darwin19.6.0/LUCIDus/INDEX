@@ -1,0 +1,19 @@
+boot.lucid              Bootstrap method of inference for LUCID
+def.control             Control parameters for EM algorithm
+def.tune                Define tuning parameters of regularization for
+                        LUCID model.
+est.lucid               Estimate latent unknown clusters with
+                        multi-omics data
+plot.lucid              Visualize the LUCID model through a Sankey
+                        diagram This function generates a Sankey
+                        diagram for the results of integrative
+                        clustering based on an 'lucid' object
+predict.lucid           Predict the outcome based on a fitted LUCID
+                        model
+print.lucid             Print the output of 'est.lucid'
+print.sumlucid          Print the output of LUCID in a nicer table
+sim1                    simulated dataset 1
+sim2                    simulated dataset 2
+summary.lucid           Summarize the results of LUCID model
+tune.lucid              Grid search for tuning parameters to fit the
+                        LUCID model
