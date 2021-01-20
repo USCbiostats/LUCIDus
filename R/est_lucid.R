@@ -191,17 +191,17 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
   if(tune$Select_Z == TRUE){
     tt2 <- apply(pars$mu, 2, range)
     selectZ <- abs(tt2[2, ] - tt2[1, ]) != 0
-    ss <- (1:dimZ)[!selectZ]
-    if(length(ss) != 0){
-      for (i in 1:length(ss)) {
-        ss.sigma <- sapply(1:K, function(x) {return(res.sigma[, , x][ss[i], ])})
-        ss.sign <- sign(ss.sigma)
-        ss.sign2 <- sum(ss.sign[, 1] == ss.sign[, 2])
-        if(ss.sign2 != dimZ){
-          selectZ[ss[i]] <- TRUE
-        }
-      }
-    }
+    # ss <- (1:dimZ)[!selectZ]
+    # if(length(ss) != 0){
+    #   for (i in 1:length(ss)) {
+    #     ss.sigma <- sapply(1:K, function(x) {return(res.sigma[, , x][ss[i], ])})
+    #     ss.sign <- sign(ss.sigma)
+    #     ss.sign2 <- sum(ss.sign[, 1] == ss.sign[, 2])
+    #     if(ss.sign2 != dimZ){
+    #       selectZ[ss[i]] <- TRUE
+    #     }
+    #   }
+    # }
   } else{
     selectZ <- rep(TRUE, dimZ)
   }

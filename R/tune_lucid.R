@@ -23,7 +23,7 @@
 #' Rho_Z_CovMu = seq(80, 100, by = 10))
 #' }
 tune.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, family = "normal", useY = TRUE,
-                       K = 2:6, Rho_G = NULL, Rho_Z_InvCov = NULL, Rho_Z_CovMu = NULL){
+                       K = 2:6, Rho_G = 0, Rho_Z_InvCov = 0, Rho_Z_CovMu = 0){
   res <- data.frame(K = K)
   bic <- NULL
   if(length(K) != 1){
@@ -31,7 +31,7 @@ tune.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, family = "normal", useY 
       invisible(capture.output(temp.fit <- est.lucid(G = G, Z = Z, Y = Y, CoG = CoG, CoY = CoY,
                                                      family = family, useY = useY, K = K[i])))
       bic <- c(bic, summary(temp.fit)$BIC)
-    } 
+    }
     res$BIC <- bic
     opt.K <- K[bic = which.min(bic)]
     opt.tune <- c(rep(NA, 3), opt.K, min(bic))
@@ -39,7 +39,7 @@ tune.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, family = "normal", useY 
   } else{
     opt.K = K
   }
-  
+
   res2 <- NULL
   if(!is.null(Rho_G) && !is.null(Rho_Z_CovMu) && !is.null(Rho_Z_InvCov)){
     for (i in 1:length(Rho_G)) {
