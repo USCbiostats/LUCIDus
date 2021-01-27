@@ -136,7 +136,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
         break
       }
       if(useY){
-        new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames, Tr = Tr)
+        new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames, Tr = Tr, sigma = res.gamma$sigma, beta = res.gamma$beta)
         check.gamma <- is.finite(unlist(new.gamma))
       }
       
