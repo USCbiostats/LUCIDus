@@ -10,12 +10,14 @@ est.lucid(
   Y,
   CoG = NULL,
   CoY = NULL,
+  Tr = NULL,
   K = 2,
   family = "normal",
   useY = TRUE,
   control = def.control(),
   tune = def.tune(),
-  Z.var.str = NULL
+  Z.var.str = NULL,
+  lambda_G = 0
 )
 }
 \arguments{
@@ -28,6 +30,8 @@ est.lucid(
 \item{CoG}{Optional, matrix. Covariates to be adjusted for estimating the latent cluster.}
 
 \item{CoY}{Optional, matrix. Covariates to be adjusted for estimating the outcome.}
+
+\item{Tr}{Optional, vector. Variables having interaction with the latent cluster}
 
 \item{K}{Number of latent clusters.}
 
@@ -55,9 +59,9 @@ This function estimates the latent clusters by integrating genetic features/envi
 \examples{
 \dontrun{
 set.seed(10)
-fit1 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as,matrix(sim1[, 21]), 
+fit1 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as.matrix(sim1[, 21]), 
 K = 2, family = "binary")
-fit2 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as,matrix(sim1[, 21]), 
+fit2 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as.matrix(sim1[, 21]), 
 K = 2, family = "binary", 
 tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
 Select_G = TRUE, Rho_G = 0.02))
