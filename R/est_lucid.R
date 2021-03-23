@@ -101,9 +101,6 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
     res.gamma <- family.list$initial.gamma(K, dimCoY)
     res.loglik <- -Inf
     itr <- 0
-    # store and track the value of beta estiamte
-    iss1 <- res.beta[-1, ]
-    iss1.r <- NULL
     
     while(!convergence && itr <= control$max_itr){
       itr <- itr + 1
@@ -136,7 +133,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
         break
       }
       if(useY){
-        new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames, Tr = Tr, sigma = res.gamma$sigma, beta = res.gamma$beta)
+        new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames, Tr = Tr, sigma = res.gamma$sigma, beta = res.gamma$beta)
         check.gamma <- is.finite(unlist(new.gamma))
       }
       
@@ -154,10 +151,6 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
         if(useY){
           res.gamma <- new.gamma
         }
-        ######### issue 1
-        iss1 <- rbind(iss1, res.beta[-1, ])
-        iss1.r <- rbind(iss1.r, summary(res.r[, 1]))
-        #########
         new.loglik <- sum(log(rowSums(new.likelihood)))
         cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
         if(abs(res.loglik - new.loglik) < control$tol){
@@ -171,7 +164,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
   
   #### summarize the results ####
   if(!useY){
-    res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames, Tr = Tr)
+    res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames, Tr = Tr, sigma = res.gamma$sigma, beta = res.gamma$beta)
   }
   res.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                           G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA)
@@ -207,9 +200,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
   }
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
                   K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik, post.p = res.r, family = family,
-                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY, 
-                  iss1 = iss1, # track beta
-                  iss1.r = iss1.r) # track post p
+                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY) 
   class(results) <- c("lucid")
   return(results)
 }
