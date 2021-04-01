@@ -142,7 +142,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
       singular <- try(sapply(1:K, function(x) return(solve(new.mu.sigma$sigma[, , x]))))
       check.singular <- "try-error" %in% class(singular)
       if(!check.value || check.singular){
-        cat("iteration", itr,": Invalid estimates")
+        cat("iteration", itr,": Invalid estimates \n")
         break
       } else{
         res.beta <- new.beta
@@ -161,7 +161,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
       }
     }
   }
-  
+  if(convergence == FALSE) {
+    stop("LUCID doesn't converge when maximum iteration number is reached; try another seed or increase max interation")
+  }
   #### summarize the results ####
   if(!useY){
     res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames, Tr = Tr, sigma = res.gamma$sigma, beta = res.gamma$beta)
@@ -298,15 +300,6 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
         new_sigma[, , k] <- l_cov$w
         # function to calculate mean
         new_mu[k, ] <- est.mu(j = k, rho = penalty.mu, z = dz, r = dr, mu = mu[k, ], wi = l_cov$wi)
-        # try_optim_mu <- try(lbfgs(call_eval = fn, call_grad = gr,
-        #                           mat = dz, mat2 = dr, k = k,  cov_inv = new_sigma_inv, cov = new_sigma_est,
-        #                           vars = rep(0, Q), invisible = 1, orthantwise_c = penalty.mu))
-        # if("try-error" %in% class(try_optim_mu)){
-        #   break
-        # }
-        # else{
-        #   new_mu[k, ] <- new_sigma[, , k] %*% (try_optim_mu$par)
-        # }
       }
       k <- k + 1
     }
@@ -324,17 +317,7 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
                           sigma = z.fit$parameters$variance$sigma)))
   }
 }
-# use lbfgs to estimate mu with L1 penalty
-# fn <- function(a, mat, mat2, cov_inv, cov, k){
-#   Mu <- cov %*% a
-#   tar <- sum(mat2[, k] * apply(mat, 1, function(v) return(t(v - Mu) %*% cov_inv %*% (v - Mu))))
-#   return(tar)
-# }
-# 
-# gr <- function(a, mat, mat2, cov_inv, cov, k){
-#   Mu <- cov %*% a
-#   return(2 * apply(mat2[, k] * t(apply(mat, 1, function(v) return(Mu - v))), 2, sum))
-# }
+
 
 # estimate the penalized mean
 est.mu <- function(j, rho, z, r, mu, wi){
