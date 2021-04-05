@@ -7,7 +7,6 @@
 #' @param Y Disease outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.
 #' @param CoG Optional, matrix. Covariates to be adjusted for estimating the latent cluster.
 #' @param CoY Optional, matrix. Covariates to be adjusted for estimating the outcome.
-#' @param Tr Optional, vector. Variables having interaction with the latent cluster
 #' @param K Number of latent clusters.
 #' @param family Type of outcome Y. It should be choose from "normal", "binary".
 #' @param useY Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.
@@ -42,8 +41,8 @@
 #' tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
 #' Select_G = TRUE, Rho_G = 0.02))
 #' }
-est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family = "normal", 
-                      useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL, lambda_G = 0){
+est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal", 
+                      useY = TRUE, control = def.control(), tune = def.tune(), Z.var.str = NULL){
   #### pre-processing ####
   # check data format
   N <- nrow(Y); dimG <- ncol(G); dimZ <- ncol(Z); 
@@ -57,9 +56,6 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
   if(is.null(colnames(Y))){
     Ynames <- "outcome"
   } else {Ynames <- colnames(Y)}
-  if(!is.null(Tr)){
-    colnames(Tr) <- "Tr"
-  }
   CoGnames <- colnames(CoG); CoYnames <- colnames(CoY)
   G <- cbind(G, CoG)
   if(!(is.matrix(G) && is.matrix(Z) && is.matrix(Y))){
@@ -71,33 +67,40 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
     }
   }
   family.list <- switch(family, normal = normal(K = K, dimCoY), 
-                                binary = binary(K = K, dimCoY))
+                        binary = binary(K = K, dimCoY))
   Mstep_Y <- family.list$f.maxY
   switch_Y <- family.list$f.switch
   # check missing pattern
   ind.NA <- Ind.NA(Z)
   if(sum(ind.NA == 2) != 0){
-    NA.Z <- which(is.na(Z), arr.ind = TRUE)
+    # NA.Z <- which(is.na(Z), arr.ind = TRUE)
     Z <- imputeData(Z) # initialize imputation
     Z[ind.NA == 3, ] <- NA
   }
-
+  
   
   #### conduct the EM algorithm ####
-  tot.itr <- 0; convergence <- FALSE; 
+  tot.itr <- 0; convergence <- FALSE
   while(!convergence && tot.itr <= control$max_tot.itr){
     # initialize EM algorithm 
     cat("initialize the LUCID ...", "\n")
     res.beta <- matrix(data = runif(K * (dimG + dimCoG + 1)), nrow = K) 
     res.beta[1, ] <- 0
-    invisible(capture.output(mclust.fit <- Mclust(Z[ind.NA != 3, ], G = K)))
-    if(is.null(Z.var.str)){
-      model.best <- mclust.fit$modelName
-    } else{
-      model.best <- Z.var.str
+    if(!tune$Select_Z) {
+      invisible(capture.output(mclust.fit <- Mclust(Z[ind.NA != 3, ], G = K)))
+      if(is.null(Z.var.str)){
+        model.best <- mclust.fit$modelName
+      } else{
+        model.best <- Z.var.str
+      }
+      res.mu <- t(mclust.fit$parameters$mean)
+      res.sigma <- mclust.fit$parameters$variance$sigma
+    } else {
+      #### try a random initiation ####
+      model.best = NULL
+      res.mu <- matrix(data = runif(K * dimZ, min = -1, max = 1), nrow = K)
+      res.sigma <- array(as.vector(diag(dimZ)), dim = c(dimZ, dimZ, K))   
     }
-    res.mu <- t(mclust.fit$parameters$mean) 
-    res.sigma <- mclust.fit$parameters$variance$sigma 
     res.gamma <- family.list$initial.gamma(K, dimCoY)
     res.loglik <- -Inf
     itr <- 0
@@ -111,7 +114,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
       new.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                               G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, useY = useY, dimCoY = dimCoY, ind.na = ind.NA)
       res.r <- new.likelihood / rowSums(new.likelihood)
-      res.r[is.na(res.r[1, ]), ] <- 1/K
+      res.r[is.nan(res.r[, 1]), ] <- 1/K
       if(!all(is.finite(res.r))){
         cat("iteration", itr,": failed: invalid r, try another seed", "\n")
         break
@@ -120,20 +123,20 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
       }
       
       # I step
-      if(sum(ind.NA == 2) != 0 && itr != 1){
-        Z <- Istep_Z(Z = Z, r = res.r, est.mu = res.mu, ind.na = ind.NA, all.na = NA.Z)
-      }
+      # if(sum(ind.NA == 2) != 0 && itr != 1){
+      #   Z <- Istep_Z(Z = Z, r = res.r, est.mu = res.mu, ind.na = ind.NA, all.na = NA.Z)
+      # }
       
       # M step
-      invisible(capture.output(new.beta <- Mstep_G(G = G, r = res.r, selectG = tune$Select_G, penalty1 = tune$Rho_G, penalty2 = lambda_G, dimG = dimG, K = K)))
+      invisible(capture.output(new.beta <- Mstep_G(G = G, r = res.r, selectG = tune$Select_G, penalty = tune$Rho_G, dimG = dimG, K = K)))
       new.mu.sigma <- Mstep_Z(Z = Z, r = res.r, selectZ = tune$Select_Z, penalty.mu = tune$Rho_Z_CovMu, penalty.cov = tune$Rho_Z_InvCov,
                               model.name = model.best, K = K, ind.na = ind.NA, mu = res.mu)
       if(is.null(new.mu.sigma$mu)){
-        print("variable selection failed, restart lucid")
+        print("variable selection failed, restart lucid \n")
         break
       }
       if(useY){
-        new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames, Tr = Tr, sigma = res.gamma$sigma, beta = res.gamma$beta)
+        new.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames)
         check.gamma <- is.finite(unlist(new.gamma))
       }
       
@@ -161,19 +164,17 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
       }
     }
   }
-  if(convergence == FALSE) {
-    stop("LUCID doesn't converge when maximum iteration number is reached; try another seed or increase max interation")
-  }
+  
   #### summarize the results ####
   if(!useY){
-    res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames, Tr = Tr, sigma = res.gamma$sigma, beta = res.gamma$beta)
+    res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames)
   }
   res.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                           G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA)
   res.r <- new.likelihood / rowSums(new.likelihood)
   
   res.loglik <- sum(log(rowSums(new.likelihood)))
-  pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K, Tr = Tr)
+  pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)
   colnames(pars$mu) <- Znames
@@ -185,24 +186,13 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, Tr = NULL, K = 2, family 
   }
   if(tune$Select_Z == TRUE){
     tt2 <- apply(pars$mu, 2, range)
-    selectZ <- abs(tt2[2, ] - tt2[1, ]) != 0
-    # ss <- (1:dimZ)[!selectZ]
-    # if(length(ss) != 0){
-    #   for (i in 1:length(ss)) {
-    #     ss.sigma <- sapply(1:K, function(x) {return(res.sigma[, , x][ss[i], ])})
-    #     ss.sign <- sign(ss.sigma)
-    #     ss.sign2 <- sum(ss.sign[, 1] == ss.sign[, 2])
-    #     if(ss.sign2 != dimZ){
-    #       selectZ[ss[i]] <- TRUE
-    #     }
-    #   }
-    # }
+    selectZ <- abs(tt2[2, ] - tt2[1, ]) > 0.001
   } else{
     selectZ <- rep(TRUE, dimZ)
   }
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
                   K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik, post.p = res.r, family = family,
-                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY) 
+                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY)
   class(results) <- c("lucid")
   return(results)
 }
@@ -214,7 +204,7 @@ Ind.NA <- function(Z){
   m <- ncol(Z)
   num.NA <- rowSums(is.na(Z))
   ind.NA <- sapply(1:n, function(x) {return(ifelse(num.NA[x] == 0, 1, 
-                                                         ifelse(num.NA[x] == m, 3, 2)))})
+                                                   ifelse(num.NA[x] == m, 3, 2)))})
   return(ind.NA)
   # 1 = complete, 2 = sporadic, 3 = listwise
 }
@@ -230,7 +220,7 @@ Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
   }
   if(!is.null(mu)){
     for (i in 1:K) {
-      pZgX[ind.na != 3, i] <- dmvnorm(Z[ind.na != 3, ], mu[i,], round(sigma[, , i], 9))
+      pZgX[ind.na != 3, i] <- mclust::dmvnorm(Z[ind.na != 3, ], mu[i,], round(sigma[, , i], 9))
     }
   }
   if(useY){
@@ -252,10 +242,10 @@ Istep_Z <- function(Z, r, est.mu, ind.na, all.na){
 }
 
 ####### M step: update the parameters #######
-Mstep_G <- function(G, r, selectG, penalty1, penalty2, dimG, K){
+Mstep_G <- function(G, r, selectG, penalty, dimG, K){
   new.beta <- matrix(rep(0, K * (dimG + 1)), nrow = K)
   if(selectG){
-    tryLasso <- try(glmnet(as.matrix(G), as.matrix(r), family = "multinomial", lambda = penalty1, alpha = 1))
+    tryLasso <- try(glmnet(as.matrix(G), as.matrix(r), family = "multinomial", lambda = penalty))
     if("try-error" %in% class(tryLasso)){
       breakdown <- TRUE
       print(paste("lasso failed"))
@@ -266,12 +256,8 @@ Mstep_G <- function(G, r, selectG, penalty1, penalty2, dimG, K){
     }
   }
   else{
-    # beta.multilogit <- multinom(as.matrix(r) ~ as.matrix(G))
-    # new.beta[-1, ] <- coef(beta.multilogit)
-    beta.multilogit <- glmnet(x = as.matrix(G), y = as.matrix(r), family = "multinomial", alpha = 0, lambda = penalty2)
-    betas <- coef(beta.multilogit)
-    ref <- betas[[1]]@x
-    new.beta[-1, ] <- t(sapply(2:K, function(x) betas[[x]]@x - ref))
+    beta.multilogit <- multinom(as.matrix(r) ~ as.matrix(G))
+    new.beta[-1, ] <- coef(beta.multilogit)
   }
   return(new.beta)
 }
@@ -289,11 +275,11 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
     while(k <= K){
       #estimate E(S_k) to be used by glasso
       Z_mu <- t(t(dz) - mu[k, ])
-      E_S <- matrix(colSums(dr[, k] * t(apply(Z_mu, 1, function(x) return(x %*% t(x))))), Q, Q) / sum(dr[, k])
+      E_S <- (matrix(colSums(dr[, k] * t(apply(Z_mu, 1, function(x) return(x %*% t(x))))), Q, Q)) / sum(dr[, k])
       #use glasso and E(S_k) to estimate new_sigma and new_sigma_inv
       l_cov <- try(glasso(E_S, penalty.cov))
       if("try-error" %in% class(l_cov)){
-        print(paste("glasso failed, restart lucid"))
+        print(paste("glasso failed, restart lucid \n"))
         break
       }
       else{
@@ -317,8 +303,6 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
                           sigma = z.fit$parameters$variance$sigma)))
   }
 }
-
-
 # estimate the penalized mean
 est.mu <- function(j, rho, z, r, mu, wi){
   p <- ncol(z)
