@@ -26,7 +26,7 @@ normal <- function(K, ...){
   f.maxY <- function(Y, r, CoY, K, CoYnames){
     if(is.null(CoY)) {
       beta <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
-      sigma <- 
+      sigma <- sqrt(colSums(r * apply(matrix(mu), 1, function(x){(x - Y)^2})) / colSums(r))
     } else {
       Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
