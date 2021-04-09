@@ -155,6 +155,12 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
           res.gamma <- new.gamma
         }
         new.loglik <- sum(log(rowSums(new.likelihood)))
+        if(tune$Select_G) {
+          new.loglik <- new.loglik - tune$Rho_G * sum(abs(res.beta))
+        }
+        if(tune$Select_Z) {
+          new.loglik <- new.loglik - tune$Rho_Z_CovMu * sum(abs(res.mu)) - tune$Rho_Z_InvCov * sum(abs(res.sigma))
+        }
         cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
         if(abs(res.loglik - new.loglik) < control$tol){
           convergence <- TRUE

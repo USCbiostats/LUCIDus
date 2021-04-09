@@ -23,56 +23,24 @@ normal <- function(K, ...){
     return(pYgX)
   }
   # update parameters for M step
-  f.maxY <- function(Y, r, CoY, K, CoYnames, Tr, beta, sigma){
-    Set0 <- as.data.frame(cbind(Y, r[, -1], CoY, Tr))
-    Trnames <- colnames(Tr)
-    colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames, Trnames)
-    N <- nrow(r)
-    dimCoY <- ncol(CoY)
-    if(is.null(Tr)){
-      # update gamma
-      for(j in 1:K){
-        xx <- cbind(matrix(data = rep(0, N * K), nrow = N), CoY)
-        xx[, j] <- 1
-        sigma[j] <- sqrt(sum((Y - xx %*% beta)^2 * r[, j]) / sum(r[, j]))
-      }
-      # update beta
-      if(is.null(CoY)){
-        beta <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
-      } else{
-        for(j in 1:K){
-          beta[j] <- sum((Y - CoY %*% beta[(K + 1):(K + dimCoY)]) * r[, j]) / sum(r[, j])
-        }
-        beta_CoY <- beta[-(1:K)]
-        for(l in 1:dimCoY){
-          numerator <- sum(sapply(1:K, function(j){
-            a <- prod(sigma[-j])^2
-            b <- sum(CoY[, l] * (Y - beta[j] - CoY[, -l] %*% beta_CoY[-l]))
-            return(a * b)
-          }))
-          denominator <- sum(sapply(1:K, function(j){
-            a <- prod(sigma[-j])^2
-            b <- sum(r[, j] * CoY[, l]^2)
-            return(a * b)
-          }))
-          beta[l + K] <- numerator / denominator / 2 ##### why the factor 2?
-        }
-      }
+  f.maxY <- function(Y, r, CoY, K, CoYnames){
+    if(is.null(CoY)) {
+      beta <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
+      sigma <- 
     } else {
-      ################ this part needs to update ##################
-      inter <- paste(colnames(Set0)[2:K], ":", Trnames, collapse = " + ")
-      cluster <- colnames(Set0)[2:K]
-      Yfit <- glm(as.formula(paste("Y ~", paste(c(cluster, Trnames, inter, CoYnames), collapse = " + "))), data = Set0, family = gaussian)
+      Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
+      colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
+      Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family = gaussian)
       beta <- summary(Yfit)$coefficients[, 1]
       beta[2:K] <- beta[1] + beta[2:K]
       sigma <- rep(sd(residuals(Yfit)), K)
-      ##############################################################
-     }
+    }
     return(structure(list(beta = beta,
                           sigma = sigma)))
+  
   }
   # switch function, rearrange the parameters
-  f.switch <- function(beta, mu, sigma, gamma, K, Tr){
+  f.switch <- function(beta, mu, sigma, gamma, K, Tr = NULL){
     var <- vector(mode = "list", length = K)
     index <- order(gamma$beta[1:K])
     beta <- t(t(beta) - beta[index[1], ])[index, ]
