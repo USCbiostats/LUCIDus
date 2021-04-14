@@ -161,7 +161,11 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
         if(tune$Select_Z) {
           new.loglik <- new.loglik - tune$Rho_Z_CovMu * sum(abs(res.mu)) - tune$Rho_Z_InvCov * sum(abs(res.sigma))
         }
-        cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
+        if(tune$Select_G | tune$Select_Z) {
+          cat("iteration", itr,": M-step finished, ", "penalized loglike = ", new.loglik, "\n")
+        } else{
+          cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
+        }
         if(abs(res.loglik - new.loglik) < control$tol){
           convergence <- TRUE
           cat("Success: LUCID converges!", "\n")
@@ -180,6 +184,12 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   res.r <- new.likelihood / rowSums(new.likelihood)
   
   res.loglik <- sum(log(rowSums(new.likelihood)))
+  if(tune$Select_G) {
+    res.loglik <- res.loglik - tune$Rho_G * sum(abs(res.beta))
+  }
+  if(tune$Select_Z) {
+    res.loglik <- res.loglik - tune$Rho_Z_CovMu * sum(abs(res.mu)) - tune$Rho_Z_InvCov * sum(abs(res.sigma))
+  }
   pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)
@@ -197,7 +207,8 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
     selectZ <- rep(TRUE, dimZ)
   }
   results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
-                  K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik, post.p = res.r, family = family,
+                  K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), Z.var.str = model.best, likelihood = res.loglik,
+                  post.p = res.r, family = family,
                   par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY)
   class(results) <- c("lucid")
   return(results)
