@@ -33,14 +33,14 @@
 #' boot1 <- boot.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]),
 #'  model = fit1, R = 100, n = num_workers)
 #' }
-boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = detectCores(), Zdiff = FALSE){
+boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = detectCores(), Zdiff = FALSE, penalty = 0){
   ss <- model$select
   G <- as.matrix(G[, ss$selectG])
   Z <- as.matrix(Z[, ss$selectZ])
   dimG <- ncol(G); dimZ <- ncol(Z); dimCoY <- ncol(CoY); dimCoG  <- ncol(CoG); K <- model$K
   alldata <- as.data.frame(cbind(G, Z, Y, CoG, CoY))
   bootstrap <- boot(data = alldata, statistic = lucid_par, R = R, parallel = "multicore", ncpus = n,
-                    dimG = dimG, dimZ = dimZ, dimCoY = dimCoY, dimCoG = dimCoG, model = model, Zdiff = Zdiff)
+                    dimG = dimG, dimZ = dimZ, dimCoY = dimCoY, dimCoG = dimCoG, model = model, Zdiff = Zdiff, penalty = penalty)
   sd <- sapply(1:length(bootstrap$t0), function(x) sd(bootstrap$t[, x]))
   if(Zdiff == FALSE){
     model.par <- c(model$pars$beta[-1, c(FALSE, ss$selectG)], as.vector(t(model$pars$mu[, ss$selectZ])), model$pars$gamma$beta)
@@ -52,7 +52,7 @@ boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = dete
   dd <- data.frame(original = model.par, sd = sd, 
                    lower = model.par - 1.96 * sd, upper = model.par + 1.96 * sd)
   beta <- dd[1:((K - 1) * dimG), ]
-  row.names(beta) <- paste0(colnames(G), ".cluster", 2:K)
+  row.names(beta) <- paste0(rep(colnames(G),each = K-1), ".cluster", 2:K)
   if(Zdiff == FALSE){
     mu <- dd[((K - 1) * dimG + 1): ((K - 1) * dimG + K * dimZ), ]
     row.names(mu) <- paste0(rep(colnames(Z), K), ".cluster", sapply(1:K, function(x) rep(x, dimZ)))
@@ -68,7 +68,7 @@ boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = dete
 
 
 
-lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model, Zdiff) {
+lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model, Zdiff, penalty) {
   d <- data[indices, ]
   G <- as.matrix(d[, 1:dimG])
   Z <- as.matrix(d[, (dimG + 1):(dimG + dimZ)])
@@ -91,7 +91,8 @@ lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model, Zdiff) {
                                CoY = CoY, 
                                CoG = CoG,
                                family = model$family, control = model$par.control,
-                               Z.var.str = model$Z.var.str, K = model$K))
+                               Z.var.str = model$Z.var.str, K = model$K, tune = model$par.tune,
+                               lambda_G = penalty))
     if("try-error" %in% class(try_lucid)){
       next
     } else{

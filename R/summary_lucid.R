@@ -98,7 +98,7 @@ print.sumlucid <- function(x, ...){
 
 f.normal <- function(x, K, se){
   gamma <- x$beta
-  cat("(1) Y (normal outcome): the mean of latent cluster and covariates effect of the Gaussian mixture model\n")
+  cat("(1) Y (normal outcome): the mean of latent cluster and covariates effect of the Gaussian mixture model, ':' indicates interaction\n")
   y <- as.data.frame(gamma)
   row.names(y)[1:K] <- paste0("cluster", 1:K)
   colnames(y) <- "beta"
@@ -109,15 +109,18 @@ f.normal <- function(x, K, se){
 }
 
 f.binary <- function(x, K, se){
-  cat("(1) Y (binary outcome): odds ratio of Y for each latent cluster (covariate) \n")
+  cat("(1) Y (binary outcome): log odds (reference) and log odds ratio of Y for latent cluster (covariate), ':' indicates interaction \n")
   gamma <- as.data.frame(x$beta)
   colnames(gamma) <- "Original"
   if(is.null(se)){
-    gamma$OR <- exp(gamma$Original)
+    gamma$Exp <- exp(gamma$Original)
   } else{
     gamma <- cbind(gamma, se[, 2:4], OR = exp(gamma[, 1]), OR.L = exp(se[, 3]), OR.U = exp(se[, 4]))
   }
   print(gamma)
 }
 
-
+############ need more test: 11/06/20 ####################
+# f.poisson <- function(x, K, se){
+#   
+# }
