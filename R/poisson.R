@@ -1,4 +1,6 @@
-binary <- function(K, ...){
+
+############# need more test: 11/06/20 ####################
+poisson <- function(K, ...){
   n.par <- K # number of parameters
   # initialize EM
   initial.gamma <- function(K, dimCoY){
@@ -13,27 +15,24 @@ binary <- function(K, ...){
       eCoY <- CoY %*% gamma$beta[(K + 1):(K + dimCoY)]
       xb <- sapply(xb, function(x) return(x + eCoY))
     }
-    p <- exp(xb) / (1 + exp(xb))
+    lambda <- exp(xb)
     for(i in 1:K){
       if(dimCoY == 0 || itr == 1){
-        pYgX[, i] <- p[i]^Y * (1 - p[i])^(1 - Y)
+        pYgX[, i] <- exp(-lambda[i]) * lambda[i]^Y / factorial(Y)
       } else{
-        pYgX[, i] <- sapply(1:N, function(x) return(p[x, i]^Y[x] * (1 - p[x, i])^(1 - Y[x])))
+        pYgX[, i] <- sapply(1:N, function(x) return(exp(-lambda[x, i]) * lambda[x, i]^Y[x] / factorial(Y[x])))
       }
     }
     return(pYgX)
   }
   # update parameters for M step
   f.maxY <- function(Y, r, CoY, K, CoYnames){
-    if(is.null(CoY)) {
-      beta = apply(r,2,function(x) return(log(sum(x*Y)/(sum(x)-sum(x*Y)))))
-    } else {
-      Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
-      colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
-      Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family ="binomial")
-      beta <- coef(Yfit) # this is the baseline log odds
-      beta[2:K] <- beta[1] + beta[2:K] # log odds for each latent cluster
-    }
+    Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
+    colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
+    Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family = poisson)
+    beta <- coef(Yfit) # this is the baseline log odds
+    beta[2:K] <- beta[1] + beta[2:K] # log odds for each latent cluster
+    # beta <- c(0, coef(Yfit)[-1])
     return(structure(list(beta = beta,
                           sigma = NULL)))
   }
@@ -62,5 +61,3 @@ binary <- function(K, ...){
                         f.maxY = f.maxY,
                         f.switch = f.switch)))
 }
-
-

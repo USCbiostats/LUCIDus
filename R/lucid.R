@@ -13,12 +13,11 @@
 #' @param Rho_Z_CovMu Optional, an array of penalties for variable selection in Biomarkers (penalizing mean)
 #'
 #' @return A list:
-#' \item best_model: the best model among different combination of tuning parameters
-#' \item tune_list: a data frame contains combination of tuning parameters and corresponding BIC
-#' \item res_model: a list stores LUCID model corresponding to each combination of tuning parameters
+#' \item{best_model}{the best model among different combination of tuning parameters}
+#' \item{tune_list}{a data frame contains combination of tuning parameters and corresponding BIC}
+#' \item{res_model}{a list stores LUCID model corresponding to each combination of tuning parameters}
 #' @export
 #'
-#' @examples
 lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, family = "normal", useY = TRUE,
                   K = 2:5, Rho_G = 0, Rho_Z_InvCov = 0, Rho_Z_CovMu = 0){
   # combinations of tuning parameters
