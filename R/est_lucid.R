@@ -162,9 +162,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
           new.loglik <- new.loglik - tune$Rho_Z_CovMu * sum(abs(res.mu)) - tune$Rho_Z_InvCov * sum(abs(res.sigma))
         }
         if(tune$Select_G | tune$Select_Z) {
-          cat("iteration", itr,": M-step finished, ", "penalized loglike = ", new.loglik, "\n")
+          cat("iteration", itr,": M-step finished, ", "penalized loglike = ", sprintf("%.3f", new.loglik), "\n")
         } else{
-          cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
+          cat("iteration", itr,": M-step finished, ", "loglike = ", sprintf("%.3f", new.loglik), "\n")
         }
         if(abs(res.loglik - new.loglik) < control$tol){
           convergence <- TRUE
