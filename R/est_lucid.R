@@ -227,24 +227,33 @@ Ind.NA <- function(Z){
 }
 
 
-####### E step: calculate the likelihood #######
+####### E step: calculate the responsibility #######
+# use the log-sum-exponential trick to avoid over/underflow
+# pXgG, pZgX and pYgX are all log-likelihood
+lse_vec <- function(vec) {
+  c <- max(vec)
+  lse <- log(sum(exp(vec - c)))
+  return(exp(vec - c - lse))
+}
+
 Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
                   G, Z, Y = NULL, family.list, K, N, useY, ind.na, ...){
   pXgG <- pZgX <- pYgX <- matrix(rep(1, N * K), nrow = N)
   if(!is.null(beta)){
-    xb <- exp(cbind(rep(1, N), G) %*% t(beta))
-    pXgG <- xb/rowSums(xb)
+    xb <- cbind(rep(1, N), G) %*% t(beta)
+    pXgG <- log(t(apply(xb, 1, lse_vec)))
   }
   if(!is.null(mu)){
     for (i in 1:K) {
-      pZgX[ind.na != 3, i] <- mclust::dmvnorm(Z[ind.na != 3, ], mu[i,], round(sigma[, , i], 9))
+      pZgX[ind.na != 3, i] <- mclust::dmvnorm(Z[ind.na != 3, ], mu[i,], round(sigma[, , i], 9), log = TRUE)
     }
   }
   if(useY){
     pYgX <- family.list$f.pYgX(Y, gamma, K = K, N = N, ...)
   }
-  likelihood <- pXgG * pZgX * pYgX
-  return (likelihood)
+  loglik <- pXgG + pZgX + pYgX
+  rsp <- t(apply(loglik, 1, lse_vec))
+  return (rsp)
 }
 
 ####### I step: impute missing values in Z #######

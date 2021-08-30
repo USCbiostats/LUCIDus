@@ -16,9 +16,9 @@ binary <- function(K, ...){
     p <- exp(xb) / (1 + exp(xb))
     for(i in 1:K){
       if(dimCoY == 0 || itr == 1){
-        pYgX[, i] <- p[i]^Y * (1 - p[i])^(1 - Y)
+        pYgX[, i] <- log(p[i]^Y * (1 - p[i])^(1 - Y))
       } else{
-        pYgX[, i] <- sapply(1:N, function(x) return(p[x, i]^Y[x] * (1 - p[x, i])^(1 - Y[x])))
+        pYgX[, i] <- sapply(1:N, function(x) return(log(p[x, i]^Y[x] * (1 - p[x, i])^(1 - Y[x]))))
       }
     }
     return(pYgX)
