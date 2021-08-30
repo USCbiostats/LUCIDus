@@ -10,14 +10,12 @@ est.lucid(
   Y,
   CoG = NULL,
   CoY = NULL,
-  Tr = NULL,
   K = 2,
   family = "normal",
   useY = TRUE,
   control = def.control(),
   tune = def.tune(),
-  Z.var.str = NULL,
-  lambda_G = 0
+  Z.var.str = NULL
 )
 }
 \arguments{
@@ -30,8 +28,6 @@ est.lucid(
 \item{CoG}{Optional, matrix. Covariates to be adjusted for estimating the latent cluster.}
 
 \item{CoY}{Optional, matrix. Covariates to be adjusted for estimating the outcome.}
-
-\item{Tr}{Optional, vector. Variables having interaction with the latent cluster}
 
 \item{K}{Number of latent clusters.}
 
