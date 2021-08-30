@@ -2,7 +2,8 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/LUCIDus?color=green)](https://cran.r-project.org/package=LUCIDus)
-![](https://cranlogs.r-pkg.org/badges/grand-total/LUCIDus?color=blue)
+![](https://cranlogs.r-pkg.org/badges/grand-total/LUCIDus?color=blue) [![](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
+
 
 ## Introduction
 

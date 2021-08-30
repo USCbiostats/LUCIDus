@@ -113,7 +113,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       # E step
       new.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                               G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, useY = useY, dimCoY = dimCoY, ind.na = ind.NA)
+
       res.r <- t(apply(new.likelihood, 1, lse_vec))
+
       if(!all(is.finite(res.r))){
         cat("iteration", itr,": failed: invalid r, try another seed", "\n")
         break
@@ -153,7 +155,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
         if(useY){
           res.gamma <- new.gamma
         }
+
         new.loglik <- sum(log(rowSums(exp(new.likelihood))))
+
         if(tune$Select_G) {
           new.loglik <- new.loglik - tune$Rho_G * sum(abs(res.beta))
         }
@@ -161,9 +165,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
           new.loglik <- new.loglik - tune$Rho_Z_CovMu * sum(abs(res.mu)) - tune$Rho_Z_InvCov * sum(abs(res.sigma))
         }
         if(tune$Select_G | tune$Select_Z) {
-          cat("iteration", itr,": M-step finished, ", "penalized loglike = ", new.loglik, "\n")
+          cat("iteration", itr,": M-step finished, ", "penalized loglike = ", sprintf("%.3f", new.loglik), "\n")
         } else{
-          cat("iteration", itr,": M-step finished, ", "loglike = ", new.loglik, "\n")
+          cat("iteration", itr,": M-step finished, ", "loglike = ", sprintf("%.3f", new.loglik), "\n")
         }
         if(abs(res.loglik - new.loglik) < control$tol){
           convergence <- TRUE
@@ -182,7 +186,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
                           G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA)
   res.r <- t(apply(res.likelihood, 1, lse_vec))
   
+
   res.loglik <- sum(log(rowSums(exp(res.likelihood))))
+
   if(tune$Select_G) {
     res.loglik <- res.loglik - tune$Rho_G * sum(abs(res.beta))
   }
@@ -245,6 +251,7 @@ Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
   if(!is.null(mu)){
     for (i in 1:K) {
       pZgX[ind.na != 3, i] <- mclust::dmvnorm(Z[ind.na != 3, ], mu[i,], round(sigma[, , i], 9), log = TRUE)
+
     }
   }
   if(useY){
