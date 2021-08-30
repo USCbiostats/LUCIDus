@@ -15,9 +15,9 @@ normal <- function(K, ...){
     }
     for(i in 1:K){
       if(dimCoY == 0 || itr == 1){
-        pYgX[, i] <- dnorm(Y, mean = mu[i], sd = gamma$sigma[i])
+        pYgX[, i] <- dnorm(Y, mean = mu[i], sd = gamma$sigma[i], log = TRUE)
       } else{
-        pYgX[, i] <- sapply(1:N, function(x) return(dnorm(Y[x], mean = mu[x, i], sd = gamma$sigma[i])))
+        pYgX[, i] <- sapply(1:N, function(x) return(dnorm(Y[x], mean = mu[x, i], sd = gamma$sigma[i], log = TRUE)))
       }
     }
     return(pYgX)
