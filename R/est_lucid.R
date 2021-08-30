@@ -113,8 +113,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       # E step
       new.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                               G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, useY = useY, dimCoY = dimCoY, ind.na = ind.NA)
-      res.r <- new.likelihood / rowSums(new.likelihood)
-      res.r[is.nan(res.r[, 1]), ] <- 1/K
+      res.r <- t(apply(new.likelihood, 1, lse_vec))
       if(!all(is.finite(res.r))){
         cat("iteration", itr,": failed: invalid r, try another seed", "\n")
         break
@@ -154,7 +153,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
         if(useY){
           res.gamma <- new.gamma
         }
-        new.loglik <- sum(log(rowSums(new.likelihood)))
+        new.loglik <- sum(log(rowSums(exp(new.likelihood))))
         if(tune$Select_G) {
           new.loglik <- new.loglik - tune$Rho_G * sum(abs(res.beta))
         }
@@ -181,9 +180,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   }
   res.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                           G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA)
-  res.r <- new.likelihood / rowSums(new.likelihood)
+  res.r <- t(apply(res.likelihood, 1, lse_vec))
   
-  res.loglik <- sum(log(rowSums(new.likelihood)))
+  res.loglik <- sum(log(rowSums(exp(res.likelihood))))
   if(tune$Select_G) {
     res.loglik <- res.loglik - tune$Rho_G * sum(abs(res.beta))
   }
@@ -252,8 +251,7 @@ Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
     pYgX <- family.list$f.pYgX(Y, gamma, K = K, N = N, ...)
   }
   loglik <- pXgG + pZgX + pYgX
-  rsp <- t(apply(loglik, 1, lse_vec))
-  return (rsp)
+  return (loglik)
 }
 
 ####### I step: impute missing values in Z #######
