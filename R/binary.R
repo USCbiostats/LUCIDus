@@ -16,9 +16,9 @@ binary <- function(K, ...){
     p <- exp(xb) / (1 + exp(xb))
     for(i in 1:K){
       if(dimCoY == 0 || itr == 1){
-        pYgX[, i] <- p[i]^Y * (1 - p[i])^(1 - Y)
+        pYgX[, i] <- log(p[i]^Y * (1 - p[i])^(1 - Y))
       } else{
-        pYgX[, i] <- sapply(1:N, function(x) return(p[x, i]^Y[x] * (1 - p[x, i])^(1 - Y[x])))
+        pYgX[, i] <- sapply(1:N, function(x) return(log(p[x, i]^Y[x] * (1 - p[x, i])^(1 - Y[x]))))
       }
     }
     return(pYgX)
@@ -31,7 +31,7 @@ binary <- function(K, ...){
       Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
       Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family ="binomial")
-      beta <- coef(Yfit) # this is the baseline log odds
+      beta <- coef(Yfit) # baseline odds
       beta[2:K] <- beta[1] + beta[2:K] # log odds for each latent cluster
     }
     return(structure(list(beta = beta,
@@ -48,7 +48,6 @@ binary <- function(K, ...){
     }
     ref <- gamma$beta[1:K][index == 1]
     gamma$beta[1:K] <- (gamma$beta[1:K] - ref)[index]
-    gamma$beta[1] <- ref
     names(gamma$beta)[1:K] <- c("LC1(reference)", paste0("LC", 2:K))
     return(structure(list(beta = beta, 
                           mu = mu,

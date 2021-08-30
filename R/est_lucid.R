@@ -113,8 +113,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       # E step
       new.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                               G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, useY = useY, dimCoY = dimCoY, ind.na = ind.NA)
-      res.r <- new.likelihood / rowSums(new.likelihood)
-      res.r[is.nan(res.r[, 1]), ] <- 1/K
+
+      res.r <- t(apply(new.likelihood, 1, lse_vec))
+
       if(!all(is.finite(res.r))){
         cat("iteration", itr,": failed: invalid r, try another seed", "\n")
         break
@@ -154,7 +155,9 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
         if(useY){
           res.gamma <- new.gamma
         }
-        new.loglik <- sum(log(rowSums(new.likelihood)))
+
+        new.loglik <- sum(log(rowSums(exp(new.likelihood))))
+
         if(tune$Select_G) {
           new.loglik <- new.loglik - tune$Rho_G * sum(abs(res.beta))
         }
@@ -181,9 +184,11 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   }
   res.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
                           G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA)
-  res.r <- new.likelihood / rowSums(new.likelihood)
+  res.r <- t(apply(res.likelihood, 1, lse_vec))
   
-  res.loglik <- sum(log(rowSums(new.likelihood)))
+
+  res.loglik <- sum(log(rowSums(exp(res.likelihood))))
+
   if(tune$Select_G) {
     res.loglik <- res.loglik - tune$Rho_G * sum(abs(res.beta))
   }
@@ -227,24 +232,33 @@ Ind.NA <- function(Z){
 }
 
 
-####### E step: calculate the likelihood #######
+####### E step: calculate the responsibility #######
+# use the log-sum-exponential trick to avoid over/underflow
+# pXgG, pZgX and pYgX are all log-likelihood
+lse_vec <- function(vec) {
+  c <- max(vec)
+  lse <- log(sum(exp(vec - c)))
+  return(exp(vec - c - lse))
+}
+
 Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
                   G, Z, Y = NULL, family.list, K, N, useY, ind.na, ...){
   pXgG <- pZgX <- pYgX <- matrix(rep(1, N * K), nrow = N)
   if(!is.null(beta)){
-    xb <- exp(cbind(rep(1, N), G) %*% t(beta))
-    pXgG <- xb/rowSums(xb)
+    xb <- cbind(rep(1, N), G) %*% t(beta)
+    pXgG <- log(t(apply(xb, 1, lse_vec)))
   }
   if(!is.null(mu)){
     for (i in 1:K) {
-      pZgX[ind.na != 3, i] <- mclust::dmvnorm(Z[ind.na != 3, ], mu[i,], round(sigma[, , i], 9))
+      pZgX[ind.na != 3, i] <- mclust::dmvnorm(Z[ind.na != 3, ], mu[i,], round(sigma[, , i], 9), log = TRUE)
+
     }
   }
   if(useY){
     pYgX <- family.list$f.pYgX(Y, gamma, K = K, N = N, ...)
   }
-  likelihood <- pXgG * pZgX * pYgX
-  return (likelihood)
+  loglik <- pXgG + pZgX + pYgX
+  return (loglik)
 }
 
 ####### I step: impute missing values in Z #######
