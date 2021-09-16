@@ -71,7 +71,7 @@ You can install the development version from
 
 ``` r
 install.packages("devtools")
-devtools::install_github("Yinqi93/LUCIDus")
+devtools::install_github("USCbiostats/LUCIDus")
 ```
 
 ## Example
