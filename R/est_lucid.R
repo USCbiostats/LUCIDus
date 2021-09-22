@@ -72,10 +72,19 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
   switch_Y <- family.list$f.switch
   # check missing pattern
   ind.NA <- Ind.NA(Z)
-  if(sum(ind.NA == 2) != 0){
+  if(sum(ind.NA$ind.NA == 2) != 0){
     NA.Z <- which(is.na(Z), arr.ind = TRUE)
-    Z <- imputeData(Z) # initialize imputation
-    Z[ind.NA == 3, ] <- NA
+    # initialize imputation
+    # Z <- imputeData(Z) 
+    # impute missing by the min
+    Z <- sapply(1:ncol(Z), function(i) {
+      temp_Z <- Z[, i]
+      if(ind.NA$col_any_miss[i]) {
+        temp_Z[is.na(temp_Z)] <- ind.NA$col_min[i]
+      }
+      return(temp_Z)
+    })
+    Z[ind.NA$ind.NA == 3, ] <- NA
   }
   
   
@@ -87,7 +96,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
     res.beta <- matrix(data = runif(K * (dimG + dimCoG + 1)), nrow = K) 
     res.beta[1, ] <- 0
     if(!tune$Select_Z) {
-      invisible(capture.output(mclust.fit <- Mclust(Z[ind.NA != 3, ], G = K)))
+      invisible(capture.output(mclust.fit <- Mclust(Z[ind.NA$ind.NA != 3, ], G = K)))
       if(is.null(Z.var.str)){
         model.best <- mclust.fit$modelName
       } else{
@@ -112,7 +121,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       
       # E step
       new.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
-                              G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, useY = useY, dimCoY = dimCoY, ind.na = ind.NA)
+                              G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, useY = useY, dimCoY = dimCoY, ind.na = ind.NA$ind.NA)
 
       res.r <- t(apply(new.likelihood, 1, lse_vec))
 
@@ -124,14 +133,18 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
       }
       
       # I step
-      if(sum(ind.NA == 2) != 0 && itr != 1){
-        Z <- Istep_Z(Z = Z, r = res.r, est.mu = res.mu, ind.na = ind.NA, all.na = NA.Z)
+      if(sum(ind.NA$ind.NA == 2) != 0 && itr != 1){
+        Z <- Istep_Z(Z = Z, r = res.r, 
+                     est.mu = res.mu, 
+                     est_sigma = res.sigma,
+                     ind.na = ind.NA, 
+                     all.na = NA.Z)
       }
       
       # M step
       invisible(capture.output(new.beta <- Mstep_G(G = G, r = res.r, selectG = tune$Select_G, penalty = tune$Rho_G, dimG = dimG, K = K)))
       new.mu.sigma <- Mstep_Z(Z = Z, r = res.r, selectZ = tune$Select_Z, penalty.mu = tune$Rho_Z_CovMu, penalty.cov = tune$Rho_Z_InvCov,
-                              model.name = model.best, K = K, ind.na = ind.NA, mu = res.mu)
+                              model.name = model.best, K = K, ind.na = ind.NA$ind.NA, mu = res.mu)
       if(is.null(new.mu.sigma$mu)){
         print("variable selection failed, restart lucid \n")
         break
@@ -183,7 +196,7 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
     res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames)
   }
   res.likelihood <- Estep(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma,
-                          G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA)
+                          G = G, Z = Z, Y = Y, family.list = family.list, itr = itr, CoY = CoY, N = N, K = K, dimCoY = dimCoY, useY = useY, ind.na = ind.NA$ind.NA)
   res.r <- t(apply(res.likelihood, 1, lse_vec))
   
 
@@ -220,15 +233,23 @@ est.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, K = 2, family = "normal",
 }
 
 
-####### check the missing patter #######
+####### check the missing patten #######
 Ind.NA <- function(Z){
   n <- nrow(Z)
   m <- ncol(Z)
   num.NA <- rowSums(is.na(Z))
   ind.NA <- sapply(1:n, function(x) {return(ifelse(num.NA[x] == 0, 1, 
                                                    ifelse(num.NA[x] == m, 3, 2)))})
-  return(ind.NA)
   # 1 = complete, 2 = sporadic, 3 = listwise
+  col_min <- sapply(1:m, function(i) {
+    min(Z[, i], na.rm = TRUE)
+  })
+  col_any_miss <- sapply(1:m, function(i) {
+    sum(is.na(Z[, i])) > 0
+  })
+  return(list(ind.NA = ind.NA,
+              col_min = col_min,
+              col_any_miss = col_any_miss))
 }
 
 
@@ -262,13 +283,35 @@ Estep <- function(beta = NULL, mu = NULL, sigma = NULL, gamma = NULL,
 }
 
 ####### I step: impute missing values in Z #######
-Istep_Z <- function(Z, r, est.mu, ind.na, all.na){
+Istep_Z <- function(Z, r, est.mu, est_sigma, ind.na, all.na){
   n <- nrow(Z)
   m <- dim(Z)
-  zr <- colMeans(r[ind.na != 3, ])
-  impute <- as.vector(zr) %*% as.matrix(est.mu)
-  Z[all.na] <- impute[all.na[, 2]]
-  Z[ind.na == 3, ] <- NA
+  k <- ncol(r)
+  # zr <- colMeans(r[ind.na != 3, ])
+  # impute <- as.vector(zr) %*% as.matrix(est.mu)
+  # Z[all.na] <- impute[all.na[, 2]]
+  impute_value <- sapply(1:nrow(all.na), function(i) {
+    x <- all.na[i, 1]
+    y <- all.na[i, 2]
+    if(ind.na$ind.NA[x] == 3) {
+      tt <- NA
+    } else {
+      lod <- ind.na$col_min[y]
+      tt_mu <- est.mu[, y]
+      tt_sigma <- sapply(1:k, function(i) {
+        return(est_sigma[y, y, i])
+      })
+      tt_r <- r[x, ]
+      tt_impute <- sapply(1:k, function(i) {
+        truncnorm::rtruncnorm(n = 1, a = -Inf, b = lod, 
+                              mean = tt_mu[i],
+                              sd = tt_sigma[i])
+      })
+      tt <- sum(tt_impute * tt_r)
+    }
+    return(tt)
+  })
+  Z[all.na] <- impute_value
   return(Z)
 }
 
