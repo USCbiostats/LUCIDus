@@ -21,6 +21,7 @@
 #' \item{modelName}{The model used to estimate the cluster-specific variance-covariance matrix, for further details, see \code{\link{mclust}}}
 #' \item{likelihood}{The log likelihood of the LUCID model}
 #' \item{post.p}{Predicted probability of belonging to each latent cluster}
+#' \item{Z}{}
 #' @importFrom nnet multinom
 #' @import mclust
 #' @importFrom glmnet glmnet
@@ -50,7 +51,7 @@ est.lucid <- function(G, Z, Y,
                       control = def.control(), 
                       tune = def.tune(), 
                       modelName = NULL,
-                      seed = 123){
+                      seed = 123) {
   
   #============ 1. basic setup for estimation function =============
   family <- match.arg(family)
@@ -308,10 +309,23 @@ est.lucid <- function(G, Z, Y,
   } else{
     selectZ <- rep(TRUE, dimZ)
   }
-  results <- list(pars = list(beta = pars$beta, mu = pars$mu, sigma = pars$sigma, gamma = pars$gamma),
-                  K = K, var.names =list(Gnames = Gnames, Znames = Znames, Ynames = Ynames), modelName = model.best, likelihood = res.loglik,
-                  post.p = res.r, family = family,
-                  par.control = control, par.tune = tune, select = list(selectG = selectG, selectZ = selectZ), useY = useY)
+  results <- list(pars = list(beta = pars$beta, 
+                              mu = pars$mu, 
+                              sigma = pars$sigma, 
+                              gamma = pars$gamma),
+                  K = K, 
+                  var.names =list(Gnames = Gnames, 
+                                  Znames = Znames, 
+                                  Ynames = Ynames), 
+                  modelName = model.best, 
+                  likelihood = res.loglik,
+                  post.p = res.r, 
+                  family = family,
+                  par.control = control, 
+                  par.tune = tune, 
+                  select = list(selectG = selectG, selectZ = selectZ), 
+                  useY = useY,
+                  Z = Z)
   class(results) <- c("lucid")
   return(results)
 }
