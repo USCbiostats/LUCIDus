@@ -51,7 +51,8 @@ est.lucid <- function(G, Z, Y,
                       control = def.control(), 
                       tune = def.tune(), 
                       modelName = NULL,
-                      seed = 123) {
+                      seed = 123,
+                      init_impute = c("mclust", "lod")) {
   
   #============ 1. basic setup for estimation function =============
   family <- match.arg(family)
