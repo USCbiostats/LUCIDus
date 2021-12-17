@@ -15,6 +15,7 @@ RoxygenNote: 7.1.2
 URL: https://github.com/Yinqi93/LUCIDus
 Suggests: 
     knitr,
+    testthat (>= 3.0.0),
     rmarkdown
 VignetteBuilder: knitr
 Imports:
@@ -26,3 +27,4 @@ Imports:
     lbfgs,
     glasso,
     glmnet
+Config/testthat/edition: 3
