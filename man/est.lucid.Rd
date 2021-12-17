@@ -11,27 +11,29 @@ est.lucid(
   CoG = NULL,
   CoY = NULL,
   K = 2,
-  family = "normal",
+  family = c("normal", "binary"),
   useY = TRUE,
   control = def.control(),
   tune = def.tune(),
-  Z.var.str = NULL
+  modelName = NULL,
+  seed = 123,
+  init_impute = c("mclust", "lod")
 )
 }
 \arguments{
-\item{G}{Genetic features/environmental exposures, a \code{\link{matrix}}.}
+\item{G}{Exposures, a \code{matrix} or a \code{dataframe}.}
 
-\item{Z}{Biomarkers/other omics data, a \code{\link{matrix}}.}
+\item{Z}{Omics data, a \code{matrix} or a \code{dataframe}.}
 
-\item{Y}{Disease outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.}
+\item{Y}{Outcome, an n x 1 \code{matrix}.}
 
-\item{CoG}{Optional, matrix. Covariates to be adjusted for estimating the latent cluster.}
+\item{CoG}{Optional, a \code{matrix}. Covariates to be adjusted for estimating the latent cluster.}
 
-\item{CoY}{Optional, matrix. Covariates to be adjusted for estimating the outcome.}
+\item{CoY}{Optional, a \code{matrix}. Covariates to be adjusted for estimating the association between latent cluster and outcome.}
 
-\item{K}{Number of latent clusters.}
+\item{K}{The number of latent clusters. An integer greater or equal to 2. You can use \code{\link{tune.lucid}} to determine the optimal number of latent clusters.}
 
-\item{family}{Type of outcome Y. It should be choose from "normal", "binary".}
+\item{family}{Distribution of outcome Y. Currently accepted distributions are "normal" and "binary".}
 
 \item{useY}{Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.}
 
@@ -39,18 +41,21 @@ est.lucid(
 
 \item{tune}{A list of tuning parameters used by variable selection procedure. See \code{\link{def.tune}}}
 
-\item{Z.var.str}{The variance-covariance structure for the biomarkers. See \code{\link{mclustModelNames}} for details.}
+\item{modelName}{The variance-covariance structure for omics data. See \code{\link{mclustModelNames}} for details.}
+
+\item{seed}{An integer to initialize the EM algorithm}
 }
 \value{
 A list which contains the several features of LUCID, including:
 \item{pars}{Estimates of parameters of LUCID, including beta (estimates of genetic feature/environmental exposure), mu (estimates of cluster-specific biomarker means), sigma (estimates of the cluster-specific biomarker variance-covariance matrix) and gamma(estimates of cluster-specific effect and covariates effect related to the outcome)}
 \item{K}{Number of latent cluster}
-\item{Z.var.str}{The model used to estimate the cluster-specific variance-covariance matrix, for further details, see \code{\link{mclust}}}
+\item{modelName}{The model used to estimate the cluster-specific variance-covariance matrix, for further details, see \code{\link{mclust}}}
 \item{likelihood}{The log likelihood of the LUCID model}
 \item{post.p}{Predicted probability of belonging to each latent cluster}
+\item{Z}{}
 }
 \description{
-This function estimates the latent clusters by integrating genetic features/environmental exposures, biomarkers with/without the outcome of interest. Variable selection is available for analyzing the high-dimensional data.
+This function fits a LUCID model, which estimates the latent clusters by integrating genetic features/environmental exposures, biomarkers with/without the outcome of interest. Variable selection is available for analyzing the high-dimensional data.
 }
 \examples{
 \dontrun{

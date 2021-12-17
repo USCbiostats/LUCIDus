@@ -13,12 +13,6 @@ def.control(tol = 0.001, max_itr = 1000, max_tot.itr = 10000)
 
 \item{max_tot.itr}{Maximum number of total iterations, integer, default is 10000.}
 }
-\value{
-A list of tolerance settings for LUCID.
-}
 \description{
 Control parameters for EM algorithm
-}
-\author{
-Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
 }

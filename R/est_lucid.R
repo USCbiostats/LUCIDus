@@ -43,8 +43,11 @@
 #' tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
 #' Select_G = TRUE, Rho_G = 0.02))
 #' }
-est.lucid <- function(G, Z, Y, 
-                      CoG = NULL, CoY = NULL, 
+est.lucid <- function(G, 
+                      Z, 
+                      Y, 
+                      CoG = NULL, 
+                      CoY = NULL, 
                       K = 2, 
                       family = c("normal", "binary"), 
                       useY = TRUE, 
@@ -60,9 +63,6 @@ est.lucid <- function(G, Z, Y,
   # 1.1 check data format 
   if(is.data.frame(G) | is.vector(G)) {
     G <- as.matrix(G)
-    if(!is.numeric(G)) {
-      stop("'G' must be numeric (for categorical input, use dummy variables)")
-    }
   }
   if(is.null(colnames(G))){
     Gnames <- paste0("G", 1:ncol(G))
@@ -71,7 +71,7 @@ est.lucid <- function(G, Z, Y,
   if(is.data.frame(Z) | is.vector(Z)) {
     Z <- as.matrix(Z)
     if(!is.numeric(Z)) {
-      stop("'Z' must be numeric (for categorical input, use dummy variables)")
+      stop("'Z' must be numeric")
     }
   }
   if(is.null(colnames(Z))){
@@ -80,9 +80,6 @@ est.lucid <- function(G, Z, Y,
   
   if(is.data.frame(Y) | is.vector(Y)) {
     Y <- as.matrix(Y)
-    if(!is.numeric(Y)) {
-      stop("'Y' must be numeric (for categorical input, use dummy variables)")
-    }
   }
   
   if(is.null(colnames(Y))){
@@ -92,18 +89,12 @@ est.lucid <- function(G, Z, Y,
   if(!is.null(CoG)) {
     if(is.data.frame(CoG) | is.vector(CoG)) {
       CoG <- as.matrix(CoG)
-      if(!is.numeric(CoG)) {
-        stop("'CoG' must be numeric (for categorical input, use dummy variables)")
-      }
     }
     CoGnames <- colnames(CoG)
   }
   if(!is.null(CoY)) {
     if(is.data.frame(CoY) | is.vector(CoY)) {
       CoY <- as.matrix(CoY)
-      if(!is.numeric(CoG)) {
-        stop("'CoY' must be numeric (for categorical input, use dummy variables)")
-      }
     }
     CoYnames <- colnames(CoY)
   }

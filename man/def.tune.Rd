@@ -7,28 +7,25 @@
 def.tune(
   Rho_G = 0,
   Rho_Z_InvCov = 0,
+  Rho_Z_Mu = 0,
   Rho_Z_CovMu = 0,
   Select_G = FALSE,
   Select_Z = FALSE
 )
 }
 \arguments{
-\item{Rho_G}{Numeric. Penalty for selection on genetic features/environmental exposures.}
+\item{Rho_G}{Numeric. Penalty for selecting exposures G.}
 
-\item{Rho_Z_InvCov}{Numeric. Penalty for the inverse of the covariance of biomarkers, which will produce a sparse matrix.}
+\item{Rho_Z_InvCov}{Numeric. Penalty to obtain a sparse covariance matrix for omics data Z.}
 
-\item{Rho_Z_CovMu}{Numeric. Penalty for the product of the inverse of the covariance of biomarkers, which will produce a sparse matrix for the mean.}
+\item{Rho_Z_Mu}{Numeric.}
 
-\item{Select_G}{Flag for variable selection in genetic features/environmental exposures. Default is FALSE.}
+\item{Rho_Z_CovMu}{Deprecated argument. Penalty for the product of the inverse of the covariance of omicss, which will produce a sparse matrix for the mean.}
 
-\item{Select_Z}{Flag for variable selection in biomarkers. Default is FALSE.}
-}
-\value{
-A list of tuning parameters and settings will be returned for integrative clustering.
+\item{Select_G}{Deprecated argument. Flag for variable selection in genetic features/environmental exposures.}
+
+\item{Select_Z}{Deprecated argument. Flag for variable selection in omics data Z.}
 }
 \description{
 Define tuning parameters of regularization for LUCID model.
-}
-\author{
-Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
 }

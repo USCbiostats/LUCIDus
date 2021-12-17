@@ -28,7 +28,8 @@ normal <- function(K, ...){
       beta <- sapply(1:K, function(x){sum(r[, x] * Y) / sum(r[, x]) })
       sigma <- sqrt(colSums(r * apply(matrix(beta), 1, function(x){(x - Y)^2})) / colSums(r))
     } else {
-      Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
+      Set0 <- as.data.frame(cbind(Y, r[, -1]))
+      Set0 <- cbind(Set0, CoY)
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
       Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family = gaussian)
       beta <- summary(Yfit)$coefficients[, 1]
