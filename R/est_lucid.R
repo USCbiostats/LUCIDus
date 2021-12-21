@@ -66,6 +66,7 @@ est.lucid <- function(G,
   
   #============ 1. basic setup for estimation function =============
   family <- match.arg(family)
+  init_impute <- match.arg(init_impute)
   
   # 1.1 check data format 
   if(!is.matrix(G)) {
@@ -92,7 +93,6 @@ est.lucid <- function(G,
   } else {
     Znames <- colnames(Z)
   }
-  colnames(Z) <- Znames
   
   if(!is.matrix(Y)) {
     Y <- as.matrix(Y)
@@ -157,9 +157,17 @@ est.lucid <- function(G,
   na_pattern <- check_na(Z)
   if(na_pattern$impute_flag) {
     # initialize imputation
-    cat("Intializing the missing values in omics data 'Z'\n")
-    invisible(capture.output(Z <- mclust::imputeData(Z)))
-    Z[na_pattern$indicator_na == 3, ] <- NA
+    if(init_impute == "mclust") {
+      cat("Intializing imputation of missing values in 'Z' via the mix package \n\n")
+      invisible(capture.output(Z <- mclust::imputeData(Z)))
+      Z[na_pattern$indicator_na == 3, ] <- NA  
+    }
+    if(init_impute == "lod") {
+      cat("Intializing imputation of missing values in 'Z' via LOD / sqrt(2) \n\n")
+      Z <- apply(Z, 2, fill_data_lod)
+      colnames(Z) <- Znames
+    }
+    
   }
   
   
@@ -173,7 +181,7 @@ est.lucid <- function(G,
     set.seed(seed)
     
     # 2.1 initialize model parameters
-    cat("initialize LUCID with mclust \n")
+    cat("Initialize LUCID with mclust \n\n")
     
     # initialize beta 
     res.beta <- matrix(data = runif(K * (dimG + dimCoG + 1)), nrow = K) 
@@ -382,9 +390,7 @@ est.lucid <- function(G,
 #' @param ind.na 
 #'
 #' @return
-#' @export
 #'
-#' @examples
 Estep <- function(beta, mu, sigma, gamma,
                   G, Z, Y = NULL, family.list, K, N, useY, ind.na, ...) {
   pXgG <- pZgX <- pYgX <- matrix(rep(1, N * K), nrow = N)
@@ -431,10 +437,6 @@ lse_vec <- function(vec) {
 #' @param dimG 
 #' @param K 
 #'
-#' @return
-#' @export
-#'
-#' @examples
 Mstep_G <- function(G, r, selectG, penalty, dimG, K) {
   new.beta <- matrix(rep(0, K * (dimG + 1)), nrow = K)
   if(selectG){
@@ -468,10 +470,6 @@ Mstep_G <- function(G, r, selectG, penalty, dimG, K) {
 #' @param ind.na 
 #' @param mu 
 #'
-#' @return
-#' @export
-#'
-#' @examples
 Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
                     model.name, K, ind.na, mu){
   dz <- Z[ind.na != 3, ]
@@ -523,10 +521,6 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
 #' @param mu 
 #' @param wi 
 #'
-#' @return
-#' @export
-#'
-#' @examples
 est.mu <- function(j, rho, z, r, mu, wi){
   p <- ncol(z)
   res.mu <- rep(0, p)
@@ -563,8 +557,7 @@ est.mu <- function(j, rho, z, r, mu, wi){
 #'
 #' @param x An object of LUCID model, returned by \code{est.lucid}
 #' @param ... Other arguments to be passed to \code{print}
-#' @export
-#'
+#' 
 print.lucid <- function(x, ...){
   cat("An object estimated by LUCID model", "\n")
   cat("Outcome type:", x$family, "\n")

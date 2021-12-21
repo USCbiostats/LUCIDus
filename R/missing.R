@@ -100,3 +100,15 @@ fill_data_help2 <- function(obs, A, B, mu, alpha, sigma_inv, P) {
   }
   return(res)
 }
+
+#' impute missing values in Z by LOD
+fill_data_lod <- function(Z_vec) {
+  na_ind <- is.na(Z_vec)
+  if(any(na_ind)) {
+    if(!all(na_ind)) {
+      lod <- min(Z_vec, na.rm = TRUE)
+      Z_vec[na_ind] <- lod / sqrt(2)
+    }
+  }
+  return(Z_vec)
+}
