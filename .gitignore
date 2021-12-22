@@ -2,5 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-inst/doc
+.Rprofile
 .DS_Store
+inst
+renv/Library
