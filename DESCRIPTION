@@ -28,3 +28,4 @@ Imports:
     glasso,
     glmnet
 Config/testthat/edition: 3
+LazydatData: true
