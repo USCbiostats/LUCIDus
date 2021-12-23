@@ -1,0 +1,6 @@
+^data-raw$
+^renv$
+^renv\.lock$
+^.*\.Rproj$
+^.Rprofile$^.*\.Rproj$
+^\.Rproj\.user$

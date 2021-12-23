@@ -1,23 +1,27 @@
-#' @title simulated dataset 1
+#' @title A simulated dataset for LUCID 
 #'
-#' @description A simulated dataset for integrated clustering with normal outcome. The data is simulated under cluster number K = 2.
-#' @format A matrix of 22 columns, which are
+#' @description This is a toy dataset to illustrate LUCID model. It is simulated
+#' by assuming there are 2 latent clusters in the data. We assume the exposures 
+#' are associated with latent cluster which ultimately affects the PFAS concentration
+#' and liver injury in children. The latent clusters are also characterized by 
+#' differential levels of metabolites.
+#' 
+#' @format A list with 5 matrices corresponding to exposures (G), omics data (Z),
+#' a continuous outcome, a binary outcome and 2 covariates (can be used either 
+#' as CoX or CoY). Each matrice contains 2000 observations.
 #' \describe{
-#'   \item{G1 - G10}{Genetic features, G1 to G5 are causal genes contributed to clustering, with OR = 2; G6 to G10 are null genes that is not related to clustering}
-#'   \item{Z1 - Z10}{Biomarkers, Z1 to Z5 are causal biomarkers with delta Z = 4 between 2 clusters, Z6 to Z10 are noises with delta Z = 0. All biomarkers are assumed to be independent with each other}
-#'   \item{Y}{Outcome of interest, which follows 2 normal distribution with N(-1, 1) and N(1, 1)}
-#'   \item{X}{Latent cluster assignment for each observation}
+#'   \item{G}{10 exposures}
+#'   \item{Z}{10 metabolites}
+#'   \item{Y_normal}{Outcome, PFAS concentration in children}
+#'   \item{Y_bninary}{Bianry outcome, liver injury status}
+#'   \item{Covariates}{2 continous covariates, can be treated as either CoX or 
+#'   CoY}
 #' }
-"sim1"
+"sim_data"
 
-#' @title simulated dataset 2
-#'
-#' @description A simulated dataset for integrated clustering with binary outcome. The data is simulated under cluster number K = 2.
-#' @format A matrix of 22 columns, which are
-#' \describe{
-#'   \item{G1 - G10}{Genetic features, G1 to G5 are causal genes contributed to clustering, with OR = 2; G6 to G10 are null genes that is not related to clustering}
-#'   \item{Z1 - Z10}{Biomarkers, Z1 to Z5 are causal biomarkers with delta Z = 4 between 2 clusters, Z6 to Z10 are noises with delta Z = 0. All biomarkers are assumed to be independent with each other}
-#'   \item{Y}{Outcome of interest, the odds ratio of the cluster is 2}
-#'   \item{X}{Latent cluster assignment for each observation}
-#' }
-"sim2"
+
+
+
+#' @title TCGA LUSC data
+#' @source 
+"lusc_data"
