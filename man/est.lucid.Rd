@@ -25,7 +25,7 @@ est.lucid(
 
 \item{Z}{Omics data, a \code{matrix} or a \code{dataframe}.}
 
-\item{Y}{Outcome, an n x 1 \code{matrix}.}
+\item{Y}{Outcome, an n x 1 \code{matrix} or a sinlge columne \code{dataframe}.}
 
 \item{CoG}{Optional, a \code{matrix}. Covariates to be adjusted for estimating the latent cluster.}
 
@@ -44,6 +44,12 @@ est.lucid(
 \item{modelName}{The variance-covariance structure for omics data. See \code{\link{mclustModelNames}} for details.}
 
 \item{seed}{An integer to initialize the EM algorithm}
+
+\item{init_impute}{Method to initialize the imputation of missing values in 
+LUCID; \code{mclust} will implement EM Algorithm for Unrestricted 
+General Location Model from the \code{mix} package to impute the missing
+values in omics data 'Z'; \code{lod} will initialize the imputation through 
+replacing missing values by LOD / sqrt(2)}
 }
 \value{
 A list which contains the several features of LUCID, including:
