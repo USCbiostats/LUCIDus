@@ -69,10 +69,14 @@ est.lucid <- function(G,
   init_impute <- match.arg(init_impute)
   
   ## 1.1 check data format ====
-  if(!is.matrix(G)) {
-    G <- as.matrix(G)
-    if(!is.numeric(G)) {
-      stop("Input data 'G' should be numeric; categorical variables should be transformed into dummies")
+  if(is.null(G)) {
+    stop("Input data 'G' is missing")
+  } else {
+    if(!is.matrix(G)) {
+      G <- as.matrix(G)
+      if(!is.numeric(G)) {
+        stop("Input data 'G' should be numeric; categorical variables should be transformed into dummies")
+      }
     }
   }
   if(is.null(colnames(G))){
@@ -82,10 +86,14 @@ est.lucid <- function(G,
   }
   colnames(G) <- Gnames
   
-  if(!is.matrix(Z)) {
-    Z <- as.matrix(Z)
-    if(!is.numeric(Z)) {
-      stop("Input data 'Z' should be numeric")
+  if(is.null(Z)) {
+    stop("Input data 'Z' is missing")
+  } else {
+    if(!is.matrix(Z)) {
+      Z <- as.matrix(Z)
+      if(!is.numeric(Z)) {
+        stop("Input data 'Z' should be numeric")
+      }
     }
   }
   if(is.null(colnames(Z))){
@@ -94,13 +102,17 @@ est.lucid <- function(G,
     Znames <- colnames(Z)
   }
   
-  if(!is.matrix(Y)) {
-    Y <- as.matrix(Y)
-    if(!is.numeric(Y)) {
-      stop("Input data 'Y' should be numeric; binary outcome should be transformed them into dummies")
-    }
-    if(ncol(Y) > 1) {
-      stop("Only continuous 'Y' or binary 'Y' is accepted")
+  if(is.null(Y)) {
+    stop("Input data 'Y' is missing")
+  } else {
+    if(!is.matrix(Y)) {
+      Y <- as.matrix(Y)
+      if(!is.numeric(Y)) {
+        stop("Input data 'Y' should be numeric; binary outcome should be transformed them into dummies")
+      }
+      if(ncol(Y) > 1) {
+        stop("Only continuous 'Y' or binary 'Y' is accepted")
+      }
     }
   }
   if(is.null(colnames(Y))) {

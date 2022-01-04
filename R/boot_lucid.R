@@ -33,14 +33,34 @@
 #' boot1 <- boot.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]),
 #'  model = fit1, R = 100, n = num_workers)
 #' }
-boot.lucid <- function(G, Z, Y, CoG = NULL, CoY = NULL, model, R = 100, n = detectCores(), Zdiff = FALSE) {
+boot.lucid <- function(G, 
+                       Z, 
+                       Y, 
+                       CoG = NULL, 
+                       CoY = NULL, 
+                       model, 
+                       R = 100, 
+                       n = detectCores(), 
+                       Zdiff = FALSE) {
   ss <- model$select
   G <- as.matrix(G[, ss$selectG])
   Z <- as.matrix(Z[, ss$selectZ])
   dimG <- ncol(G); dimZ <- ncol(Z); dimCoY <- ncol(CoY); dimCoG  <- ncol(CoG); K <- model$K
   alldata <- as.data.frame(cbind(G, Z, Y, CoG, CoY))
-  bootstrap <- boot(data = alldata, statistic = lucid_par, R = R, parallel = "multicore", ncpus = n,
-                    dimG = dimG, dimZ = dimZ, dimCoY = dimCoY, dimCoG = dimCoG, model = model, Zdiff = Zdiff)
+  cat("Use Bootstrap resampling to derive 95% CI for LUCID")
+  invisible(capture.output(
+    bootstrap <- boot(data = alldata, 
+                      statistic = lucid_par, 
+                      R = R, 
+                      parallel = "multicore", 
+                      ncpus = n,
+                      dimG = dimG, 
+                      dimZ = dimZ, 
+                      dimCoY = dimCoY, 
+                      dimCoG = dimCoG, 
+                      model = model, 
+                      Zdiff = Zdiff)
+  ))
   sd <- sapply(1:length(bootstrap$t0), function(x) sd(bootstrap$t[, x]))
   if(Zdiff == FALSE){
     model.par <- c(model$pars$beta[-1, c(FALSE, ss$selectG)], as.vector(t(model$pars$mu[, ss$selectZ])), model$pars$gamma$beta)
@@ -90,8 +110,11 @@ lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model, Zdiff) {
                                Y = Y,
                                CoY = CoY, 
                                CoG = CoG,
-                               family = model$family, control = model$par.control,
-                               modelName = model$modelName, K = model$K, tune = model$par.tune))
+                               family = model$family, 
+                               control = model$par.control,
+                               modelName = model$modelName, 
+                               K = model$K, 
+                               tune = model$par.tune))
     if("try-error" %in% class(try_lucid)){
       next
     } else{
