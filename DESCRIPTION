@@ -1,7 +1,7 @@
 Package: LUCIDus
 Type: Package
 Title: Latent Unknown Clustering with Integrated Data
-Version: 2.1.1
+Version: 2.1.2
 Author: Yinqi Zhao, David V. Conti, Cheng Peng, Zhao Yang
 Maintainer: Yinqi Zhao <yinqiz@usc.edu>
 Description: An implementation for the 'LUCID' model (Peng (2019) <doi:10.1093/bioinformatics/btz667>) to jointly estimate latent unknown clusters/subgroups with integrated data. 
