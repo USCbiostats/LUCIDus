@@ -26,7 +26,7 @@ binary <- function(K, ...){
   # update parameters for M step
   f.maxY <- function(Y, r, CoY, K, CoYnames){
     if(is.null(CoY)) {
-      beta = apply(r,2,function(x) return(log(sum(x*Y)/(sum(x)-sum(x*Y)))))
+      beta <- apply(r, 2, function(x) return(log(sum(x * Y) / (sum(x) - sum(x * Y)))))
     } else {
       Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)

@@ -122,6 +122,7 @@ est.lucid <- function(G,
   }
   colnames(Y) <- Ynames
   
+  CoGnames <- NULL
   if(!is.null(CoG)) {
     if(!is.matrix(CoG)) {
       CoG <- as.matrix(CoG)
@@ -137,6 +138,7 @@ est.lucid <- function(G,
     colnames(CoG) <- CoGnames
   }
   
+  CoYnames <- NULL
   if(!is.null(CoY)) {
     if(!is.matrix(CoY)) {
       CoY <- as.matrix(CoY)
@@ -159,6 +161,7 @@ est.lucid <- function(G,
   dimCoG <- ifelse(is.null(CoG), 0, ncol(CoG))
   dimCoY <- ifelse(is.null(CoY), 0, ncol(CoY))
   G <- cbind(G, CoG)
+  Gnames <- c(Gnames, CoGnames)
   family.list <- switch(family, normal = normal(K = K, dimCoY), 
                         binary = binary(K = K, dimCoY))
   Mstep_Y <- family.list$f.maxY
@@ -352,7 +355,7 @@ est.lucid <- function(G,
   }
   pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
-  colnames(pars$beta) <- c("intercept", Gnames, CoGnames)
+  colnames(pars$beta) <- c("intercept", Gnames)
   colnames(pars$mu) <- Znames
   if(tune$Select_G == TRUE){
     tt1 <- apply(pars$beta[, -1], 2, range)
