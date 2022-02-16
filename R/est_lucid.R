@@ -258,6 +258,7 @@ est.lucid <- function(G,
                                                    selectG = tune$Select_G, 
                                                    penalty = tune$Rho_G, 
                                                    dimG = dimG, 
+                                                   dimCoG = dimCoG,
                                                    K = K)))
       new.mu.sigma <- Mstep_Z(Z = Z, 
                               r = res.r, 
@@ -351,7 +352,7 @@ est.lucid <- function(G,
   }
   pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
-  colnames(pars$beta) <- c("intercept", Gnames)
+  colnames(pars$beta) <- c("intercept", Gnames, CoGnames)
   colnames(pars$mu) <- Znames
   if(tune$Select_G == TRUE){
     tt1 <- apply(pars$beta[, -1], 2, range)

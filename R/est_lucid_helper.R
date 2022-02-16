@@ -64,8 +64,8 @@ Estep <- function(beta,
 #' @param dimG 
 #' @param K 
 #'
-Mstep_G <- function(G, r, selectG, penalty, dimG, K) {
-  new.beta <- matrix(rep(0, K * (dimG + 1)), nrow = K)
+Mstep_G <- function(G, r, selectG, penalty, dimG, dimCoG, K) {
+  new.beta <- matrix(rep(0, K * (dimG + dimCoG + 1)), nrow = K)
   if(selectG){
     tryLasso <- try(glmnet(as.matrix(G), 
                            as.matrix(r), 
