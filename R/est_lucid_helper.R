@@ -15,8 +15,19 @@
 #'
 #' @return
 #'
-Estep <- function(beta, mu, sigma, gamma,
-                  G, Z, Y = NULL, family.list, K, N, useY, ind.na, ...) {
+Estep <- function(beta, 
+                  mu, 
+                  sigma, 
+                  gamma = NULL,
+                  G, 
+                  Z, 
+                  Y = NULL, 
+                  family.list, 
+                  K, 
+                  N, 
+                  useY, 
+                  ind.na, ...) {
+  # initialize vectors for storing likelihood
   pXgG <- pZgX <- pYgX <- matrix(rep(1, N * K), nrow = N)
   
   # log-likelihood for G -> X
