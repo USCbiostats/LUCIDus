@@ -293,7 +293,9 @@ est.lucid <- function(G,
       
       
       # 2.5 control step ====
-      check.value <- all(is.finite(new.beta), is.finite(unlist(new.mu.sigma)), check.gamma)
+      check.value <- all(is.finite(new.beta), 
+                         is.finite(unlist(new.mu.sigma)), 
+                         check.gamma)
       singular <- try(sapply(1:K, function(x) return(solve(new.mu.sigma$sigma[, , x]))))
       check.singular <- "try-error" %in% class(singular)
       if(!check.value || check.singular){
@@ -307,7 +309,7 @@ est.lucid <- function(G,
           res.gamma <- new.gamma
         }
 
-        new.loglik <- sum(log(rowSums(exp(new.likelihood))))
+        new.loglik <- sum(rowSums(res.r * new.likelihood))
 
         if(tune$Select_G) {
           new.loglik <- new.loglik - tune$Rho_G * sum(abs(res.beta))
@@ -337,15 +339,21 @@ est.lucid <- function(G,
                           mu = res.mu, 
                           sigma = res.sigma, 
                           gamma = res.gamma,
-                          G = G, Z = Z, Y = Y, 
+                          G = G, 
+                          Z = Z, 
+                          Y = Y, 
                           family.list = family.list, 
-                          itr = itr, CoY = CoY, N = N, K = K, 
-                          dimCoY = dimCoY, useY = useY, 
+                          itr = itr, 
+                          CoY = CoY, 
+                          N = N, 
+                          K = K, 
+                          dimCoY = dimCoY, 
+                          useY = useY, 
                           ind.na = na_pattern$indicator_na)
   res.r <- t(apply(res.likelihood, 1, lse_vec))
   
 
-  res.loglik <- sum(log(rowSums(exp(res.likelihood))))
+  res.loglik <- sum(rowSums(res.r * res.likelihood))
 
   if(tune$Select_G) {
     res.loglik <- res.loglik - tune$Rho_G * sum(abs(res.beta))
