@@ -42,7 +42,7 @@ def.tune <- function(Rho_G = 0,
   }
   
   if(Select_G) {
-    Rho_G == Rho_G
+    Rho_G = Rho_G
   }
   if(Select_Z) {
     Rho_Z_InvCov = Rho_Z_InvCov
