@@ -2,7 +2,7 @@
 normal <- function(K, ...){
   # initialize EM
   initial.gamma <- function(K, dimCoY){
-    structure(list(beta = runif(K + dimCoY),
+    structure(list(beta = runif(K + dimCoY, min = -1, max = 1),
                    sigma = runif(K)))
   }
   # likelihood function pYgX
