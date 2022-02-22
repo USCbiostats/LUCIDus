@@ -28,11 +28,12 @@ Estep <- function(beta,
                   useY, 
                   ind.na, ...) {
   # initialize vectors for storing likelihood
-  pXgG <- pZgX <- pYgX <- matrix(rep(1, N * K), nrow = N)
+  pXgG <- pZgX <- pYgX <- matrix(rep(0, N * K), nrow = N)
   
   # log-likelihood for G -> X
   xb <- cbind(rep(1, N), G) %*% t(beta)
-  pXgG <- log(t(apply(xb, 1, lse_vec)))
+  xb_lse <- apply(xb, 1, lse)
+  pXgG <- xb - xb_lse
   
   # log-likelihood for X -> Z
   for (i in 1:K) {
@@ -142,12 +143,18 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
 }
 
 
-#' use the log-sum-exponential trick to avoid over/underflow
+#' calculate the log-sum-exp
+#' @param vec  a vector of length K
+lse <- function(vec) {
+  c <- max(vec)
+  return(c + log(sum(exp(vec - c))))
+}
+
+#' use the log-sum-exp trick to normalize a vector
 #' @param vec  a vector of length K
 lse_vec <- function(vec) {
-  c <- max(vec)
-  lse <- log(sum(exp(vec - c)))
-  return(exp(vec - c - lse))
+  norm_vec <- exp(vec - lse(vec))
+  return(norm_vec)
 }
 
 
