@@ -10,8 +10,6 @@
 #' @param K The number of latent clusters. An integer greater or equal to 2. You can use \code{\link{tune.lucid}} to determine the optimal number of latent clusters.
 #' @param family Distribution of outcome Y. Currently accepted distributions are "normal" and "binary".
 #' @param useY Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.
-#' @param control A list of tolerance parameters used by EM algorithm. See \code{\link{def.control}}.
-#' @param tune A list of tuning parameters used by variable selection procedure. See \code{\link{def.tune}}
 #' @param modelName The variance-covariance structure for omics data. See \code{\link{mclustModelNames}} for details.
 #' @param seed An integer to initialize the EM algorithm
 #' @param init_impute Method to initialize the imputation of missing values in 
@@ -19,7 +17,6 @@
 #' General Location Model from the \code{mix} package to impute the missing
 #' values in omics data 'Z'; \code{lod} will initialize the imputation through 
 #' replacing missing values by LOD / sqrt(2)
-#' 
 #' 
 #' 
 #' @return A list which contains the several features of LUCID, including:
@@ -40,6 +37,8 @@
 #' @author Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
 #' @references
 #' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
+#' 
+#' 
 #' @examples
 #' \dontrun{
 #' set.seed(10)
@@ -58,8 +57,12 @@ est.lucid <- function(G,
                       K = 2, 
                       family = c("normal", "binary"), 
                       useY = TRUE, 
-                      control = def.control(), 
-                      tune = def.tune(), 
+                      tol = 1e-3,
+                      max_itr = 1e3,
+                      max_tot.itr = 1e4,
+                      Rho_G = 0,
+                      Rho_Z_Mu = 0,
+                      Rho_Z_Cov = 0, 
                       modelName = NULL,
                       seed = 123,
                       init_impute = c("mclust", "lod")) {
@@ -67,6 +70,15 @@ est.lucid <- function(G,
   # 1. basic setup for estimation function =============
   family <- match.arg(family)
   init_impute <- match.arg(init_impute)
+  Select_G <- FALSE
+  Select_Z <- FALSE
+  if(Rho_G != 0) {
+    Select_G <- TRUE
+  }
+  if(Rho_Z_Mu != 0 | Rho_Z_Cov != 0) {
+    Select_Z <- TRUE
+  }
+  
   
   ## 1.1 check data format ====
   if(is.null(G)) {
@@ -189,7 +201,7 @@ est.lucid <- function(G,
   # 2. EM algorithm for LUCID ================
   tot.itr <- 0
   convergence <- FALSE
-  while(!convergence && tot.itr <= control$max_tot.itr) {
+  while(!convergence && tot.itr <= max_tot.itr) {
     if(tot.itr > 0) {
       seed <- seed + 10
     }
@@ -221,7 +233,7 @@ est.lucid <- function(G,
     # start EM algorithm 
     res.loglik <- -Inf
     itr <- 0
-    while(!convergence && itr <= control$max_itr){
+    while(!convergence && itr <= max_itr){
       itr <- itr + 1
       tot.itr <- tot.itr + 1
       check.gamma <-  TRUE
@@ -258,16 +270,16 @@ est.lucid <- function(G,
       # update model parameters to maximize the expected likelihood
       invisible(capture.output(new.beta <- Mstep_G(G = G, 
                                                    r = res.r, 
-                                                   selectG = tune$Select_G, 
-                                                   penalty = tune$Rho_G, 
+                                                   selectG = Select_G, 
+                                                   penalty = Rho_G, 
                                                    dimG = dimG, 
                                                    dimCoG = dimCoG,
                                                    K = K)))
       new.mu.sigma <- Mstep_Z(Z = Z, 
                               r = res.r, 
-                              selectZ = tune$Select_Z, 
-                              penalty.mu = tune$Rho_Z_CovMu, 
-                              penalty.cov = tune$Rho_Z_InvCov,
+                              selectZ = Select_Z, 
+                              penalty.mu = Rho_Z_Mu, 
+                              penalty.cov = Rho_Z_Cov,
                               model.name = model.best, 
                               K = K, 
                               ind.na = na_pattern$indicator_na, 
@@ -311,18 +323,18 @@ est.lucid <- function(G,
 
         new.loglik <- sum(rowSums(res.r * new.likelihood))
 
-        if(tune$Select_G) {
-          new.loglik <- new.loglik - tune$Rho_G * sum(abs(res.beta))
+        if(Select_G) {
+          new.loglik <- new.loglik - Rho_G * sum(abs(res.beta))
         }
-        if(tune$Select_Z) {
-          new.loglik <- new.loglik - tune$Rho_Z_CovMu * sum(abs(res.mu)) - tune$Rho_Z_InvCov * sum(abs(res.sigma))
+        if(Select_Z) {
+          new.loglik <- new.loglik - Rho_Z_Mu * sum(abs(res.mu)) - Rho_Z_Cov * sum(abs(res.sigma))
         }
-        if(tune$Select_G | tune$Select_Z) {
+        if(Select_G | Select_Z) {
           cat("iteration", itr,": M-step finished, ", "penalized loglike = ", sprintf("%.3f", new.loglik), "\n")
         } else{
           cat("iteration", itr,": M-step finished, ", "loglike = ", sprintf("%.3f", new.loglik), "\n")
         }
-        if(abs(res.loglik - new.loglik) < control$tol){
+        if(abs(res.loglik - new.loglik) < tol){
           convergence <- TRUE
           cat("Success: LUCID converges!", "\n")
         }
@@ -355,23 +367,23 @@ est.lucid <- function(G,
 
   res.loglik <- sum(rowSums(res.r * res.likelihood))
 
-  if(tune$Select_G) {
-    res.loglik <- res.loglik - tune$Rho_G * sum(abs(res.beta))
+  if(Select_G) {
+    res.loglik <- res.loglik - Rho_G * sum(abs(res.beta))
   }
-  if(tune$Select_Z) {
-    res.loglik <- res.loglik - tune$Rho_Z_CovMu * sum(abs(res.mu)) - tune$Rho_Z_InvCov * sum(abs(res.sigma))
+  if(Select_Z) {
+    res.loglik <- res.loglik - Rho_Z_Mu * sum(abs(res.mu)) - Rho_Z_Cov * sum(abs(res.sigma))
   }
   pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)
   colnames(pars$mu) <- Znames
-  if(tune$Select_G == TRUE){
+  if(Select_G){
     tt1 <- apply(pars$beta[, -1], 2, range)
     selectG <- abs(tt1[2, ] - tt1[1, ]) > 0.001
   } else{
     selectG <- rep(TRUE, dimG)
   }
-  if(tune$Select_Z == TRUE){
+  if(Select_Z){
     tt2 <- apply(pars$mu, 2, range)
     selectZ <- abs(tt2[2, ] - tt2[1, ]) > 0.001
   } else{
@@ -389,8 +401,6 @@ est.lucid <- function(G,
                   likelihood = res.loglik,
                   post.p = res.r, 
                   family = family,
-                  par.control = control, 
-                  par.tune = tune, 
                   select = list(selectG = selectG, selectZ = selectZ), 
                   useY = useY,
                   Z = Z)

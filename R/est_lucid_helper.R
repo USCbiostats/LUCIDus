@@ -67,6 +67,9 @@ Estep <- function(beta,
 Mstep_G <- function(G, r, selectG, penalty, dimG, dimCoG, K) {
   new.beta <- matrix(rep(0, K * (dimG + dimCoG + 1)), nrow = K)
   if(selectG){
+    if(dimG < 2) {
+      stop("At least 2 exposure variables are needed to conduct variable selection")
+    }
     tryLasso <- try(glmnet(as.matrix(G), 
                            as.matrix(r), 
                            family = "multinomial", 
@@ -122,7 +125,12 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
       else{
         new_sigma[, , k] <- l_cov$w
         # function to calculate mean
-        new_mu[k, ] <- est.mu(j = k, rho = penalty.mu, z = dz, r = dr, mu = mu[k, ], wi = l_cov$wi)
+        new_mu[k, ] <- est.mu(j = k, 
+                              rho = penalty.mu, 
+                              z = dz, 
+                              r = dr, 
+                              mu = mu[k, ], 
+                              wi = l_cov$wi)
       }
       k <- k + 1
     }
