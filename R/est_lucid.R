@@ -65,11 +65,13 @@ est.lucid <- function(G,
                       Rho_Z_Cov = 0, 
                       modelName = NULL,
                       seed = 123,
-                      init_impute = c("mclust", "lod")) {
+                      init_impute = c("mclust", "lod"),
+                      init_par = c("mclust", "random")) {
   
   # 1. basic setup for estimation function =============
   family <- match.arg(family)
   init_impute <- match.arg(init_impute)
+  init_par <- match.arg(init_par)
   Select_G <- FALSE
   Select_Z <- FALSE
   if(Rho_G != 0) {
@@ -186,7 +188,7 @@ est.lucid <- function(G,
     # initialize imputation
     if(init_impute == "mclust") {
       cat("Intializing imputation of missing values in 'Z' via the mix package \n\n")
-      invisible(capture.output(Z <- mclust::imputeData(Z)))
+      invisible(capture.output(Z <- mclust::imputeData(Z, seed = seed)))
       Z[na_pattern$indicator_na == 3, ] <- NA  
     }
     if(init_impute == "lod") {
@@ -208,23 +210,38 @@ est.lucid <- function(G,
     set.seed(seed)
     
     ## 2.1 initialize model parameters ====
-    cat("Initialize LUCID with mclust \n\n")
     
     # initialize beta 
     res.beta <- matrix(data = runif(K * (dimG + dimCoG + 1)), nrow = K) 
     res.beta[1, ] <- 0
     
-    # initialize GMM parameters mu and sigma 
-    invisible(capture.output(mclust.fit <- Mclust(Z[na_pattern$indicator_na != 3, ], 
-                                                  G = K,
-                                                  modelNames = modelName)))
-    if(is.null(modelName)){
-      model.best <- mclust.fit$modelName
-    } else{
-      model.best <- modelName
+    # initialize mu and sigma
+    # initialize by mclust
+    if(init_par == "mclust") {
+      cat("Initialize LUCID with mclust \n\n")
+      invisible(capture.output(mclust.fit <- Mclust(Z[na_pattern$indicator_na != 3, ], 
+                                                    G = K,
+                                                    modelNames = modelName)))
+      if(is.null(modelName)){
+        model.best <- mclust.fit$modelName
+      } else{
+        model.best <- modelName
+      }
+      res.mu <- t(mclust.fit$parameters$mean)
+      res.sigma <- mclust.fit$parameters$variance$sigma
+    } else { # initialize by random guess
+      cat("Initialize LUCID with random values from uniform distribution \n\n")
+      if(is.null(modelName)){
+        model.best <- "EII"
+        warning("GMM model for LUCID is not specified, 'EII' model is used by default")
+      } else{
+        model.best <- modelName
+      }
+      res.mu <- matrix(runif(dimZ * K, min = -0.5, max = 0.5),
+                       nrow = K)
+      
+      res.sigma <- gen_cov_matrices(dimZ = dimZ, K = K)
     }
-    res.mu <- t(mclust.fit$parameters$mean)
-    res.sigma <- mclust.fit$parameters$variance$sigma
     
     # initialize family specific parameters gamma
     res.gamma <- family.list$initial.gamma(K, dimCoY)

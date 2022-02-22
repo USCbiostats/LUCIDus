@@ -1,3 +1,15 @@
+gen_cov_matrices <- function(dimZ, K) {
+  x <- matrix(runif(dimZ^2, min = -0.5, max = 0.5), nrow = dimZ)
+  x_sym <- t(x) %*% x
+  res <- array(rep(0, dimZ^2 * K), dim = c(dimZ, dimZ, K))
+  for(i in 1:K) {
+    res[, , i] <- x_sym
+  }
+  return(res)
+}
+
+
+
 #' Calculate the log-likelihood of cluster assignment for each observation
 #'
 #' @param beta 
@@ -125,7 +137,7 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
       else{
         new_sigma[, , k] <- l_cov$w
         # function to calculate mean
-        new_mu[k, ] <- est.mu(j = k, 
+        new_mu[k, ] <- est_mu(j = k, 
                               rho = penalty.mu, 
                               z = dz, 
                               r = dr, 
@@ -168,7 +180,7 @@ lse_vec <- function(vec) {
 #' @param mu 
 #' @param wi 
 #'
-est.mu <- function(j, rho, z, r, mu, wi){
+est_mu <- function(j, rho, z, r, mu, wi){
   p <- ncol(z)
   res.mu <- rep(0, p)
   mu1 <- sapply(1:p, function(x){

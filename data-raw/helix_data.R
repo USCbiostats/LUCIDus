@@ -70,3 +70,6 @@ covariate <- full_dat[, 20:24]
 serum_metab <- full_dat[, 27:203]
 urine_metab <- full_dat[, 204:247]
 protein <- full_dat[, 248:283]
+
+
+
