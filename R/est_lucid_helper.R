@@ -51,7 +51,7 @@ Estep <- function(beta,
   for (i in 1:K) {
     pZgX[ind.na != 3, i] <- mclust::dmvnorm(data = Z[ind.na != 3, ], 
                                             mean = mu[i,], 
-                                            sigma = round(sigma[, , i], 9), 
+                                            sigma = sigma[, , i], 
                                             log = TRUE)
   }
   
@@ -60,8 +60,8 @@ Estep <- function(beta,
     pYgX <- family.list$f.pYgX(Y, gamma, K = K, N = N, ...)
   }
   
-  loglik <- pXgG + pZgX + pYgX
-  return (loglik)
+  vec <- pXgG + pZgX + pYgX
+  return (vec)
 }
 
 
