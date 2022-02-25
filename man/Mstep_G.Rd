@@ -2,23 +2,10 @@
 % Please edit documentation in R/est_lucid_helper.R
 \name{Mstep_G}
 \alias{Mstep_G}
-\title{Estiamte the association between exposure and latent cluster}
+\title{M-step to estimate the association between exposure and latent cluster}
 \usage{
 Mstep_G(G, r, selectG, penalty, dimG, dimCoG, K)
 }
-\arguments{
-\item{G}{}
-
-\item{r}{}
-
-\item{selectG}{}
-
-\item{penalty}{}
-
-\item{dimG}{}
-
-\item{K}{}
-}
 \description{
-Estiamte the association between exposure and latent cluster
+M-step to estimate the association between exposure and latent cluster
 }

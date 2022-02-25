@@ -1,4 +1,10 @@
 #' Check missing patterns in omics data Z
+#' @return 
+#' index - indeces for missing values in omics data
+#' indicator_na - missing pattern for each observation
+#' impute_flag - flag to initialize imputation. Only happens when sporadic missing
+#' pattern is observed
+#' 
 check_na <- function(Z){
   N <- nrow(Z)
   M <- ncol(Z)
@@ -19,13 +25,6 @@ check_na <- function(Z){
 
 
 #' I-step of LUCID: impute missing data in Z by maximizing the likelihood
-#'
-#' @param Z 
-#' @param r 
-#' @param mu
-#' @param sigma
-#' @param index
-#'
 #' @return a complete dataset of Z
 #' 
 Istep_Z <- function(Z, p, mu, sigma, index){
@@ -47,6 +46,7 @@ Istep_Z <- function(Z, p, mu, sigma, index){
 #' or not in the raw data
 #'
 #' @return an observation with updated imputed value
+#' 
 fill_data <- function(obs, mu, sigma, p, index) {
   mu <- t(mu)
   M <- length(obs)
@@ -74,6 +74,7 @@ fill_data <- function(obs, mu, sigma, p, index) {
 }
 
 #' Calculate the first half of the imputed values
+#' 
 fill_data_help1 <- function(obs, B, mu, alpha, sigma_inv, P) {
   K <- ncol(mu)
   l <- length(B)
@@ -86,6 +87,7 @@ fill_data_help1 <- function(obs, B, mu, alpha, sigma_inv, P) {
 
 
 #' Calcualte the second half of the imputed values
+#' 
 fill_data_help2 <- function(obs, A, B, mu, alpha, sigma_inv, P) {
   K <- ncol(mu)
   l <- length(B)
@@ -102,6 +104,7 @@ fill_data_help2 <- function(obs, A, B, mu, alpha, sigma_inv, P) {
 }
 
 #' impute missing values in Z by LOD
+#' 
 fill_data_lod <- function(Z_vec) {
   na_ind <- is.na(Z_vec)
   if(any(na_ind)) {

@@ -2,29 +2,10 @@
 % Please edit documentation in R/est_lucid_helper.R
 \name{Mstep_Z}
 \alias{Mstep_Z}
-\title{Estimate the mean and variance-covariance structure of GMM part of LUCID}
+\title{M-step to estimate the parameters related to GMM for omics data}
 \usage{
 Mstep_Z(Z, r, selectZ, penalty.mu, penalty.cov, model.name, K, ind.na, mu)
 }
-\arguments{
-\item{Z}{}
-
-\item{r}{}
-
-\item{selectZ}{}
-
-\item{penalty.mu}{}
-
-\item{penalty.cov}{}
-
-\item{model.name}{}
-
-\item{K}{}
-
-\item{ind.na}{}
-
-\item{mu}{}
-}
 \description{
-Estimate the mean and variance-covariance structure of GMM part of LUCID
+M-step to estimate the parameters related to GMM for omics data
 }

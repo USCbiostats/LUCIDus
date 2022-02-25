@@ -6,6 +6,12 @@
 \usage{
 check_na(Z)
 }
+\value{
+index - indeces for missing values in omics data
+indicator_na - missing pattern for each observation
+impute_flag - flag to initialize imputation. Only happens when sporadic missing
+pattern is observed
+}
 \description{
 Check missing patterns in omics data Z
 }

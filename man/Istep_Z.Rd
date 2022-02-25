@@ -6,13 +6,6 @@
 \usage{
 Istep_Z(Z, p, mu, sigma, index)
 }
-\arguments{
-\item{Z}{}
-
-\item{index}{}
-
-\item{r}{}
-}
 \value{
 a complete dataset of Z
 }

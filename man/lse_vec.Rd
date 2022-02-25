@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_lucid_helper.R
 \name{lse_vec}
 \alias{lse_vec}
-\title{use the log-sum-exp trick to normalize a vector}
+\title{use the log-sum-exp trick to normalize a vector to probability}
 \usage{
 lse_vec(vec)
 }
@@ -10,5 +10,5 @@ lse_vec(vec)
 \item{vec}{a vector of length K}
 }
 \description{
-use the log-sum-exp trick to normalize a vector
+use the log-sum-exp trick to normalize a vector to probability
 }
