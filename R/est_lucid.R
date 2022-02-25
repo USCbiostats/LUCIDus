@@ -63,7 +63,7 @@ est.lucid <- function(G,
                       Rho_G = 0,
                       Rho_Z_Mu = 0,
                       Rho_Z_Cov = 0, 
-                      modelName = NULL,
+                      modelName = "VVV",
                       seed = 123,
                       init_impute = c("mclust", "lod"),
                       init_par = c("mclust", "random")) {
@@ -232,8 +232,8 @@ est.lucid <- function(G,
     } else { # initialize by random guess
       cat("Initialize LUCID with random values from uniform distribution \n\n")
       if(is.null(modelName)){
-        model.best <- "EII"
-        warning("GMM model for LUCID is not specified, 'EII' model is used by default")
+        model.best <- "VVV"
+        warning("GMM model for LUCID is not specified, 'VVV' model is used by default")
       } else{
         model.best <- modelName
       }
