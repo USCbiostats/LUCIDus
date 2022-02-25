@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_lucid_helper.R
 \name{lse_vec}
 \alias{lse_vec}
-\title{use the log-sum-exponential trick to avoid over/underflow}
+\title{use the log-sum-exp trick to normalize a vector}
 \usage{
 lse_vec(vec)
 }
@@ -10,5 +10,5 @@ lse_vec(vec)
 \item{vec}{a vector of length K}
 }
 \description{
-use the log-sum-exponential trick to avoid over/underflow
+use the log-sum-exp trick to normalize a vector
 }

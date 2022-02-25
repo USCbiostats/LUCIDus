@@ -4,18 +4,18 @@
 \alias{predict.lucid}
 \title{Predict the outcome based on a fitted LUCID model}
 \usage{
-\method{predict}{lucid}(object, newG, newZ, newCoG = NULL, newCoY = NULL, response = TRUE, ...)
+\method{predict}{lucid}(model, G, Z, CoG = NULL, CoY = NULL, response = TRUE, ...)
 }
 \arguments{
-\item{object}{A model fitted and returned by \code{\link{est.lucid}}}
+\item{model}{A model fitted and returned by \code{\link{est.lucid}}}
 
-\item{newG}{A new data set of genetic/environmental factors}
+\item{G}{A new data set of genetic/environmental factors}
 
-\item{newZ}{A new data set of biomarkers}
+\item{Z}{A new data set of biomarkers}
 
-\item{newCoG}{Optional. A new data set of covariates included in the G->X analysis}
+\item{CoG}{Optional. A new data set of covariates included in the G->X analysis}
 
-\item{newCoY}{Optional. A new data set of covariates included in the X->Y analysis}
+\item{CoY}{Optional. A new data set of covariates included in the X->Y analysis}
 
 \item{response}{Report the posterior distribution of cluster assignment (and the probability of binary outcome), default is TRUE}
 
@@ -31,6 +31,6 @@ Predict the outcome based on a fitted LUCID model
 \dontrun{
 index <- sample(1:2000, 200)
 fit <- est.lucid(G = sim1[-index, 1:10], Z = sim1[-index, 11:20], Y = as.matrix(sim1[-index, 21]))
-pred <- predict(object = fit, newG = sim1[index, 1:10], newZ = sim1[index, 11:20])
+pred <- predict(model = fit, newG = sim1[index, 1:10], newZ = sim1[index, 11:20])
 }
 }
