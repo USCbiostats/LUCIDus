@@ -1,3 +1,4 @@
+#' Use uniform distributon to initialzie variance covariance matrices
 gen_cov_matrices <- function(dimZ, K) {
   x <- matrix(runif(dimZ^2, min = -0.5, max = 0.5), nrow = dimZ)
   x_sym <- t(x) %*% x
@@ -11,22 +12,6 @@ gen_cov_matrices <- function(dimZ, K) {
 
 
 #' Calculate the log-likelihood of cluster assignment for each observation
-#'
-#' @param beta 
-#' @param mu 
-#' @param sigma 
-#' @param gamma 
-#' @param G 
-#' @param Z 
-#' @param Y 
-#' @param family.list 
-#' @param K 
-#' @param N 
-#' @param useY 
-#' @param ind.na 
-#'
-#' @return
-#'
 Estep <- function(beta, 
                   mu, 
                   sigma, 
@@ -68,15 +53,7 @@ Estep <- function(beta,
 
 
 
-#' Estiamte the association between exposure and latent cluster
-#'
-#' @param G 
-#' @param r 
-#' @param selectG 
-#' @param penalty 
-#' @param dimG 
-#' @param K 
-#'
+#' M-step to estimate the association between exposure and latent cluster
 Mstep_G <- function(G, r, selectG, penalty, dimG, dimCoG, K) {
   new.beta <- matrix(rep(0, K * (dimG + dimCoG + 1)), nrow = K)
   if(selectG){
@@ -104,18 +81,8 @@ Mstep_G <- function(G, r, selectG, penalty, dimG, dimCoG, K) {
 }
 
 
-#' Estimate the mean and variance-covariance structure of GMM part of LUCID
-#'
-#' @param Z 
-#' @param r 
-#' @param selectZ 
-#' @param penalty.mu 
-#' @param penalty.cov 
-#' @param model.name 
-#' @param K 
-#' @param ind.na 
-#' @param mu 
-#'
+
+#' M-step to estimate the parameters related to GMM for omics data
 Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
                     model.name, K, ind.na, mu) {
   dz <- Z[ind.na != 3, ]
@@ -164,13 +131,12 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
 
 
 #' calculate the log-sum-exp
-#' @param vec  a vector of length K
 lse <- function(vec) {
   c <- max(vec)
   return(c + log(sum(exp(vec - c))))
 }
 
-#' use the log-sum-exp trick to normalize a vector
+#' use the log-sum-exp trick to normalize a vector to probability
 #' @param vec  a vector of length K
 lse_vec <- function(vec) {
   norm_vec <- exp(vec - lse(vec))
@@ -178,15 +144,7 @@ lse_vec <- function(vec) {
 }
 
 
-#' estimate the penalized mean in M-step Z
-#'
-#' @param j 
-#' @param rho 
-#' @param z 
-#' @param r 
-#' @param mu 
-#' @param wi 
-#'
+#' M-step: obtain sparse mean for omics data via LASSO penalty
 est_mu <- function(j, rho, z, r, mu, wi){
   p <- ncol(z)
   res.mu <- rep(0, p)
