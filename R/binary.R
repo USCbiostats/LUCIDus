@@ -46,8 +46,8 @@ binary <- function(K, ...){
     for (i in 1:K) {
       var[[i]] <- sigma[, , i]
     }
-    ref <- gamma$beta[1:K][index == 1]
-    gamma$beta[1:K] <- (gamma$beta[1:K] - ref)[index]
+    # ref <- gamma$beta[1:K][index == 1]
+    gamma$beta[1:K] <- gamma$beta[1:K][index]
     names(gamma$beta)[1:K] <- c("LC1(reference)", paste0("LC", 2:K))
     return(structure(list(beta = beta, 
                           mu = mu,

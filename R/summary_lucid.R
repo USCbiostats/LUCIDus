@@ -73,15 +73,15 @@ print.sumlucid <- function(x, ...){
               binary = f.binary)
   y(x$gamma, K, se = x$boot.se$gamma)
   cat("\n")
-  cat("(2) Z: estimates of biomarker means for each latent cluster \n")
+  cat("(2) Z: mean of omics data for each latent cluster \n")
   if(is.null(x$boot.se)){
-    colnames(z.mean) <- paste0("cluster", 1:K)
+    colnames(z.mean) <- paste0("mu_cluster", 1:K)
     print(z.mean)
   } else{
     print(x$boot.se$mu)
   }
   cat("\n")
-  cat("(3) E: the odds ratio of being assigned to each latent cluster for each exposure \n")
+  cat("(3) E: odds ratio of being assigned to each latent cluster for each exposure \n")
   dd <- as.matrix(as.data.frame(beta)[2:K, 2:ncol(beta)])
   g.or <- data.frame(beta = unlist(split(dd, row(dd))))
   rownames(g.or) <- paste0(colnames(beta)[-1], ".cluster", sapply(2:K, function(x) return(rep(x, dim1))))
@@ -99,7 +99,7 @@ print.sumlucid <- function(x, ...){
 # summarize output of normal outcome
 f.normal <- function(x, K, se){
   gamma <- x$beta
-  cat("(1) Y (normal outcome): the mean of Y for each latent cluster and covariates effect \n")
+  cat("(1) Y (normal outcome): the mean of Y for each latent cluster (covariates) \n")
   y <- as.data.frame(gamma)
   row.names(y)[1:K] <- paste0("cluster", 1:K)
   colnames(y) <- "beta"
@@ -112,11 +112,11 @@ f.normal <- function(x, K, se){
 
 # summarize output of binary outcome
 f.binary <- function(x, K, se){
-  cat("(1) Y (binary outcome): log odds (reference) and log odds ratio of Y for latent cluster (covariate)\n")
+  cat("(1) Y (binary outcome): odds (reference) and odds ratio of Y for each latent cluster (covariate)\n")
   gamma <- as.data.frame(x$beta)
-  colnames(gamma) <- "Original"
+  colnames(gamma) <- "gamma"
   if(is.null(se)){
-    gamma$Exp <- exp(gamma$Original)
+    gamma$OR <- exp(gamma$gamma)
   } else{
     gamma <- cbind(gamma, se[, 2:4], OR = exp(gamma[, 1]), OR.L = exp(se[, 3]), OR.U = exp(se[, 4]))
   }

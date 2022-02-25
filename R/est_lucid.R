@@ -63,7 +63,7 @@ est.lucid <- function(G,
                       Rho_G = 0,
                       Rho_Z_Mu = 0,
                       Rho_Z_Cov = 0, 
-                      modelName = NULL,
+                      modelName = "VVV",
                       seed = 123,
                       init_impute = c("mclust", "lod"),
                       init_par = c("mclust", "random")) {
