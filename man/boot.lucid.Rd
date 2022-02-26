@@ -2,7 +2,7 @@
 % Please edit documentation in R/boot_lucid.R
 \name{boot.lucid}
 \alias{boot.lucid}
-\title{Bootstrap method of inference for LUCID}
+\title{Inference of LUCID model based on bootstrap resampling}
 \usage{
 boot.lucid(
   G,
@@ -11,54 +11,74 @@ boot.lucid(
   CoG = NULL,
   CoY = NULL,
   model,
+  conf = 0.95,
   R = 100,
-  n = detectCores(),
-  Zdiff = FALSE
+  ncpus = detectCores() - 1
 )
 }
 \arguments{
-\item{G}{Genetic features/environmental exposures, a \code{\link{matrix}}.}
+\item{G}{Exposures, a numeric vector, matrix, or data frame. Categorical variable 
+should be transformed into dummy variables. If a matrix or data frame, rows 
+represent observations and columns correspond to variables.}
 
-\item{Z}{Biomarkers/other omics data, a \code{\link{matrix}}.}
+\item{Z}{Omics data, a numeric matrix or data frame. Rows correspond to observations
+and columns correspond to variables.}
 
-\item{Y}{Disease outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.}
+\item{Y}{Outcome, a numeric vector. Categorical variable is not allowed. Binary 
+outcome should be coded as 0 and 1.}
 
-\item{CoG}{Optional, matrix. Covariates to be adjusted for estimating the latent cluster.}
+\item{CoG}{Optional, covariates to be adjusted for estimating the latent cluster.
+A numeric vector, matrix or data frame. Categorical variable should be transformed 
+into dummy variables.}
 
-\item{CoY}{Optional, matrix. Covariates to be adjusted for estimating the outcome.}
+\item{CoY}{Optional, covariates to be adjusted for estimating the association 
+between latent cluster and the outcome. A numeric vector, matrix or data frame. 
+Categorical variable should be transformed into dummy variables.}
 
-\item{model}{A LUCID model fitted by \code{\link{est.lucid}}.}
+\item{model}{A LUCID model fitted by \code{est.lucid}.}
 
-\item{R}{Number of bootstrap iterations.}
+\item{conf}{A numeric scalar between 0 and 1 to specify confidence level(s) 
+of the required interval(s).}
 
-\item{n}{Number of CPU cores to be used in the bootstrap}
+\item{R}{An integer to specify number of bootstrap replicates for LUCID model.
+If feasible, it is recommended to set R > 1000. However, the convergence speed 
+of LUCID varies greatly depending on data. If it takes very long time to run
+1000 replicates, it is recommend to set smaller values for R, such as 200.}
 
-\item{Zdiff}{Whether conduct inference based on the range of Z or not. Default is FALSE.}
+\item{ncpus}{Integer, number of processors to be used in parallel computation.}
 }
 \value{
-A list of estimates with their 95 percent CI.
+A list, containing the following components:
+\item{beta}{effect estimate for each exposure}
+\item{mu}{cluster-specific mean for each omics feature}
+\item{gamma}{effect estiamte for the association btween latent cluster and 
+outcome}
+\item{bootstrap}{The \code{boot} object returned by \code{boot:boot}}
 }
 \description{
-This function provides SEs of parameter estimates from a LUCID model through bootstrap method.
+Generate \code{R} bootstrap replicates of LUCID parameters and 
+derive confidence interval (CI) base on bootstrap. Bootstrap replicates are 
+generated based on nonparameteric resampling, implemented by \code{ordinary} 
+method of code{boot::boot} function.
 }
 \examples{
 \dontrun{
-fit1 <- est.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]), 
-K = 2, family = "binary")
-chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-if (nzchar(chk) && chk == "TRUE") {
- # use 2 cores in CRAN/Travis/AppVeyor
- num_workers <- 2L
-} else {
- num_workers <- parallel::detectCores()
+# use simulated data
+G <- sim_data$G
+Z <- sim_data$Z
+Y_normal <- sim_data$Y_normal
+
+# fit lucid model
+fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
+seed = 1008)
+
+# conduct bootstrap resampling
+boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
+
+# check distribution for bootstrap replicates of the variable of interest
+plot(boot1$bootstrap, 1)
+
+# use 90\% CI
+boot2 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100, conf = 0.9)
 }
-boot1 <- boot.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]),
- model = fit1, R = 100, n = num_workers)
-}
-}
-\references{
-Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
-}
-\author{
-Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
 }

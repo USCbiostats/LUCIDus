@@ -117,6 +117,15 @@
 #' # fit LUCID model with covariates
 #' fit6 <- est.lucid(G = G, Z = Z, Y = Y_binary, CoY = cov, family = "binary", 
 #' K = 2, seed = 1008)
+#' 
+#' # use LUCID model to conduct integrated variable selection
+#' # select exposure
+#' fit6 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
+#' K = 2, seed = 1008, Rho_G = 0.1)
+#' # select omics data
+#' fit7 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal",
+#' K = 2, seed = 1008, Rho_Z_Mu = 90, Rho_Z_Cov = 0.1, init_par = "random")
+#' 
 #' }
 est.lucid <- function(G, 
                       Z, 
