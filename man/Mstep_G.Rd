@@ -4,7 +4,7 @@
 \alias{Mstep_G}
 \title{Estiamte the association between exposure and latent cluster}
 \usage{
-Mstep_G(G, r, selectG, penalty, dimG, K)
+Mstep_G(G, r, selectG, penalty, dimG, dimCoG, K)
 }
 \arguments{
 \item{G}{}

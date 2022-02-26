@@ -8,7 +8,7 @@ Estep(
   beta,
   mu,
   sigma,
-  gamma,
+  gamma = NULL,
   G,
   Z,
   Y = NULL,

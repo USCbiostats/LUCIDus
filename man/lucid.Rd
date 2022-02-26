@@ -14,10 +14,9 @@ lucid(
   useY = TRUE,
   K = 2:5,
   Rho_G = 0,
-  Rho_Z_InvCov = 0,
-  Rho_Z_CovMu = 0,
-  CV = 5,
-  tol = 0.001
+  Rho_Z_Mu = 0,
+  Rho_Z_Cov = 0,
+  ...
 )
 }
 \arguments{

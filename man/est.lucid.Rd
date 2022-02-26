@@ -13,11 +13,16 @@ est.lucid(
   K = 2,
   family = c("normal", "binary"),
   useY = TRUE,
-  control = def.control(),
-  tune = def.tune(),
-  modelName = NULL,
+  tol = 0.001,
+  max_itr = 1000,
+  max_tot.itr = 10000,
+  Rho_G = 0,
+  Rho_Z_Mu = 0,
+  Rho_Z_Cov = 0,
+  modelName = "VVV",
   seed = 123,
-  init_impute = c("mclust", "lod")
+  init_impute = c("mclust", "lod"),
+  init_par = c("mclust", "random")
 )
 }
 \arguments{
@@ -36,10 +41,6 @@ est.lucid(
 \item{family}{Distribution of outcome Y. Currently accepted distributions are "normal" and "binary".}
 
 \item{useY}{Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.}
-
-\item{control}{A list of tolerance parameters used by EM algorithm. See \code{\link{def.control}}.}
-
-\item{tune}{A list of tuning parameters used by variable selection procedure. See \code{\link{def.tune}}}
 
 \item{modelName}{The variance-covariance structure for omics data. See \code{\link{mclustModelNames}} for details.}
 
