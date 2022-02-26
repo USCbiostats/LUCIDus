@@ -2,7 +2,7 @@
 % Please edit documentation in R/lucid.R
 \name{lucid}
 \alias{lucid}
-\title{A wrapper to estimate latent unknown clusters with multi-omics data}
+\title{A wrapper function to perform model selection for LUCID}
 \usage{
 lucid(
   G,
@@ -20,38 +20,61 @@ lucid(
 )
 }
 \arguments{
-\item{G}{Required. Genetic features/environmental exposures, a \code{\link{matrix}}.}
+\item{G}{Exposures, a numeric vector, matrix, or data frame. Categorical variable 
+should be transformed into dummy variables. If a matrix or data frame, rows 
+represent observations and columns correspond to variables.}
 
-\item{Z}{Required. Biomarkers/other omics data, a \code{\link{matrix}}.}
+\item{Z}{Omics data, a numeric matrix or data frame. Rows correspond to observations
+and columns correspond to variables.}
 
-\item{Y}{Required. Outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.}
+\item{Y}{Outcome, a numeric vector. Categorical variable is not allowed. Binary 
+outcome should be coded as 0 and 1.}
 
-\item{CoG}{Optional, matrix. Covariates to be adjusted for estimating the latent cluster.}
+\item{CoG}{Optional, covariates to be adjusted for estimating the latent cluster.
+A numeric vector, matrix or data frame. Categorical variable should be transformed 
+into dummy variables.}
 
-\item{CoY}{Optional, matrix. Covariates to be adjusted for estimating the outcome.}
+\item{CoY}{Optional, covariates to be adjusted for estimating the association 
+between latent cluster and the outcome. A numeric vector, matrix or data frame. 
+Categorical variable should be transformed into dummy variables.}
 
-\item{family}{Required. Type of outcome Y. It should be choose from "normal", "binary".}
+\item{family}{Distribution of outcome. For continuous outcome, use "normal"; 
+for binary outcome, use "binary". Default is "normal".}
 
-\item{useY}{Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.}
+\item{useY}{Flag to include information of outcome when estimating the latent 
+cluster. Default is TRUE.}
 
-\item{K}{Required, an array of integers, representing the number of latent clusters}
+\item{K}{Number of latent clusters. An integer greater or equal to 2.}
 
-\item{Rho_G}{Optional, an array of penalties for variable selection in exposures}
+\item{Rho_G}{A scalar or a vector. Penalty to conduct LASSO regularization and 
+obtain a sparse estimation for effect of exposures. If a vector, \code{lucid} will 
+fit lucid model over the grid of penalties.}
 
-\item{Rho_Z_InvCov}{Optional, an array of penalties for variable selection in Biomarkers (penalizing inverse of covariance matrix)}
+\item{Rho_Z_Mu}{A scalar or a vector. Penalty to conduct LASSO regularization 
+and obtain a sparse estimation of cluster-specific mean for omics data. If a 
+vector, \code{lucid} will fit lucid model over the grid of penalties.}
 
-\item{Rho_Z_CovMu}{Optional, an array of penalties for variable selection in Biomarkers (penalizing mean)}
+\item{Rho_Z_Cov}{Penalty to conduct graphic LASSO regularization and obtain a
+sparse estimation of cluster-specific variance-covariance matrices for omics 
+data. If a vector, \code{lucid} will fit lucid model over the grid of penalties.}
 
-\item{CV}{Number of folds in K-fold cross validation}
-
-\item{tol}{Tolerance of convergence for EM algorithm}
+\item{...}{Other parameters passed to \code{est.lucid}}
 }
 \value{
 A list:
-\item{best_model}{the best model among different combination of tuning parameters}
-\item{tune_list}{a data frame contains combination of tuning parameters and corresponding BIC}
-\item{res_model}{a list stores LUCID model corresponding to each combination of tuning parameters}
+\item{best_model}{the best model over different combination of tuning parameters}
+\item{tune_list}{a data frame contains combination of tuning parameters and c
+orresponding BIC}
+\item{res_model}{a list of LUCID models corresponding to each combination of 
+tuning parameters}
 }
 \description{
-A wrapper to estimate latent unknown clusters with multi-omics data
+Given a grid of K and L1 penalties (incluing Rho_G, Rho_Z_mu and
+Rho_Z_Cov), fit LUCID model over all combinations of K and L1 penalties to 
+determine the optimal penalty.
+}
+\examples{
+\dontrun{
+
+}
 }

@@ -29,13 +29,15 @@
 #' @param max_tot.itr Max number of total iterations for \code{est.lucid} function.
 #' \code{est.lucid} may conduct EM algorithm for multiple times if the algorithm 
 #' fails to converge.
-#' @param Rho_G Penalty to conduct LASSO regularization and obtain a sparse estimation
-#' for effect of exposures. A numeric value.
-#' @param Rho_Z_Mu Penalty to conduct LASSO regularization and obtain a sparse 
-#' estimation of cluster-specific mean for omics data. A numeric value.
-#' @param Rho_Z_Cov Penalty to conduct graphic LASSO regularization and obtain a
+#' @param Rho_G A scalar. Penalty to conduct LASSO regularization and obtain a sparse estimation
+#' for effect of exposures. If user wants to tune the penalty, use the wrapper 
+#' function \code{lucid}
+#' @param Rho_Z_Mu A scalar. Penalty to conduct LASSO regularization and obtain a sparse 
+#' estimation of cluster-specific mean for omics data. If user wants to tune the 
+#' penalty, use the wrapper function \code{lucid}
+#' @param Rho_Z_Cov A scalar. Penalty to conduct graphic LASSO regularization and obtain a
 #' sparse estimation of cluster-specific variance-covariance matrices for omics 
-#' data. A numeric value.
+#' data. If user wants to tune the penalty, use the wrapper function \code{lucid}
 #' @param modelName The variance-covariance structure for omics data. 
 #' See \code{mclust::mclustModelNames} for details.
 #' @param seed An integer to initialize the EM algorithm or imputing missing values.
@@ -72,7 +74,7 @@
 #' @import stats
 #' @import utils
 #' @export
-#' @author Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
+#'
 #' @references
 #' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, 
 #' Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering 

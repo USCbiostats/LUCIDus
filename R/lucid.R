@@ -1,24 +1,51 @@
-#' A wrapper to estimate latent unknown clusters with multi-omics data
+#' @title A wrapper function to perform model selection for LUCID
+#' 
+#' @description Given a grid of K and L1 penalties (incluing Rho_G, Rho_Z_mu and
+#' Rho_Z_Cov), fit LUCID model over all combinations of K and L1 penalties to 
+#' determine the optimal penalty.
+#' 
+#' @param G Exposures, a numeric vector, matrix, or data frame. Categorical variable 
+#' should be transformed into dummy variables. If a matrix or data frame, rows 
+#' represent observations and columns correspond to variables.
+#' @param Z Omics data, a numeric matrix or data frame. Rows correspond to observations
+#' and columns correspond to variables.
+#' @param Y Outcome, a numeric vector. Categorical variable is not allowed. Binary 
+#' outcome should be coded as 0 and 1.
+#' @param CoG Optional, covariates to be adjusted for estimating the latent cluster.
+#' A numeric vector, matrix or data frame. Categorical variable should be transformed 
+#' into dummy variables. 
+#' @param CoY Optional, covariates to be adjusted for estimating the association 
+#' between latent cluster and the outcome. A numeric vector, matrix or data frame. 
+#' Categorical variable should be transformed into dummy variables.
+#' @param K Number of latent clusters. An integer greater or equal to 2. 
+#' @param family Distribution of outcome. For continuous outcome, use "normal"; 
+#' for binary outcome, use "binary". Default is "normal".
+#' @param useY Flag to include information of outcome when estimating the latent 
+#' cluster. Default is TRUE.
+#' @param Rho_G A scalar or a vector. Penalty to conduct LASSO regularization and 
+#' obtain a sparse estimation for effect of exposures. If a vector, \code{lucid} will 
+#' fit lucid model over the grid of penalties.
+#' @param Rho_Z_Mu A scalar or a vector. Penalty to conduct LASSO regularization 
+#' and obtain a sparse estimation of cluster-specific mean for omics data. If a 
+#' vector, \code{lucid} will fit lucid model over the grid of penalties.
+#' @param Rho_Z_Cov Penalty to conduct graphic LASSO regularization and obtain a
+#' sparse estimation of cluster-specific variance-covariance matrices for omics 
+#' data. If a vector, \code{lucid} will fit lucid model over the grid of penalties.
+#' @param ... Other parameters passed to \code{est.lucid}
 #'
-#' @param G Required. Genetic features/environmental exposures, a \code{\link{matrix}}.
-#' @param Z Required. Biomarkers/other omics data, a \code{\link{matrix}}.
-#' @param Y Required. Outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.
-#' @param CoG Optional, matrix. Covariates to be adjusted for estimating the latent cluster.
-#' @param CoY Optional, matrix. Covariates to be adjusted for estimating the outcome.
-#' @param family Required. Type of outcome Y. It should be choose from "normal", "binary".
-#' @param useY Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.
-#' @param K Required, an array of integers, representing the number of latent clusters
-#' @param Rho_G Optional, an array of penalties for variable selection in exposures
-#' @param Rho_Z_InvCov Optional, an array of penalties for variable selection in Biomarkers (penalizing inverse of covariance matrix)
-#' @param Rho_Z_CovMu Optional, an array of penalties for variable selection in Biomarkers (penalizing mean)
-#' @param CV Number of folds in K-fold cross validation
-#' @param tol Tolerance of convergence for EM algorithm
-#' @return A list:
-#' \item{best_model}{the best model among different combination of tuning parameters}
-#' \item{tune_list}{a data frame contains combination of tuning parameters and corresponding BIC}
-#' \item{res_model}{a list stores LUCID model corresponding to each combination of tuning parameters}
 #' @export
+#' 
+#' @return A list:
+#' \item{best_model}{the best model over different combination of tuning parameters}
+#' \item{tune_list}{a data frame contains combination of tuning parameters and c
+#' orresponding BIC}
+#' \item{res_model}{a list of LUCID models corresponding to each combination of 
+#' tuning parameters}
 #'
+#' @examples 
+#' \dontrun{
+#' 
+#' }
 lucid <- function(G, 
                   Z, 
                   Y, 

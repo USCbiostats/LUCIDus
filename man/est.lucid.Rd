@@ -61,15 +61,17 @@ cluster. Default is TRUE.}
 \code{est.lucid} may conduct EM algorithm for multiple times if the algorithm 
 fails to converge.}
 
-\item{Rho_G}{Penalty to conduct LASSO regularization and obtain a sparse estimation
-for effect of exposures. A numeric value.}
+\item{Rho_G}{A scalar. Penalty to conduct LASSO regularization and obtain a sparse estimation
+for effect of exposures. If user wants to tune the penalty, use the wrapper 
+function \code{lucid}}
 
-\item{Rho_Z_Mu}{Penalty to conduct LASSO regularization and obtain a sparse 
-estimation of cluster-specific mean for omics data. A numeric value.}
+\item{Rho_Z_Mu}{A scalar. Penalty to conduct LASSO regularization and obtain a sparse 
+estimation of cluster-specific mean for omics data. If user wants to tune the 
+penalty, use the wrapper function \code{lucid}}
 
-\item{Rho_Z_Cov}{Penalty to conduct graphic LASSO regularization and obtain a
+\item{Rho_Z_Cov}{A scalar. Penalty to conduct graphic LASSO regularization and obtain a
 sparse estimation of cluster-specific variance-covariance matrices for omics 
-data. A numeric value.}
+data. If user wants to tune the penalty, use the wrapper function \code{lucid}}
 
 \item{modelName}{The variance-covariance structure for omics data. 
 See \code{mclust::mclustModelNames} for details.}
@@ -161,7 +163,4 @@ Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi,
 Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering 
 Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics,
 btz667, https://doi.org/10.1093/bioinformatics/btz667.
-}
-\author{
-Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
 }
