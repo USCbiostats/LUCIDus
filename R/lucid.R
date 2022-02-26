@@ -44,6 +44,22 @@
 #'
 #' @examples 
 #' \dontrun{
+#' # use simulated data
+#' G <- sim_data$G
+#' Z <- sim_data$Z
+#' Y_normal <- sim_data$Y_normal
+#' 
+#' # find the optimal model over the grid of K
+#' tune_K <- lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3, 
+#' seed = 1, K = 2:5)
+#' 
+#' # tune penalties
+#' tune_Rho_G <- lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
+#' seed = 1, K = 2, Rho_G = c(0.1, 0.2, 0.3, 0.4))
+#' tune_Rho_Z_mu <- lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
+#' seed = 1, K = 2, Rho_Z_mu = c(10, 20, 30, 40))
+#' tune_Rho_Z_Cov <- lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
+#' seed = 1, K = 2, Rho_Z_Cov = c(0.1, 0.2, 0.3))
 #' 
 #' }
 lucid <- function(G, 
