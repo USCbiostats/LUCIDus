@@ -1,37 +1,63 @@
-#' @title Bootstrap method of inference for LUCID
+#' @title Inference of LUCID model based on bootstrap resampling
 #' 
-#' @description This function provides SEs of parameter estimates from a LUCID model through bootstrap method.
+#' @description Generate \code{R} bootstrap replicates of LUCID parameters and 
+#' derive confidence interval (CI) base on bootstrap. Bootstrap replicates are 
+#' generated based on nonparameteric resampling, implemented by \code{ordinary} 
+#' method of code{boot::boot} function.
 #'
-#' @param G Genetic features/environmental exposures, a \code{\link{matrix}}.
-#' @param Z Biomarkers/other omics data, a \code{\link{matrix}}.
-#' @param Y Disease outcome, it is suggested to transform it into a n by 1 \code{\link{matrix}}.
-#' @param CoG Optional, matrix. Covariates to be adjusted for estimating the latent cluster.
-#' @param CoY Optional, matrix. Covariates to be adjusted for estimating the outcome.
-#' @param model A LUCID model fitted by \code{\link{est.lucid}}.
-#' @param R Number of bootstrap iterations.
-#' @param n Number of CPU cores to be used in the bootstrap
-#' @param Zdiff Whether conduct inference based on the range of Z or not. Default is FALSE.
+#' @param G Exposures, a numeric vector, matrix, or data frame. Categorical variable 
+#' should be transformed into dummy variables. If a matrix or data frame, rows 
+#' represent observations and columns correspond to variables.
+#' @param Z Omics data, a numeric matrix or data frame. Rows correspond to observations
+#' and columns correspond to variables.
+#' @param Y Outcome, a numeric vector. Categorical variable is not allowed. Binary 
+#' outcome should be coded as 0 and 1.
+#' @param CoG Optional, covariates to be adjusted for estimating the latent cluster.
+#' A numeric vector, matrix or data frame. Categorical variable should be transformed 
+#' into dummy variables. 
+#' @param CoY Optional, covariates to be adjusted for estimating the association 
+#' between latent cluster and the outcome. A numeric vector, matrix or data frame. 
+#' Categorical variable should be transformed into dummy variables.
+#' @param model A LUCID model fitted by \code{est.lucid}.
+#' @param conf A numeric scalar between 0 and 1 to specify confidence level(s) 
+#' of the required interval(s).
+#' @param R An integer to specify number of bootstrap replicates for LUCID model.
+#' If feasible, it is recommended to set R > 1000. However, the convergence speed 
+#' of LUCID varies greatly depending on data. If it takes very long time to run
+#' 1000 replicates, it is recommend to set smaller values for R, such as 200.
+#' @param ncpus Integer, number of processors to be used in parallel computation.
 #' 
-#' @return A list of estimates with their 95 percent CI.
+#' @return A list, containing the following components:
+#' \item{beta}{effect estimate for each exposure}
+#' \item{mu}{cluster-specific mean for each omics feature}
+#' \item{gamma}{effect estiamte for the association btween latent cluster and 
+#' outcome}
+#' \item{bootstrap}{The \code{boot} object returned by \code{boot:boot}}
+#' 
 #' @export
+#' 
 #' @import boot
 #' @import parallel
-#' @author Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
-#' @references
-#' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
+#' 
 #' @examples
 #' \dontrun{
-#' fit1 <- est.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]), 
-#' K = 2, family = "binary")
-#' chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-#' if (nzchar(chk) && chk == "TRUE") {
-#'  # use 2 cores in CRAN/Travis/AppVeyor
-#'  num_workers <- 2L
-#' } else {
-#'  num_workers <- parallel::detectCores()
-#' }
-#' boot1 <- boot.lucid(G = sim2[, 1:10], Z = sim2[, 11:20], Y = as.matrix(sim2[, 21]),
-#'  model = fit1, R = 100, n = num_workers)
+#' # use simulated data
+#' G <- sim_data$G
+#' Z <- sim_data$Z
+#' Y_normal <- sim_data$Y_normal
+#' 
+#' # fit lucid model
+#' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
+#' seed = 1008)
+#' 
+#' # conduct bootstrap resampling
+#' boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
+#' 
+#' # check distribution for bootstrap replicates of the variable of interest
+#' plot(boot1$bootstrap, 1)
+#' 
+#' # use 90% CI
+#' boot2 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100, conf = 0.9)
 #' }
 boot.lucid <- function(G, 
                        Z, 
@@ -39,56 +65,57 @@ boot.lucid <- function(G,
                        CoG = NULL, 
                        CoY = NULL, 
                        model, 
+                       conf = 0.95,
                        R = 100, 
-                       n = detectCores(), 
-                       Zdiff = FALSE) {
-  ss <- model$select
-  G <- as.matrix(G[, ss$selectG])
-  Z <- as.matrix(Z[, ss$selectZ])
-  dimG <- ncol(G); dimZ <- ncol(Z); dimCoY <- ncol(CoY); dimCoG  <- ncol(CoG); K <- model$K
+                       ncpus = detectCores() - 1) {
+  # prepare data for bootstrap (boot function require data in a matrix form, 
+  # list data structure doesn't work)
+  if(!is.null(model$selectG) | !is.null(model$selectZ)) {
+    stop("Refit LUCID model with selected feature first then conduct bootstrap inference")
+  }
+  G <- as.matrix(G)
+  Z <- as.matrix(Z)
+  Y <- as.matrix(Y)
+  dimG <- ncol(G) 
+  dimZ <- ncol(Z) 
+  dimCoG <- ncol(CoG)
+  dimCoY <- ncol(CoY)
+  K <- model$K
   alldata <- as.data.frame(cbind(G, Z, Y, CoG, CoY))
-  cat("Use Bootstrap resampling to derive 95% CI for LUCID")
-  invisible(capture.output(
-    bootstrap <- boot(data = alldata, 
-                      statistic = lucid_par, 
-                      R = R, 
-                      parallel = "multicore", 
-                      ncpus = n,
-                      dimG = dimG, 
-                      dimZ = dimZ, 
-                      dimCoY = dimCoY, 
-                      dimCoG = dimCoG, 
-                      model = model, 
-                      Zdiff = Zdiff)
-  ))
-  sd <- sapply(1:length(bootstrap$t0), function(x) sd(bootstrap$t[, x]))
-  if(Zdiff == FALSE){
-    model.par <- c(model$pars$beta[-1, c(FALSE, ss$selectG)], as.vector(t(model$pars$mu[, ss$selectZ])), model$pars$gamma$beta)
-  } else {
-    z.range0 <- apply(model$pars$mu[, ss$selectZ], 2, range)
-    z.diff0 <- abs(z.range0[1, ] - z.range0[2, ])
-    model.par <- c(model$pars$beta[-1, c(FALSE, ss$selectG)], z.diff0, model$pars$gamma$beta)
-  }
-  dd <- data.frame(original = model.par, sd = sd, 
-                   lower = model.par - 1.96 * sd, upper = model.par + 1.96 * sd)
-  beta <- dd[1:((K - 1) * dimG), ]
-  row.names(beta) <- paste0(rep(colnames(G),each = K-1), ".cluster", 2:K)
-  if(Zdiff == FALSE){
-    mu <- dd[((K - 1) * dimG + 1): ((K - 1) * dimG + K * dimZ), ]
-    row.names(mu) <- paste0(rep(colnames(Z), K), ".cluster", sapply(1:K, function(x) rep(x, dimZ)))
-    gamma <- dd[-(1:((K - 1) * dimG + K * dimZ)), ]
-  } else {
-    mu <- dd[((K - 1) * dimG + 1): ((K - 1) * dimG + dimZ), ]
-    row.names(mu) <- paste0(colnames(Z), ".range")
-    gamma <- dd[-(1:((K - 1) * dimG + dimZ)), ]
-  }
-  row.names(gamma) <- c("reference", paste0("cluster", 2:K), colnames(CoY))
-  return(structure(list(beta = beta, mu = mu, gamma = gamma, t = bootstrap$t)))
+  
+  # bootstrap
+  cat(paste0("Use Bootstrap resampling to derive ", 100 * conf, "% CI for LUCID \n"))
+  bootstrap <- boot(data = alldata, 
+                    statistic = lucid_par, 
+                    R = R, 
+                    parallel = "multicore", 
+                    ncpus = ncpus,
+                    dimG = dimG, 
+                    dimZ = dimZ, 
+                    dimCoY = dimCoY, 
+                    dimCoG = dimCoG, 
+                    model = model)
+  
+  # bootstrap CIs
+  ci <- gen_ci(bootstrap,
+               conf = conf)
+  
+  # organize CIs
+  beta <- ci[1:((K - 1) * dimG), ]
+  mu <- ci[((K - 1) * dimG + 1): ((K - 1) * dimG + K * dimZ), ]
+  gamma <- ci[-(1:((K - 1) * dimG + K * dimZ)), ]
+  return(list(beta = beta,
+              mu = mu, 
+              gamma = gamma, 
+              bootstrap = bootstrap))
 }
 
 
 
-lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model, Zdiff) {
+#' function to calculate parameters of LUCID model. use as statisitc input for
+#' boot function.
+#'
+lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG) {
   d <- data[indices, ]
   G <- as.matrix(d[, 1:dimG])
   Z <- as.matrix(d[, (dimG + 1):(dimG + dimZ)])
@@ -104,33 +131,56 @@ lucid_par <- function(data, indices, dimG, dimZ, dimCoY, dimCoG, model, Zdiff) {
     CoY <- as.matrix(d[, (dimG + dimZ + 2):ncol(d)])
   } 
   converge <- FALSE
-  while(!converge){
+  while(!converge) {
+    seed <- sample(1:2000, 1)
     try_lucid <- try(est.lucid(G = G, 
                                Z = Z, 
                                Y = Y,
                                CoY = CoY, 
                                CoG = CoG,
                                family = model$family, 
-                               control = model$par.control,
                                modelName = model$modelName, 
                                K = model$K, 
-                               tune = model$par.tune))
+                               init_impute = model$init_impute,
+                               init_par = model$init_par,
+                               seed = seed))
     if("try-error" %in% class(try_lucid)){
       next
     } else{
-      if(Zdiff == FALSE){
-        par_lucid <- c(try_lucid$pars$beta[-1, -1],
-                       as.vector(t(try_lucid$pars$mu)),
-                       try_lucid$pars$gamma$beta)
-      } else{
-        z.range <- apply(try_lucid$pars$mu, 2, range)
-        z.diff <- abs(z.range[1, ] - z.range[2, ])
-        par_lucid <- c(try_lucid$pars$beta[-1, -1], 
-                       as.vector(z.diff),
-                       try_lucid$pars$gamma$beta)
-      }
+      par_lucid <- c(try_lucid$pars$beta[-1, -1],
+                     as.vector(t(try_lucid$pars$mu)),
+                     try_lucid$pars$gamma$beta)
       converge <- TRUE
     }
   }
   return(par_lucid)
+}
+
+
+#' generate bootstrp ci (normal, basic and percentile)
+#'
+#' @param x an object return by boot function
+#'
+#' @return a matrix, the first column is t0 statistic from original model
+#'
+gen_ci <- function(x, conf = 0.95) {
+  t0 <- x$t0
+  res_ci <- NULL
+  for (i in 1:length(t0)) {
+    ci <- boot.ci(x, 
+                  index = i, 
+                  conf = conf, 
+                  type = c("norm", "basic", "perc"))
+    temp_ci <- c(ci$normal[2:3],
+                 ci$basic[4:5],
+                 ci$percent[4:5])
+    res_ci <- rbind(res_ci,
+                    temp_ci)
+  }
+  res <- cbind(t0, res_ci)
+  colnames(res) <- c("t0",
+                     "norm_lower", "norm_upper",
+                     "basic_lower", "basic_upper",
+                     "perc_lower", "perc_upper")
+  return(res)
 }
