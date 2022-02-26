@@ -2,23 +2,10 @@
 % Please edit documentation in R/est_lucid_helper.R
 \name{est_mu}
 \alias{est_mu}
-\title{estimate the penalized mean in M-step Z}
+\title{M-step: obtain sparse mean for omics data via LASSO penalty}
 \usage{
 est_mu(j, rho, z, r, mu, wi)
 }
-\arguments{
-\item{j}{}
-
-\item{rho}{}
-
-\item{z}{}
-
-\item{r}{}
-
-\item{mu}{}
-
-\item{wi}{}
-}
 \description{
-estimate the penalized mean in M-step Z
+M-step: obtain sparse mean for omics data via LASSO penalty
 }

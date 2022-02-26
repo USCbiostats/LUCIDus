@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_lucid.R
 \name{est.lucid}
 \alias{est.lucid}
-\title{Estimate latent unknown clusters with multi-omics data}
+\title{Fit LUCID model to conduct integrated clustering}
 \usage{
 est.lucid(
   G,
@@ -26,57 +26,141 @@ est.lucid(
 )
 }
 \arguments{
-\item{G}{Exposures, a \code{matrix} or a \code{dataframe}.}
+\item{G}{Exposures, a numeric vector, matrix, or data frame. Categorical variable 
+should be transformed into dummy variables. If a matrix or data frame, rows 
+represent observations and columns correspond to variables.}
 
-\item{Z}{Omics data, a \code{matrix} or a \code{dataframe}.}
+\item{Z}{Omics data, a numeric matrix or data frame. Rows correspond to observations
+and columns correspond to variables.}
 
-\item{Y}{Outcome, an n x 1 \code{matrix} or a sinlge columne \code{dataframe}.}
+\item{Y}{Outcome, a numeric vector. Categorical variable is not allowed. Binary 
+outcome should be coded as 0 and 1.}
 
-\item{CoG}{Optional, a \code{matrix}. Covariates to be adjusted for estimating the latent cluster.}
+\item{CoG}{Optional, covariates to be adjusted for estimating the latent cluster.
+A numeric vector, matrix or data frame. Categorical variable should be transformed 
+into dummy variables.}
 
-\item{CoY}{Optional, a \code{matrix}. Covariates to be adjusted for estimating the association between latent cluster and outcome.}
+\item{CoY}{Optional, covariates to be adjusted for estimating the association 
+between latent cluster and the outcome. A numeric vector, matrix or data frame. 
+Categorical variable should be transformed into dummy variables.}
 
-\item{K}{The number of latent clusters. An integer greater or equal to 2. You can use \code{\link{tune.lucid}} to determine the optimal number of latent clusters.}
+\item{K}{Number of latent clusters. An integer greater or equal to 2. User 
+can use \code{\link{lucid}} to determine the optimal number of latent clusters.}
 
-\item{family}{Distribution of outcome Y. Currently accepted distributions are "normal" and "binary".}
+\item{family}{Distribution of outcome. For continuous outcome, use "normal"; 
+for binary outcome, use "binary". Default is "normal".}
 
-\item{useY}{Whether or not to include the information of Y to estimate the latent clusters. Default is TRUE.}
+\item{useY}{Flag to include information of outcome when estimating the latent 
+cluster. Default is TRUE.}
 
-\item{modelName}{The variance-covariance structure for omics data. See \code{\link{mclustModelNames}} for details.}
+\item{tol}{Tolerance for convergence. Default is 1e-3.}
 
-\item{seed}{An integer to initialize the EM algorithm}
+\item{max_itr}{Max number of iterations for EM algorithm.}
+
+\item{max_tot.itr}{Max number of total iterations for \code{est.lucid} function.
+\code{est.lucid} may conduct EM algorithm for multiple times if the algorithm 
+fails to converge.}
+
+\item{Rho_G}{Penalty to conduct LASSO regularization and obtain a sparse estimation
+for effect of exposures. A numeric value.}
+
+\item{Rho_Z_Mu}{Penalty to conduct LASSO regularization and obtain a sparse 
+estimation of cluster-specific mean for omics data. A numeric value.}
+
+\item{Rho_Z_Cov}{Penalty to conduct graphic LASSO regularization and obtain a
+sparse estimation of cluster-specific variance-covariance matrices for omics 
+data. A numeric value.}
+
+\item{modelName}{The variance-covariance structure for omics data. 
+See \code{mclust::mclustModelNames} for details.}
+
+\item{seed}{An integer to initialize the EM algorithm or imputing missing values.
+Default is 123.}
 
 \item{init_impute}{Method to initialize the imputation of missing values in 
-LUCID; \code{mclust} will implement EM Algorithm for Unrestricted 
-General Location Model from the \code{mix} package to impute the missing
-values in omics data 'Z'; \code{lod} will initialize the imputation through 
-replacing missing values by LOD / sqrt(2)}
+LUCID. "mclust" will use \code{mclust:imputeData} to implement EM Algorithm 
+for Unrestricted General Location Model to impute the missing values in omics 
+data; \code{lod} will initialize the imputation via relacing missing values by
+LOD / sqrt(2). LOD is determined by the minimum of each variable in omics data.}
+
+\item{init_par}{Method to initialize the EM algorithm. "mclust" will use mclust
+model to initialize parameters; "random" initialize parameters from uniform 
+distribution.}
 }
 \value{
 A list which contains the several features of LUCID, including:
-\item{pars}{Estimates of parameters of LUCID, including beta (estimates of genetic feature/environmental exposure), mu (estimates of cluster-specific biomarker means), sigma (estimates of the cluster-specific biomarker variance-covariance matrix) and gamma(estimates of cluster-specific effect and covariates effect related to the outcome)}
+\item{pars}{Estimates of parameters of LUCID, including beta (effect of 
+exposure), mu (cluster-specific mean for omics data), sigma (cluster-specific 
+variance-covariance matrix for omics data) and gamma (effect estimate of association
+between latent cluster and outcome)}
 \item{K}{Number of latent cluster}
-\item{modelName}{The model used to estimate the cluster-specific variance-covariance matrix, for further details, see \code{\link{mclust}}}
+\item{modelName}{Geometric model to estiamte variance-covariance matrix for 
+omics data}
 \item{likelihood}{The log likelihood of the LUCID model}
-\item{post.p}{Predicted probability of belonging to each latent cluster}
-\item{Z}{}
+\item{post.p}{Posterior inclusion probability (PIP) for assigning observation i
+to latent cluster j}
+\item{Z}{If missing values are observed, this is the complet dataset for omics
+data with missing values imputed by LUCID}
 }
 \description{
-This function fits a LUCID model, which estimates the latent clusters by integrating genetic features/environmental exposures, biomarkers with/without the outcome of interest. Variable selection is available for analyzing the high-dimensional data.
+The Latent Unknown Clustering with Integrated Data (LUCID) performs 
+integrative clustering using multi-view data. LUCID model is estimated via EM 
+algorithm for model-based clustering. It also features variable selection,
+integrated imputation, bootstrap inference and visualization via Sankey diagram.
 }
 \examples{
 \dontrun{
-set.seed(10)
-fit1 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as.matrix(sim1[, 21]), 
-K = 2, family = "binary")
-fit2 <- est.lucid(G = sim1[, 1:10],Z = sim1[, 11:20],Y = as.matrix(sim1[, 21]), 
-K = 2, family = "binary", 
-tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
-Select_G = TRUE, Rho_G = 0.02))
+# use simulated data
+G <- sim_data$G
+Z <- sim_data$Z
+Y_normal <- sim_data$Y_normal
+Y_binary <- sim_data$Y_binary
+cov <- sim_data$Covariate
+
+# fit LUCID model with continuous outcome
+fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
+seed = 1008)
+
+# fit LUCID model with block-wise missing pattern in omics data
+Z_miss_1 <- Z
+Z_miss_1[sample(1:nrow(Z), 0.3 * nrow(Z)), ] <- NA
+fit2 <- est.lucid(G = G, Z = Z_miss_1, Y = Y_normal, family = "normal", K = 2)
+
+# fit LUCID model with sporadic missing pattern in omics data
+Z_miss_2 <- Z
+index <- arrayInd(sample(length(Z_miss_2), 0.3 * length(Z_miss_2)), dim(Z_miss_2))
+Z_miss_2[index] <- NA
+# initialize imputation by imputing 
+fit3 <- est.lucid(G = G, Z = Z_miss_2, Y = Y_normal, family = "normal", 
+K = 2, seed = 1008, init_impute = "lod") 
+LOD
+# initialize imputation by mclust
+fit4 <- est.lucid(G = G, Z = Z_miss_2, Y = Y, family = "normal", K = 2, 
+seed = 123, init_impute = "mclust") 
+
+# fit LUCID model with binary outcome
+fit5 <- est.lucid(G = G, Z = Z, Y = Y_binary, family = "binary", K = 2,
+seed = 1008)
+
+# fit LUCID model with covariates
+fit6 <- est.lucid(G = G, Z = Z, Y = Y_binary, CoY = cov, family = "binary", 
+K = 2, seed = 1008)
+
+# use LUCID model to conduct integrated variable selection
+# select exposure
+fit6 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
+K = 2, seed = 1008, Rho_G = 0.1)
+# select omics data
+fit7 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal",
+K = 2, seed = 1008, Rho_Z_Mu = 90, Rho_Z_Cov = 0.1, init_par = "random")
+
 }
 }
 \references{
-Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
+Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, 
+Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering 
+Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics,
+btz667, https://doi.org/10.1093/bioinformatics/btz667.
 }
 \author{
 Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti

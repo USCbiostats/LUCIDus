@@ -1,20 +1,55 @@
-#' Visualize the LUCID model through a Sankey diagram
-#' This function generates a Sankey diagram for the results of integrative clustering based on an \code{lucid} object
-#' @param x A model fitted by \code{\link{est.lucid}}
-#' @param ... Other parameters to be passed to \code{plot}
+#' @title Visualize LUCID model through a Sankey diagram
+#' In the Sankey diagram, each node either represents a variable (exposure,
+#' omics or outcome) or a latent cluster. Each line represents an association. The
+#' color of the node represents variable type, either exposure, omics or outcome.
+#' The width of the line represents the effect size of a certain association; the
+#' color of the line represents the direction of a certain association. 
+#' 
+#' @param x A LUCID model fitted by \code{\link{est.lucid}}
+#' @param G_color Color of node for exposure
+#' @param X_color Color of node for latent cluster
+#' @param Z_color Color of node for omics data
+#' @param Y_color Color of node for outcome
+#' @param pos_link_color Color of link corresponds to positive association
+#' @param neg_link_color Color of link corresponds to negative association
+#' @param fontsize Font size for annotation
+#' 
 #' @return A DAG graph created by \code{\link{sankeyNetwork}}
+#' 
 #' @import networkD3
+#' 
 #' @export
-#' @author Cheng Peng, Zhao Yang, David V. Conti
-#' @references
-#' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
-#'
+#' 
 #' @examples
 #' \dontrun{
-#' fit1 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary")
+#' # prepare data
+#' G <- sim_data$G
+#' Z <- sim_data$Z
+#' Y_normal <- sim_data$Y_normal
+#' Y_binary <- sim_data$Y_binary
+#' cov <- sim_data$Covariate
+#' 
+#' # plot lucid model
+#' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
+#' K = 2, seed = 1008)
 #' plot(fit1)
+#' 
+#' # change node color
+#' plot(fit1, G_color = "yellow")
+#' plot(fit1, Z_color = "red")
+#' 
+#' # change link color
+#' plot(fit1, pos_link_color = "red", neg_link_color = "green")
 #' }
-plot.lucid <- function(x, ...){
+plot.lucid <- function(x,
+                       G_color = "dimgray",
+                       X_color = "#eb8c30",
+                       Z_color = "#2fa4da",
+                       Y_color =  "#afa58e",
+                       pos_link_color = "#67928b", 
+                       neg_link_color = "#d1e5eb",
+                       fontsize = 7
+                       ) {
   K <- x$K
   var.names <- x$var.names
   pars <- x$pars
@@ -35,9 +70,9 @@ plot.lucid <- function(x, ...){
                      target = rep(var.names$Ynames, K),
                      value = abs(valueXtoY),
                      group = as.factor(valueXtoY > 0))
-  if(x$family == "binary"){
-    XtoY$value <- exp(valueXtoY)
-  }
+  # if(x$family == "binary"){
+  #   XtoY$value <- exp(valueXtoY)
+  # }
   links <- rbind(GtoX, XtoZ, XtoY)
   nodes <- data.frame(name = unique(c(as.character(links$source), as.character(links$target))),
                       group = as.factor(c(rep("exposure", dimG), 
@@ -45,11 +80,27 @@ plot.lucid <- function(x, ...){
                                           rep("biomarker", dimZ), "outcome")))
   links$IDsource <- match(links$source, nodes$name)-1 
   links$IDtarget <- match(links$target, nodes$name)-1
-  my_color <- 'd3.scaleOrdinal() .domain(["exposure", "lc", "biomarker", "outcome", "TRUE", "FALSE"]) .range(["dimgray", "#eb8c30", "#2fa4da", "#afa58e", "#67928b", "#d1e5eb"])'
-  p <- sankeyNetwork(Links = links, Nodes = nodes,
-                     Source = "IDsource", Target = "IDtarget",
-                     Value = "value", NodeID = "name",
-                     colourScale = my_color, LinkGroup ="group", NodeGroup ="group",
-                     sinksRight = FALSE, fontSize = 7)
+  color_scale <- data.frame(domain = c("exposure", "lc", "biomarker", "outcome", "TRUE", "FALSE"),
+                            range = c(G_color, X_color, Z_color, Y_color, pos_link_color, neg_link_color))
+  
+  p <- sankeyNetwork(Links = links, 
+                     Nodes = nodes,
+                     Source = "IDsource", 
+                     Target = "IDtarget",
+                     Value = "value", 
+                     NodeID = "name",
+                     colourScale = JS(
+                       sprintf(
+                       'd3.scaleOrdinal()
+                        .domain(%s)
+                        .range(%s)
+                       ',
+                       jsonlite::toJSON(color_scale$domain),
+                       jsonlite::toJSON(color_scale$range)
+                     )), 
+                     LinkGroup ="group", 
+                     NodeGroup ="group",
+                     sinksRight = FALSE, 
+                     fontSize = fontsize)
   p
 }

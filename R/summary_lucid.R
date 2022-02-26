@@ -40,7 +40,7 @@ summary.lucid <- function(object, boot.se = NULL, ...){
   if(object$family == "binary"){
     nY <- length(gamma$beta)
   }
-  npars <- (nG + 1) * (K - 1) + (nZ * K + nZ * (nZ + 1) / 2 * K) + nY
+  npars <- (nG + 1) * (K - 1) + (nZ * K + nZ^2 * K) + nY
   BIC <- -2 * object$likelihood + npars * log(nrow(object$post.p))
   results <- list(beta = object$pars$beta[, c(TRUE, s1)],
                     mu = object$pars$mu[, s2],

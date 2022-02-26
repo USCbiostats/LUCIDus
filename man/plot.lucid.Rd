@@ -2,32 +2,71 @@
 % Please edit documentation in R/plot_lucid.R
 \name{plot.lucid}
 \alias{plot.lucid}
-\title{Visualize the LUCID model through a Sankey diagram
-This function generates a Sankey diagram for the results of integrative clustering based on an \code{lucid} object}
+\title{Visualize LUCID model through a Sankey diagram
+In the Sankey diagram, each node either represents a variable (exposure,
+omics or outcome) or a latent cluster. Each line represents an association. The
+color of the node represents variable type, either exposure, omics or outcome.
+The width of the line represents the effect size of a certain association; the
+color of the line represents the direction of a certain association.}
 \usage{
-\method{plot}{lucid}(x, ...)
+\method{plot}{lucid}(
+  x,
+  G_color = "dimgray",
+  X_color = "#eb8c30",
+  Z_color = "#2fa4da",
+  Y_color = "#afa58e",
+  pos_link_color = "#67928b",
+  neg_link_color = "#d1e5eb",
+  fontsize = 7
+)
 }
 \arguments{
-\item{x}{A model fitted by \code{\link{est.lucid}}}
+\item{x}{A LUCID model fitted by \code{\link{est.lucid}}}
 
-\item{...}{Other parameters to be passed to \code{plot}}
+\item{G_color}{Color of node for exposure}
+
+\item{X_color}{Color of node for latent cluster}
+
+\item{Z_color}{Color of node for omics data}
+
+\item{Y_color}{Color of node for outcome}
+
+\item{pos_link_color}{Color of link corresponds to positive association}
+
+\item{neg_link_color}{Color of link corresponds to negative association}
+
+\item{fontsize}{Font size for annotation}
 }
 \value{
 A DAG graph created by \code{\link{sankeyNetwork}}
 }
 \description{
-Visualize the LUCID model through a Sankey diagram
-This function generates a Sankey diagram for the results of integrative clustering based on an \code{lucid} object
+Visualize LUCID model through a Sankey diagram
+In the Sankey diagram, each node either represents a variable (exposure,
+omics or outcome) or a latent cluster. Each line represents an association. The
+color of the node represents variable type, either exposure, omics or outcome.
+The width of the line represents the effect size of a certain association; the
+color of the line represents the direction of a certain association.
 }
 \examples{
 \dontrun{
-fit1 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary")
+# prepare data
+G <- sim_data$G
+Z <- sim_data$Z
+Y_normal <- sim_data$Y_normal
+Y_binary <- sim_data$Y_binary
+cov <- sim_data$Covariate
+
+# plot lucid model
+fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
+K = 2, seed = 1008)
 plot(fit1)
+
+# change node color
+plot(fit1, G_color = "yellow")
+plot(fit1, Z_color = "red")
+
+# change link color
+plot(fit1, pos_link_color = "red", neg_link_color = "green")
 }
-}
-\references{
-Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
-}
-\author{
-Cheng Peng, Zhao Yang, David V. Conti
 }
