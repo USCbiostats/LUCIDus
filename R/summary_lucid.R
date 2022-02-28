@@ -1,30 +1,29 @@
-#' Summarize the results of LUCID model
+#' @titl Summarize results of LUCID model
 #'
-#' @param object A model fitted by \code{\link{est.lucid}}
-#' @param boot.se A object returned by \code{\link{boot.lucid}}, which contains the bootstrap standard error
-#' @param ... Other parameters to be passed to \code{summary}
-#' @return A list with class "sumlucid", which contains the following object
-#' \item{Beta}{Estimates of genetic/environmental effects (and effect of covariates if included), matrix}
-#' \item{Mu}{Estimates of cluster-specific biomarker means, matrix}
-#' \item{Gamma}{Estimates of cluster-specific disease risk (and effect of covariates if included), vector}
-#' \item{Family}{Type of Y, binary or normal}
-#' \item{K}{Number of latent clusters}
-#' \item{loglik}{log likelihood of the model}
-#' \item{BIC}{Bayesian Information Criteria of the model}
-#' \item{boot.se}{Bootstrap SE for estimates, an object returned by \code{\link{boot.lucid}}}
-#' @export
-#' @author Yinqi Zhao, Cheng Peng, Zhao Yang, David V. Conti
-#' @references
-#' Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti, A Latent Unknown Clustering Integrating Multi-Omics Data (LUCID) with Phenotypic Traits, Bioinformatics, , btz667, https://doi.org/10.1093/bioinformatics/btz667.
+#' @param object A LUCID model fitted by \code{\link{est.lucid}}
+#' @param boot.se An object returned by \code{\link{boot.lucid}}, 
+#' which contains the bootstrap confidence intervals
 #' 
+#' @export
 #' @examples
 #' \dontrun{
-#' fit1 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary", useY = FALSE)
+#' # use simulated data
+#' G <- sim_data$G
+#' Z <- sim_data$Z
+#' Y_normal <- sim_data$Y_normal
+#' 
+#' # fit lucid model
+#' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
+#' seed = 1008)
+#' 
+#' # conduct bootstrap resampling
+#' boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
+#' 
+#' # summarize lucid model
 #' summary(fit1)
-#' fit2 <- est.lucid(G = G1, Z = Z1, Y = Y1, CoY = CovY, K = 2, family = "binary", useY = FALSE,
-#'  tune = def.tune(Select_Z = TRUE, Rho_Z_InvCov = 0.1, Rho_Z_CovMu = 90, 
-#'  Select_G = TRUE, Rho_G = 0.02)) 
-#' summary(fit2)
+#' 
+#' # summarize lucid model with bootstrap CIs
+#' summary(fit1, boot.se = boot1)
 #' }
 
 summary.lucid <- function(object, boot.se = NULL, ...){
@@ -43,11 +42,11 @@ summary.lucid <- function(object, boot.se = NULL, ...){
   npars <- (nG + 1) * (K - 1) + (nZ * K + nZ^2 * K) + nY
   BIC <- -2 * object$likelihood + npars * log(nrow(object$post.p))
   results <- list(beta = object$pars$beta[, c(TRUE, s1)],
-                    mu = object$pars$mu[, s2],
-                    gamma = object$pars$gamma,
-                    family = object$family,
-                    K = K,
-                    BIC = BIC,
+                  mu = object$pars$mu[, s2],
+                  gamma = object$pars$gamma,
+                  family = object$family,
+                  K = K,
+                  BIC = BIC,
                   loglik = object$likelihood,
                   boot.se = boot.se)
   class(results) <- "sumlucid"
@@ -89,22 +88,25 @@ print.sumlucid <- function(x, ...){
     g.or$OR <- exp(g.or$beta)
     print(g.or)
   } else{
-    bb <- x$boot.se$beta
-    g.or <- cbind(g.or, bb[, 2:4], OR = exp(bb[, 1]), OR.L = exp(bb[, 3]), OR.U = exp(bb[, 4]))
-    print(g.or)
+    # bb <- x$boot.se$beta
+    # g.or <- cbind(g.or, bb[, 2:4], OR = exp(bb[, 1]), OR.L = exp(bb[, 3]), OR.U = exp(bb[, 4]))
+    print(x$boot.se$beta)
   }
 }
 
 
 # summarize output of normal outcome
 f.normal <- function(x, K, se){
-  gamma <- x$beta
-  cat("(1) Y (normal outcome): the mean of Y for each latent cluster (covariates) \n")
-  y <- as.data.frame(gamma)
-  row.names(y)[1:K] <- paste0("cluster", 1:K)
-  colnames(y) <- "beta"
+  
+  cat("(1) Y (normal outcome): the mean of Y for each latent cluster (and effect of covariates) \n")
+  
   if(!is.null(se)){
-    y <- cbind(y, se[, 2:4])
+    y <- se
+  } else {
+    gamma <- x$beta
+    y <- as.data.frame(gamma)
+    row.names(y)[1:K] <- paste0("cluster", 1:K)
+    colnames(y) <- "beta"
   }
   print(y)
 }
@@ -118,7 +120,7 @@ f.binary <- function(x, K, se){
   if(is.null(se)){
     gamma$OR <- exp(gamma$gamma)
   } else{
-    gamma <- cbind(gamma, se[, 2:4], OR = exp(gamma[, 1]), OR.L = exp(se[, 3]), OR.U = exp(se[, 4]))
+    gamma <- cbind(gamma, se[, -1])
   }
   print(gamma)
 }
