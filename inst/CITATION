@@ -7,8 +7,7 @@ citEntry(
   journal      = "Bioinformatics",
   year         = "2019",
   issn         = "1367-4803",
-  doi          = "10.1093/bioinformatics/btz667",
-  url          = "https://doi.org/10.1093/bioinformatics/btz667",
+  url          = "https://academic.oup.com/bioinformatics/article/36/3/842/5556107",
 
   textVersion  =
   paste("Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti (2019).",

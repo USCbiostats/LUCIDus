@@ -1,5 +1,5 @@
 #' @title Visualize LUCID model through a Sankey diagram
-#' In the Sankey diagram, each node either represents a variable (exposure,
+#' @description In the Sankey diagram, each node either represents a variable (exposure,
 #' omics or outcome) or a latent cluster. Each line represents an association. The
 #' color of the node represents variable type, either exposure, omics or outcome.
 #' The width of the line represents the effect size of a certain association; the
@@ -17,6 +17,7 @@
 #' @return A DAG graph created by \code{\link{sankeyNetwork}}
 #' 
 #' @import networkD3
+#' @importFrom jsonlite toJSON
 #' 
 #' @export
 #' 
@@ -32,16 +33,16 @@
 #' # plot lucid model
 #' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
 #' K = 2, seed = 1008)
-#' plot(fit1)
+#' plot_lucid(fit1)
 #' 
 #' # change node color
-#' plot(fit1, G_color = "yellow")
-#' plot(fit1, Z_color = "red")
+#' plot_lucid(fit1, G_color = "yellow")
+#' plot_lucid(fit1, Z_color = "red")
 #' 
 #' # change link color
-#' plot(fit1, pos_link_color = "red", neg_link_color = "green")
+#' plot_lucid(fit1, pos_link_color = "red", neg_link_color = "green")
 #' }
-plot.lucid <- function(x,
+plot_lucid <- function(x,
                        G_color = "dimgray",
                        X_color = "#eb8c30",
                        Z_color = "#2fa4da",

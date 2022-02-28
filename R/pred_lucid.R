@@ -1,4 +1,4 @@
-#' Predict the outcome based on a fitted LUCID model
+#' @title Predict cluster assignment and outcome based on LUCID model
 #'
 #' @param model A model fitted and returned by \code{\link{est.lucid}}
 #' @param G A new data set of genetic/environmental factors
@@ -12,12 +12,19 @@
 #'
 #' @examples
 #' \dontrun{
-#' index <- sample(1:2000, 200)
-#' fit <- est.lucid(G = sim1[-index, 1:10], Z = sim1[-index, 11:20], Y = as.matrix(sim1[-index, 21]))
-#' pred <- predict(model = fit, newG = sim1[index, 1:10], newZ = sim1[index, 11:20])
+#' # prepare data
+#' G <- sim_data$G
+#' Z <- sim_data$Z
+#' Y_normal <- sim_data$Y_normal
+#' 
+#' # fit lucid model
+#' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, K = 2, family = "normal")
+#' 
+#' # prediction on training set
+#' pred1 <- predict_lucid(model = fit1, G = G, Z = Z)
 #' }
 
-predict.lucid <- function(model, 
+predict_lucid <- function(model, 
                           G, 
                           Z, 
                           CoG = NULL, 

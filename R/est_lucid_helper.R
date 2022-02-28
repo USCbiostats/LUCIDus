@@ -1,4 +1,4 @@
-#' Use uniform distributon to initialzie variance covariance matrices
+# Use uniform distributon to initialzie variance covariance matrices
 gen_cov_matrices <- function(dimZ, K) {
   x <- matrix(runif(dimZ^2, min = -0.5, max = 0.5), nrow = dimZ)
   x_sym <- t(x) %*% x
@@ -11,7 +11,7 @@ gen_cov_matrices <- function(dimZ, K) {
 
 
 
-#' Calculate the log-likelihood of cluster assignment for each observation
+# Calculate the log-likelihood of cluster assignment for each observation
 Estep <- function(beta, 
                   mu, 
                   sigma, 
@@ -53,7 +53,7 @@ Estep <- function(beta,
 
 
 
-#' M-step to estimate the association between exposure and latent cluster
+# M-step to estimate the association between exposure and latent cluster
 Mstep_G <- function(G, r, selectG, penalty, dimG, dimCoG, K) {
   new.beta <- matrix(rep(0, K * (dimG + dimCoG + 1)), nrow = K)
   if(selectG){
@@ -82,7 +82,7 @@ Mstep_G <- function(G, r, selectG, penalty, dimG, dimCoG, K) {
 
 
 
-#' M-step to estimate the parameters related to GMM for omics data
+# M-step to estimate the parameters related to GMM for omics data
 Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
                     model.name, K, ind.na, mu) {
   dz <- Z[ind.na != 3, ]
@@ -130,21 +130,21 @@ Mstep_Z <- function(Z, r, selectZ, penalty.mu, penalty.cov,
 }
 
 
-#' calculate the log-sum-exp
+# calculate the log-sum-exp
 lse <- function(vec) {
   c <- max(vec)
   return(c + log(sum(exp(vec - c))))
 }
 
-#' use the log-sum-exp trick to normalize a vector to probability
-#' @param vec  a vector of length K
+# use the log-sum-exp trick to normalize a vector to probability
+# @param vec  a vector of length K
 lse_vec <- function(vec) {
   norm_vec <- exp(vec - lse(vec))
   return(norm_vec)
 }
 
 
-#' M-step: obtain sparse mean for omics data via LASSO penalty
+# M-step: obtain sparse mean for omics data via LASSO penalty
 est_mu <- function(j, rho, z, r, mu, wi){
   p <- ncol(z)
   res.mu <- rep(0, p)
@@ -170,7 +170,7 @@ est_mu <- function(j, rho, z, r, mu, wi){
 }
 
 
-#' Print the output of \code{est.lucid}
+#' @title Print the output of \code{est.lucid}
 #'
 #' @param x An object of LUCID model, returned by \code{est.lucid}
 #' @param ... Other arguments to be passed to \code{print}

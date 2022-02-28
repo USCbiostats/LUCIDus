@@ -2,7 +2,7 @@
 % Please edit documentation in R/missing.R
 \name{fill_data}
 \alias{fill_data}
-\title{Fill in missing data by optimizing the likelihood function}
+\title{Impute missing data by optimizing the likelihood function}
 \usage{
 fill_data(obs, mu, sigma, p, index)
 }
@@ -22,5 +22,5 @@ or not in the raw data}
 an observation with updated imputed value
 }
 \description{
-Fill in missing data by optimizing the likelihood function
+Impute missing data by optimizing the likelihood function
 }

@@ -1,4 +1,4 @@
-#' @titl Summarize results of LUCID model
+#' @title Summarize results of LUCID model
 #'
 #' @param object A LUCID model fitted by \code{\link{est.lucid}}
 #' @param boot.se An object returned by \code{\link{boot.lucid}}, 
@@ -20,13 +20,13 @@
 #' boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
 #' 
 #' # summarize lucid model
-#' summary(fit1)
+#' summary_lucid(fit1)
 #' 
 #' # summarize lucid model with bootstrap CIs
-#' summary(fit1, boot.se = boot1)
+#' summary_lucid(fit1, boot.se = boot1)
 #' }
 
-summary.lucid <- function(object, boot.se = NULL, ...){
+summary_lucid <- function(object, boot.se = NULL){
   s1 <- object$select$selectG
   s2 <- object$select$selectZ
   nG <- sum(s1)

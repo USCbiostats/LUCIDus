@@ -8,6 +8,9 @@ gen_ci(x, conf = 0.95)
 }
 \arguments{
 \item{x}{an object return by boot function}
+
+\item{conf}{A numeric scalar between 0 and 1 to specify confidence level(s) 
+of the required interval(s).}
 }
 \value{
 a matrix, the first column is t0 statistic from original model

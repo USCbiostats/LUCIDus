@@ -1,10 +1,10 @@
-#' Check missing patterns in omics data Z
-#' @return 
-#' index - indeces for missing values in omics data
-#' indicator_na - missing pattern for each observation
-#' impute_flag - flag to initialize imputation. Only happens when sporadic missing
-#' pattern is observed
-#' 
+# Check missing patterns in omics data Z
+# @return 
+# index - indeces for missing values in omics data
+# indicator_na - missing pattern for each observation
+# impute_flag - flag to initialize imputation. Only happens when sporadic missing
+# pattern is observed
+# 
 check_na <- function(Z){
   N <- nrow(Z)
   M <- ncol(Z)
@@ -24,9 +24,9 @@ check_na <- function(Z){
 
 
 
-#' I-step of LUCID: impute missing data in Z by maximizing the likelihood
-#' @return a complete dataset of Z
-#' 
+# I-step of LUCID: impute missing data in Z by maximizing the likelihood
+# @return a complete dataset of Z
+# 
 Istep_Z <- function(Z, p, mu, sigma, index){
   N <- nrow(Z)
   Z_fill <- t(sapply(1:N, function(i) {
@@ -36,7 +36,7 @@ Istep_Z <- function(Z, p, mu, sigma, index){
 }
 
 
-#' Fill in missing data by optimizing the likelihood function
+#' @title Impute missing data by optimizing the likelihood function
 #'
 #' @param obs a vector of length M
 #' @param mu a matrix of size M x K
@@ -73,8 +73,7 @@ fill_data <- function(obs, mu, sigma, p, index) {
   return(obs)
 }
 
-#' Calculate the first half of the imputed values
-#' 
+# Calculate the first half of the imputed values
 fill_data_help1 <- function(obs, B, mu, alpha, sigma_inv, P) {
   K <- ncol(mu)
   l <- length(B)
@@ -86,8 +85,7 @@ fill_data_help1 <- function(obs, B, mu, alpha, sigma_inv, P) {
 }
 
 
-#' Calcualte the second half of the imputed values
-#' 
+# Calculate the second half of the imputed values
 fill_data_help2 <- function(obs, A, B, mu, alpha, sigma_inv, P) {
   K <- ncol(mu)
   l <- length(B)
@@ -103,8 +101,7 @@ fill_data_help2 <- function(obs, A, B, mu, alpha, sigma_inv, P) {
   return(res)
 }
 
-#' impute missing values in Z by LOD
-#' 
+# impute missing values in Z by LOD
 fill_data_lod <- function(Z_vec) {
   na_ind <- is.na(Z_vec)
   if(any(na_ind)) {

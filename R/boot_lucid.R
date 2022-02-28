@@ -112,9 +112,8 @@ boot.lucid <- function(G,
 
 
 
-#' function to calculate parameters of LUCID model. use as statisitc input for
-#' boot function.
-#'
+# function to calculate parameters of LUCID model. use as statisitc input for
+# boot function.
 lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG) {
   d <- data[indices, ]
   G <- as.matrix(d[, 1:dimG])
@@ -157,9 +156,11 @@ lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG) {
 }
 
 
-#' generate bootstrp ci (normal, basic and percentile)
+#' @title generate bootstrp ci (normal, basic and percentile)
 #'
 #' @param x an object return by boot function
+#' @param conf A numeric scalar between 0 and 1 to specify confidence level(s) 
+#' of the required interval(s).
 #'
 #' @return a matrix, the first column is t0 statistic from original model
 #'

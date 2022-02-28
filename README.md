@@ -2,8 +2,8 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/LUCIDus?color=green)](https://cran.r-project.org/package=LUCIDus)
-![](https://cranlogs.r-pkg.org/badges/grand-total/LUCIDus?color=blue) [![](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
-
+![](https://cranlogs.r-pkg.org/badges/grand-total/LUCIDus?color=blue)
+[![](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
 
 ## Introduction
 
@@ -71,7 +71,7 @@ You can install the development version from
 
 ``` r
 install.packages("devtools")
-devtools::install_github("USCbiostats/LUCIDus")
+devtools::install_github("Yinqi93/LUCIDus")
 ```
 
 ## Example
@@ -159,9 +159,9 @@ For more details, see documentations for each function in the R package.
 
 ## Built With
 
-  - [devtools](https://cran.r-project.org/package=devtools) - Tools to
+-   [devtools](https://cran.r-project.org/package=devtools) - Tools to
     Make Developing R Packages Easier
-  - [roxygen2](https://cran.r-project.org/package=roxygen2) - In-Line
+-   [roxygen2](https://cran.r-project.org/package=roxygen2) - In-Line
     Documentation for R
 
 ## Versioning
@@ -169,12 +169,12 @@ For more details, see documentations for each function in the R package.
 The current version is 2.0.0.
 
 For the versions available, see the
-[Release](https://github.com/Yinqi93/LUCIDus/releases) on this
+[Release](https://github.com/USCbiostats/LUCIDus/releases) on this
 repository.
 
 ## Authors
 
-  - Yinqi Zhao
+-   Yinqi Zhao
 
 ## License
 
@@ -182,7 +182,7 @@ This project is licensed under the GPL-2 License.
 
 ## Acknowledgments
 
-  - Cheng Peng, Ph.D.
-  - David V. Conti, Ph.D.
-  - Zhao Yang, Ph.D.
-  - USC IMAGE P1 Group
+-   Cheng Peng, Ph.D.
+-   David V. Conti, Ph.D.
+-   Zhao Yang, Ph.D.
+-   USC IMAGE P1 Group
