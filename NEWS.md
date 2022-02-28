@@ -1,3 +1,20 @@
+# LUCIDus 2.1.4
+## New features
+1. `est.lucid` is enhanced to:
+  * Deal with missing values in omics data, inclduing sporadict missing pattern and list-wise missing pattern.
+  * Integrated imputation for missing values.
+  * Different approaches for initialization of EM algorithm, including mclust and guess from uniform distribution.
+2. New function `lucid`, a wrapper function to perform model selection over grid of K and penalty terms.
+3. `plot.lucid`: new option to change color for nodes and lines
+4. `boot.lucid`: return original output from `boot::boot` to allow user plot diagnostic figures.
+
+## Other changes
+1. Use log-sum-exponential trick and update the likelihood function to avoid under/overflow
+2. Major bug fixes for `boot.lucid` function
+3. Update simulated dataset 
+3. Update corresponding examples in documentation.
+
+
 # LUCIDus 2.1.0
 ## New features
 A new variable selection framework is applied to LUCID. 
