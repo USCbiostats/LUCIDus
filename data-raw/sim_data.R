@@ -32,7 +32,7 @@ t1 <- matrix(runif(nZ^2, min = -0.5, max = 0.5), nrow = nZ)
 sigma_XtoZ[[1]] <- t1 %*% t(t1)
 t2 <- matrix(runif(nZ^2, min = -0.5, max = 0.5), nrow = nZ)
 sigma_XtoZ[[2]] <- t2 %*% t(t2)
-set.seed(1008)
+set.seed(123)
 Z <- sim_Z(X, mu = coef_XtoZ, sigma = sigma_XtoZ)
 
 
@@ -88,8 +88,6 @@ Y_binary <- as.matrix(sim_Y_binary(X = X, CovX = CovX, beta = coef_XtoY))
 #                   seed = 1008)
 # summary(fit2)
 
-colnames(G) <- paste0("exposure", 1:10)
-colnames(Z) <- paste0("metabolite", 1:10)
 colnames(Y_binary) <- "liver_injury"
 colnames(CovX) <- c("Cov1", "Cov2")
 
@@ -97,5 +95,6 @@ sim_data <- list(G = G,
                  Z = Z,
                  Y_normal = Y_normal,
                  Y_binary = Y_binary,
-                 Covariate = CovX)
+                 Covariate = CovX,
+                 X = X)
 usethis::use_data(sim_data, overwrite = TRUE)

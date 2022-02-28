@@ -16,6 +16,7 @@
 #'     \item{Y_bninary}{Bianry outcome, liver injury status}
 #'     \item{Covariates}{2 continous covariates, can be treated as either CoX or 
 #'                       CoY}
+#'     \item{X}{Latent clusters}
 #' }
 "sim_data"
 
