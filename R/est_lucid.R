@@ -302,6 +302,9 @@ est.lucid <- function(G,
       invisible(capture.output(mclust.fit <- Mclust(Z[na_pattern$indicator_na != 3, ], 
                                                     G = K,
                                                     modelNames = modelName)))
+      if(is.null(mclust.fit)) {
+        stop("mclust failed for specified model - please set modelNames to `NULL` to conduct automatic model selection ")
+      }
       if(is.null(modelName)){
         model.best <- mclust.fit$modelName
       } else{
