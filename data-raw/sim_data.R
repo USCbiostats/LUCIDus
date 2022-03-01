@@ -70,11 +70,17 @@ colnames(Y_normal) <- "pfas_concentration"
 CovX <- t(replicate(N, rnorm(2)))
 
 # beta matrix: the first k elements represent the mean for each cluster
-coef_XtoY <- c(0, log(2.2), -0.2, 0.2)
+coef_XtoY <- c(0, log(2.2), -0.8, 0.8)
 set.seed(1008)
 Y_binary <- as.matrix(sim_Y_binary(X = X, CovX = CovX, beta = coef_XtoY))
 
-
+X_dummy <- model.matrix(~as.factor(X), data = data.frame(X = X))
+temp_dat <- cbind(Y_binary, X_dummy[, -1], CovX)
+colnames(temp_dat) <- c("Y", "X", "Cov1", "Cov2")
+temp_fit <- glm(Y ~., 
+                data = as.data.frame(temp_dat),
+                family = "binomial")
+summary(temp_fit)
 # test the simulated data
 # G <- as.matrix(G)
 # Z <- as.matrix(Z)
@@ -86,7 +92,7 @@ Y_binary <- as.matrix(sim_Y_binary(X = X, CovX = CovX, beta = coef_XtoY))
 #                   family = "binary",
 #                   K = 2,
 #                   seed = 1008)
-# summary(fit2)
+# summary_lucid(fit2)
 
 colnames(Y_binary) <- "liver_injury"
 colnames(CovX) <- c("Cov1", "Cov2")

@@ -9,6 +9,7 @@ binary <- function(K, ...){
   f.pYgX <- function(Y, gamma, K, N, CoY, dimCoY, itr){
     pYgX <- mat.or.vec(N, K)
     xb <- gamma$beta[1:K]
+    # xb[2:K] <- xb[1] + xb[2:K] # log odds for each latent cluster
     if(dimCoY != 0 && itr > 1){
       eCoY <- CoY %*% gamma$beta[(K + 1):(K + dimCoY)]
       xb <- sapply(xb, function(x) return(x + eCoY))
@@ -31,8 +32,8 @@ binary <- function(K, ...){
       Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
       Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family ="binomial")
-      beta <- coef(Yfit) # baseline odds
-      beta[2:K] <- beta[1] + beta[2:K] # log odds for each latent cluster
+      beta <- coef(Yfit) # log odds for latent cluster 1 (reference)
+      beta[2:K] <- beta[2:K] + beta[1] # log OR for rest latent cluster
     }
     return(structure(list(beta = beta,
                           sigma = NULL)))

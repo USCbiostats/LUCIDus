@@ -114,7 +114,7 @@ f.normal <- function(x, K, se){
 
 # summarize output of binary outcome
 f.binary <- function(x, K, se){
-  cat("(1) Y (binary outcome): odds (reference) and odds ratio of Y for each latent cluster (covariate)\n")
+  cat("(1) Y (binary outcome): log odds (reference) and log odds ratio of Y for each latent cluster (covariate)\n")
   gamma <- as.data.frame(x$beta)
   colnames(gamma) <- "gamma"
   if(is.null(se)){
