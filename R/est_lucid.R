@@ -215,6 +215,12 @@ est.lucid <- function(G,
     Ynames <- colnames(Y)
   }
   colnames(Y) <- Ynames
+  if(family == "binary") {
+    if(!(all(Y %in% c(0, 1)))) {
+      stop("Binary outcome should be coded as 0 and 1")
+    }
+  }
+  
   
   CoGnames <- NULL
   if(!is.null(CoG)) {

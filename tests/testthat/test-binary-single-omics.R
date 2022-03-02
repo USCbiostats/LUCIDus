@@ -113,3 +113,33 @@ test_that("check whether arguments of est.lucid work", {
   expect_equal(class(fit1$modelName), "character")
   expect_equal(fit2$init_par, "random")
 })
+
+
+test_that("check whether est.lucid throws an erorr with continuous outcome or outcome coded rather than 0 and 1", {
+  G <- sim_data$G[1:500, ]
+  Z <- sim_data$Z[1:500, ]
+  Y_binary <- sim_data$Y_binary[1:500, ]
+  Y_normal <- sim_data$Y_normal[1:500, ]
+  cov <- sim_data$Covariate[1:500, ]
+  i <- sample(1:2000, 1)
+  cat(paste("test4 - seed =", i, "\n"))
+  
+  expect_error(est.lucid(G = G,
+                         Z = Z,
+                         Y = Y_normal,
+                         CoY = cov,
+                         family = "binary",
+                         K = 2,
+                         seed = i,
+                         useY = TRUE,
+                         modelName = NULL))
+  expect_error(est.lucid(G = G,
+                         Z = Z,
+                         Y = Y_binary + 1,
+                         CoY = cov,
+                         family = "binary",
+                         K = 2,
+                         seed = i,
+                         useY = TRUE,
+                         modelName = NULL))
+})
