@@ -27,13 +27,18 @@
 predict_lucid <- function(model, 
                           G, 
                           Z, 
+                          Y = NULL,
                           CoG = NULL, 
                           CoY = NULL, 
                           response = TRUE, ...){
   
   if(class(model) != "lucid") {
-    stop("model should be fitted by est.lucid")
+    stop("model should be an object fitted by est.lucid")
   }
+  if(model$useY == TRUE & is.null(Y)) {
+    stop("LUCID is fitted via supervised learning, Y should be given to predict latent cluster")
+  }
+  
   ## 1.1 check data format ====
   if(is.null(G)) {
     stop("Input data 'G' is missing")
@@ -101,13 +106,14 @@ predict_lucid <- function(model,
                gamma = gamma,
                G = G, 
                Z = Z, 
+               Y = Y,
                CoY = CoY, 
                family.list, 
                K = K, 
                N = n,
                itr = 2,
                dimCoY = dimCoY, 
-               useY = FALSE, 
+               useY = model$useY, 
                ind.na = na_pattern$indicator_na)
   
   # normalize the log-likelihood to probability

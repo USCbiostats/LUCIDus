@@ -503,7 +503,9 @@ est.lucid <- function(G,
                   family = family,
                   select = list(selectG = selectG, selectZ = selectZ), 
                   useY = useY,
-                  Z = Z)
+                  Z = Z,
+                  init_impute = init_impute,
+                  init_par = init_par)
   class(results) <- c("lucid")
   return(results)
 }

@@ -17,9 +17,11 @@ binary <- function(K, ...){
     p <- exp(xb) / (1 + exp(xb))
     for(i in 1:K){
       if(dimCoY == 0 || itr == 1){
-        pYgX[, i] <- log(p[i]^Y * (1 - p[i])^(1 - Y))
+        # pYgX[, i] <- log(p[i]^Y * (1 - p[i])^(1 - Y))
+        pYgX[, i] <- dbinom(Y, 1, prob = p[i], log = TRUE)
       } else{
-        pYgX[, i] <- sapply(1:N, function(x) return(log(p[x, i]^Y[x] * (1 - p[x, i])^(1 - Y[x]))))
+        # pYgX[, i] <- sapply(1:N, function(x) return(log(p[x, i]^Y[x] * (1 - p[x, i])^(1 - Y[x]))))
+        pYgX[, i] <- dbinom(Y, 1, prob = p[, i], log = TRUE)
       }
     }
     return(pYgX)
@@ -47,7 +49,6 @@ binary <- function(K, ...){
     for (i in 1:K) {
       var[[i]] <- sigma[, , i]
     }
-    # ref <- gamma$beta[1:K][index == 1]
     gamma$beta[1:K] <- gamma$beta[1:K][index]
     names(gamma$beta)[1:K] <- c("LC1(reference)", paste0("LC", 2:K))
     return(structure(list(beta = beta, 

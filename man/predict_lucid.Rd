@@ -4,7 +4,16 @@
 \alias{predict_lucid}
 \title{Predict cluster assignment and outcome based on LUCID model}
 \usage{
-predict_lucid(model, G, Z, CoG = NULL, CoY = NULL, response = TRUE, ...)
+predict_lucid(
+  model,
+  G,
+  Z,
+  Y = NULL,
+  CoG = NULL,
+  CoY = NULL,
+  response = TRUE,
+  ...
+)
 }
 \arguments{
 \item{model}{A model fitted and returned by \code{\link{est.lucid}}}
