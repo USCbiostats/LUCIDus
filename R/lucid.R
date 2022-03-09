@@ -98,7 +98,7 @@ lucid <- function(G,
     if("try-error" %in% class(fit)) {
       tune_list[i, 5] <- NA
     } else {
-      tune_list[i, 5] <- summary(fit)$BIC
+      tune_list[i, 5] <- summary_lucid(fit)$BIC
     }
     res_model[[i]] <- fit
   }

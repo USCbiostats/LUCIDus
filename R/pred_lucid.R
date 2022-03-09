@@ -1,12 +1,21 @@
 #' @title Predict cluster assignment and outcome based on LUCID model
 #'
 #' @param model A model fitted and returned by \code{\link{est.lucid}}
-#' @param G A new data set of genetic/environmental factors
-#' @param Z A new data set of biomarkers
-#' @param CoG Optional. A new data set of covariates included in the G->X analysis
-#' @param CoY Optional. A new data set of covariates included in the X->Y analysis
-#' @param response Report the posterior distribution of cluster assignment (and the probability of binary outcome), default is TRUE
-#' @param ... Other parameters to be passed to \code{predict}
+#' @param G Exposures, a numeric vector, matrix, or data frame. Categorical variable 
+#' should be transformed into dummy variables. If a matrix or data frame, rows 
+#' represent observations and columns correspond to variables.
+#' @param Z Omics data, a numeric matrix or data frame. Rows correspond to observations
+#' and columns correspond to variables.
+#' @param Y Outcome, a numeric vector. Categorical variable is not allowed. Binary 
+#' outcome should be coded as 0 and 1.
+#' @param CoG Optional, covariates to be adjusted for estimating the latent cluster.
+#' A numeric vector, matrix or data frame. Categorical variable should be transformed 
+#' into dummy variables. 
+#' @param CoY Optional, covariates to be adjusted for estimating the association 
+#' between latent cluster and the outcome. A numeric vector, matrix or data frame. 
+#' Categorical variable should be transformed into dummy variables.
+#' @param response If TRUE, when predicting binary outcome, the response will be
+#' returned. If FALSE, the linear predictor is returned.
 #' @return A list contains predicted latent cluster and outcome for each observation
 #' @export
 #'
@@ -30,7 +39,7 @@ predict_lucid <- function(model,
                           Y = NULL,
                           CoG = NULL, 
                           CoY = NULL, 
-                          response = TRUE, ...){
+                          response = TRUE){
   
   if(class(model) != "lucid") {
     stop("model should be an object fitted by est.lucid")

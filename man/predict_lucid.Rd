@@ -4,31 +4,31 @@
 \alias{predict_lucid}
 \title{Predict cluster assignment and outcome based on LUCID model}
 \usage{
-predict_lucid(
-  model,
-  G,
-  Z,
-  Y = NULL,
-  CoG = NULL,
-  CoY = NULL,
-  response = TRUE,
-  ...
-)
+predict_lucid(model, G, Z, Y = NULL, CoG = NULL, CoY = NULL, response = TRUE)
 }
 \arguments{
 \item{model}{A model fitted and returned by \code{\link{est.lucid}}}
 
-\item{G}{A new data set of genetic/environmental factors}
+\item{G}{Exposures, a numeric vector, matrix, or data frame. Categorical variable 
+should be transformed into dummy variables. If a matrix or data frame, rows 
+represent observations and columns correspond to variables.}
 
-\item{Z}{A new data set of biomarkers}
+\item{Z}{Omics data, a numeric matrix or data frame. Rows correspond to observations
+and columns correspond to variables.}
 
-\item{CoG}{Optional. A new data set of covariates included in the G->X analysis}
+\item{Y}{Outcome, a numeric vector. Categorical variable is not allowed. Binary 
+outcome should be coded as 0 and 1.}
 
-\item{CoY}{Optional. A new data set of covariates included in the X->Y analysis}
+\item{CoG}{Optional, covariates to be adjusted for estimating the latent cluster.
+A numeric vector, matrix or data frame. Categorical variable should be transformed 
+into dummy variables.}
 
-\item{response}{Report the posterior distribution of cluster assignment (and the probability of binary outcome), default is TRUE}
+\item{CoY}{Optional, covariates to be adjusted for estimating the association 
+between latent cluster and the outcome. A numeric vector, matrix or data frame. 
+Categorical variable should be transformed into dummy variables.}
 
-\item{...}{Other parameters to be passed to \code{predict}}
+\item{response}{If TRUE, when predicting binary outcome, the response will be
+returned. If FALSE, the linear predictor is returned.}
 }
 \value{
 A list contains predicted latent cluster and outcome for each observation
