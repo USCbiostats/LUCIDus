@@ -28,5 +28,6 @@ Imports:
     boot,
     glasso,
     glmnet,
-    jsonlite
+    jsonlite,
+    mix
 Config/testthat/edition: 3
