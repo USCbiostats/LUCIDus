@@ -70,7 +70,8 @@ At each iteration, in the E-step, we compute $r_{ij}$; in the M-step, parameters
 
 ## Fit LUCID model
 We use `est.lucid()` function to fit LUCID model. 
-```
+```{r, eval=FALSE}
+library(LUCIDus)
 # use simulated data
 G <- sim_data$G
 Z <- sim_data$Z
@@ -91,13 +92,13 @@ fit3 <- est.lucid(G = G, Z = Z, Y = Y_binary, CoY = cov, family = "binary", K = 
 
 User should be aware of option `useY`. By default, `useY = TRUE`, which means we fit LUCID model in a supervised fashion and incorporate information of outcome to define clusters. On the other hand, by setting `useY = FALSE`, we are fitting LUCID model in an unsupervised fashion, only using information from exposure and omics data to define clusters.
 
-```
+```{r, eval=FALSE}
 # fit LUCID model without useing information from outcome
 fit4 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, useY = FALSE, seed = 1008)
 ```
 
 For LUCID model, we use `mclust` method to optimize likelihood related to omcis data with respect to mean and covariance structure. By default, a `VVV` model is used to estimate covariance structure for omics data, which means the volume, shape and orientation of covariance matrices varies across different clusters. User can set `modelName = NULL` to let `est.lucid` select the optimal covariance model, or specify a specific covariance model for LUCID. Details of available models can be found in `mclust::mclustModelNames` under multivariate mixture section.
-```
+```{r, eval=FALSE}
 # fit LUCID model with automatic selection on optimal covariance models
 fit5 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, modelName = NULL, seed = 1008)
 # check the optimal model
@@ -108,7 +109,7 @@ fit6 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, modelNam
 ```
 
 In terms of initialization of EM algorithm, `est.lucid` uses either random initialization based on uniform distribution or a heuristic method based on `mclust`. By default, initialization of EM algorithm uses `mclsut`. However, if it takes long time, we recommend user turn to random initialization by setting  `init_par = "random`.
-```
+```{r, eval=FALSE}
 # initialize EM algorithm by mclust
 fit7 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, init_par = "mclust" , seed = 1008)
 
@@ -117,22 +118,22 @@ fit8 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, init_par
 ```
 
 To ensure replicable results, user can set random seed by using the option `seed`. The LUCID model can be summarized via `summary_lucid()`.
-```
+```{r, eval=FALSE}
 # summarize lucid results
 summary_lucid(fit1)
 ```
 
 ## Visualization of LUCID model
 We use a Sankey diagram to visualize LUCID model. In the Sankey diagram, each node represents a variable in LUCID model (exposure, omics data and outcome), each line corresponds to an association between two variables. The color of line indicates the direction of association (by default, dark blue refers to positive association while light blue refers to negative association) and the width of line indicates the magnitude of association (large effect corresponds to wider line).
-```
+```{r, eval=FALSE}
 # visualze lucid model via a Snakey diagram
 plot_lucid(fit1)
 ```
-```{r out.width="50%"}
+```{r out.width="50%", include=FALSE}
 knitr::include_graphics("sankey.png")
 ```
 
-```
+```{r, eval=FALSE}
 # change node color
 plot_lucid(fit1, G_color = "yellow")
 plot_lucid(fit1, Z_color = "red")
@@ -144,7 +145,7 @@ plot_lucid(fit1, pos_link_color = "red", neg_link_color = "green")
 
 ## LUCID incorporating missing omics data
 The latest version of LUCID allows missingness in omics data. We consider 2 missing patterns in omics data: (1) list-wise missing pattern that only a subset of observations have measured omics data and (2) sporadic missing pattern that missingness is completely at random. We implement a likelihood partition for (1) and an integrated imputation based EM algorithm for (2).
-```
+```{r, eval=FALSE}
 # fit LUCID model with block-wise missing pattern in omics data
 Z_miss_1 <- Z
 Z_miss_1[sample(1:nrow(Z), 0.3 * nrow(Z)), ] <- NA
@@ -157,7 +158,7 @@ Z_miss_2[index] <- NA
 fit10 <- est.lucid(G = G, Z = Z_miss_2, Y = Y_normal, family = "normal", K = 2, seed = 1008) 
 ```
 For sporadic missing pattern, `est.lucid` uses `mclust::imputeData` to initialize the imputation. The imputed omics data is also returned by `est.lucid`.
-```
+```{r, eval=FALSE}
 # imputed omics dataset
 fit10$Z
 ```
@@ -169,7 +170,7 @@ The integrated variable selection for LUCID is built upon penalized EM algorithm
 p_{\lambda}(\Theta) = \lambda_{ \mu}\sum_{j=1}^k\sum_{l=1}^m|\mu_{jl}| + \lambda_{ W}\sum_{j=1}^k \sum_{l,o}|w_{j;l,o}|
 \end{equation}
 where $W = \Sigma^{-1}$.
-```
+```{r, eval=FALSE}
 # use LUCID model to conduct integrated variable selection
 # select exposure
 fit6 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
@@ -181,12 +182,12 @@ K = 2, seed = 1008, Rho_Z_Mu = 90, Rho_Z_Cov = 0.1, init_par = "random")
 
 ## Model selection
 For clustering analysis, usually we need to specify the number of clusters a priori. For LUCID, we use Bayesian Information Criteria (BIC) to choose the optimal number of latent clusters. The strategy is to fit LUCID model over a grid of $K$, and choose the optimal model with lowest BIC. This can be done via the wrapper function `lucid`.
-```
+```{r, eval=FALSE}
 # tune lucid over a grid of K (note this function may take time to run)
 tune_lucid <- lucid(G = G, Z = Z, Y = Y_normal, K =2:5)
 ```
 Check the tuning process by
-```
+```{r, eval=FALSE}
 > tune_lucid$tune_list
   K Rho_G Rho_Z_Mu Rho_Z_Cov      BIC
 1 2     0        0         0 46917.94
@@ -195,14 +196,14 @@ Check the tuning process by
 4 5     0        0         0 49276.93
 ```
 The optimal model (K = 2) is returned as
-```
+```{r, eval=FALSE}
 tune_lucid$best_model
 ```
 
 
 ## Bootstrap inference
 We use a bootstrap method to conduct inference for LUCID. 
-```
+```{r, eval=FALSE}
 # conduct bootstrap resampling
 boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
 
@@ -210,7 +211,7 @@ boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
 boot2 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100, conf = 0.9)
 ```
 Diagnostic plot for bootstranp sampling is drawn by
-```
+```{r, eval=FALSE}
 # check distribution for bootstrap replicates of the variable of interest
 plot(boot1$bootstrap, 1)
 ```
