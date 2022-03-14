@@ -30,7 +30,7 @@ You can install the development version of LUCIDus from
 devtools::install_github("USCbiostats/LUCIDus")
 
 # install package with vignettes
-devtools::install_github(build_vignettes = TRUE)
+devtools::install_github("USCbiostats/LUCIDus", build_vignettes = TRUE)
 ```
 
 ## Fit LUCID model
