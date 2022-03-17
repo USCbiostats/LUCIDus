@@ -50,6 +50,8 @@
 #' @param init_par Method to initialize the EM algorithm. "mclust" will use mclust
 #' model to initialize parameters; "random" initialize parameters from uniform 
 #' distribution.
+#' @param verbose A flag indicates whether detailed information for each iteration
+#' of EM algorithm is printed in console. Default is FALSE.
 #' 
 #' 
 #' 
@@ -146,7 +148,8 @@ est.lucid <- function(G,
                       modelName = "VVV",
                       seed = 123,
                       init_impute = c("mclust", "lod"),
-                      init_par = c("mclust", "random")) {
+                      init_par = c("mclust", "random"),
+                      verbose = FALSE) {
   
   # 1. basic setup for estimation function =============
   family <- match.arg(family)
@@ -337,6 +340,7 @@ est.lucid <- function(G,
     
     
     # start EM algorithm 
+    cat("Fitting LUCID model \n")
     res.loglik <- -Inf
     itr <- 0
     while(!convergence && itr <= max_itr){
@@ -365,10 +369,12 @@ est.lucid <- function(G,
       res.r <- t(apply(new.likelihood, 1, lse_vec))
 
       if(!all(is.finite(res.r))){
-        cat("iteration", itr,": EM algorithm collapsed: invalid estiamtes due to over/underflow, try another seed \n")
+        cat("iteration", itr,": EM algorithm collapsed: invalid estiamtes due to over/underflow, try LUCID with another seed \n")
         break
       } else{
-        cat("iteration", itr,": E-step finished.\n")
+        if(isTRUE(verbose)) {
+          cat("iteration", itr,": E-step finished.\n")  
+        }
       }
       
       
@@ -391,7 +397,7 @@ est.lucid <- function(G,
                               ind.na = na_pattern$indicator_na, 
                               mu = res.mu)
       if(is.null(new.mu.sigma$mu)){
-        print("variable selection failed, restart lucid \n")
+        cat("variable selection failed, try LUCID with another seed \n")
         break
       }
       if(useY){
@@ -417,7 +423,7 @@ est.lucid <- function(G,
       singular <- try(sapply(1:K, function(x) return(solve(new.mu.sigma$sigma[, , x]))))
       check.singular <- "try-error" %in% class(singular)
       if(!check.value || check.singular){
-        cat("iteration", itr,": Invalid estimates \n")
+        cat("iteration", itr,": Invalid estimates, try LUCID with another seed \n")
         break
       } else{
         res.beta <- new.beta
@@ -435,11 +441,16 @@ est.lucid <- function(G,
         if(Select_Z) {
           new.loglik <- new.loglik - Rho_Z_Mu * sum(abs(res.mu)) - Rho_Z_Cov * sum(abs(res.sigma))
         }
-        if(Select_G | Select_Z) {
-          cat("iteration", itr,": M-step finished, ", "penalized loglike = ", sprintf("%.3f", new.loglik), "\n")
-        } else{
-          cat("iteration", itr,": M-step finished, ", "loglike = ", sprintf("%.3f", new.loglik), "\n")
+        if(isTRUE(verbose)) {
+          if(Select_G | Select_Z) {
+            cat("iteration", itr,": M-step finished, ", "penalized loglike = ", sprintf("%.3f", new.loglik), "\n")
+          } else{
+            cat("iteration", itr,": M-step finished, ", "loglike = ", sprintf("%.3f", new.loglik), "\n")
+          }
+        } else {
+          cat(".")
         }
+        
         if(abs(res.loglik - new.loglik) < tol){
           convergence <- TRUE
           cat("Success: LUCID converges!", "\n")

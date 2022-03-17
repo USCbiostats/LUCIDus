@@ -1,4 +1,4 @@
-# use HELIX Data Challenge data as an example in LUCIDus package
+# use HELIX Data from ISGlobal data challenge as an example in LUCIDus package
 # 2022-02-24
 rm(list = ls())
 
@@ -93,3 +93,8 @@ saveRDS(tune_mod,
 # tune_mod <- readRDS("../helix_data/tune_mod.rds")
 # helix_data <- readRDS("../helix_data/helix_data.rds")
 usethis::use_data(helix_data, overwrite = TRUE)
+
+
+# 2. Analysis based on LUCID ====
+
+

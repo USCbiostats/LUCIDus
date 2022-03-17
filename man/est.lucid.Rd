@@ -22,7 +22,8 @@ est.lucid(
   modelName = "VVV",
   seed = 123,
   init_impute = c("mclust", "lod"),
-  init_par = c("mclust", "random")
+  init_par = c("mclust", "random"),
+  verbose = FALSE
 )
 }
 \arguments{
@@ -88,6 +89,9 @@ LOD / sqrt(2). LOD is determined by the minimum of each variable in omics data.}
 \item{init_par}{Method to initialize the EM algorithm. "mclust" will use mclust
 model to initialize parameters; "random" initialize parameters from uniform 
 distribution.}
+
+\item{verbose}{A flag indicates whether detailed information for each iteration
+of EM algorithm is printed in console. Default is FALSE.}
 }
 \value{
 A list which contains the several features of LUCID, including:
