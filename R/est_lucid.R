@@ -307,7 +307,7 @@ est.lucid <- function(G,
     # initialize mu and sigma
     # initialize by mclust
     if(init_par == "mclust") {
-      cat("Initialize LUCID with mclust \n\n")
+      cat("Initialize LUCID with mclust \n")
       invisible(capture.output(mclust.fit <- Mclust(Z[na_pattern$indicator_na != 3, ], 
                                                     G = K,
                                                     modelNames = modelName)))
@@ -322,7 +322,7 @@ est.lucid <- function(G,
       res.mu <- t(mclust.fit$parameters$mean)
       res.sigma <- mclust.fit$parameters$variance$sigma
     } else { # initialize by random guess
-      cat("Initialize LUCID with random values from uniform distribution \n\n")
+      cat("Initialize LUCID with random values from uniform distribution \n")
       if(is.null(modelName)){
         model.best <- "VVV"
         warning("GMM model for LUCID is not specified, 'VVV' model is used by default")
@@ -340,7 +340,7 @@ est.lucid <- function(G,
     
     
     # start EM algorithm 
-    cat("Fitting LUCID model \n")
+    cat(paste0("Fitting LUCID model (K = ", K, ") \n"))
     res.loglik <- -Inf
     itr <- 0
     while(!convergence && itr <= max_itr){
@@ -453,7 +453,7 @@ est.lucid <- function(G,
         
         if(abs(res.loglik - new.loglik) < tol){
           convergence <- TRUE
-          cat("Success: LUCID converges!", "\n")
+          cat("Success: LUCID converges!", "\n\n")
         }
         res.loglik <- new.loglik
       }

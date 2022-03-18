@@ -9,7 +9,6 @@ binary <- function(K, ...){
   f.pYgX <- function(Y, gamma, K, N, CoY, dimCoY, itr){
     pYgX <- mat.or.vec(N, K)
     xb <- gamma$beta[1:K]
-    # xb[2:K] <- xb[1] + xb[2:K] # log odds for each latent cluster
     if(dimCoY != 0 && itr > 1){
       eCoY <- CoY %*% gamma$beta[(K + 1):(K + dimCoY)]
       xb <- sapply(xb, function(x) return(x + eCoY))
@@ -17,10 +16,8 @@ binary <- function(K, ...){
     p <- exp(xb) / (1 + exp(xb))
     for(i in 1:K){
       if(dimCoY == 0 || itr == 1){
-        # pYgX[, i] <- log(p[i]^Y * (1 - p[i])^(1 - Y))
         pYgX[, i] <- dbinom(Y, 1, prob = p[i], log = TRUE)
       } else{
-        # pYgX[, i] <- sapply(1:N, function(x) return(log(p[x, i]^Y[x] * (1 - p[x, i])^(1 - Y[x]))))
         pYgX[, i] <- dbinom(Y, 1, prob = p[, i], log = TRUE)
       }
     }
@@ -34,8 +31,8 @@ binary <- function(K, ...){
       Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
       Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family ="binomial")
-      beta <- coef(Yfit) # log odds for latent cluster 1 (reference)
-      beta[2:K] <- beta[2:K] + beta[1] # log OR for rest latent cluster
+      beta <- coef(Yfit) 
+      beta[2:K] <- beta[2:K] + beta[1] # log odds for all latent cluster
     }
     return(structure(list(beta = beta,
                           sigma = NULL)))
@@ -44,12 +41,14 @@ binary <- function(K, ...){
   f.switch <- function(beta, mu, sigma, gamma, K){
     var <- vector(mode = "list", length = K)
     index <- order(gamma$beta[1:K])
-    beta <- t(t(beta) - beta[index == 1, ])[index, ]
+    beta <- t(t(beta) - beta[index[1], ])[index, ]
     mu <- mu[index, ]
     for (i in 1:K) {
       var[[i]] <- sigma[, , i]
     }
     gamma$beta[1:K] <- gamma$beta[1:K][index]
+    # transfer log odds back to log OR for LC2 to LCK
+    gamma$beta[2:K] <- gamma$beta[2:K] - gamma$beta[1]
     names(gamma$beta)[1:K] <- c("LC1(reference)", paste0("LC", 2:K))
     return(structure(list(beta = beta, 
                           mu = mu,

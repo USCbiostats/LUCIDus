@@ -50,12 +50,6 @@ normal <- function(K, ...){
       var[[i]] <- sigma[, , i]
     }
     gamma$beta[1:K] <- gamma$beta[index]
-    # if(!is.null(Tr)){
-    #   int <- c(0, gamma$beta[(K + 2):(2 * K)])
-    #   gamma$beta[K + 1] <- gamma$beta[K + 1] + int[index == 1]
-    #   int <- (int - int[index == 1])[index]
-    #   gamma$beta[(K + 2):(2 * K)] <- int[-1]
-    # }
     gamma$sigma <- gamma$sigma[index]
     return(structure(list(beta = beta, 
                           mu = mu,
