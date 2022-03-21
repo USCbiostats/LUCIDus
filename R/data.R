@@ -32,9 +32,9 @@
 #' @format A list with 4 matrices corresponding to exposures (G), omics data (Z),
 #' outcome (Y) and covariates (CoY)
 #' \describe{
-#'     \item{exposure}{18 variables, representing children/maternal exposure to 
+#'     \item{exposure}{8 variables, representing children/maternal exposure to 
 #'     organochlorines}
-#'     \item{omics}{35 untargeted metabolites and 10 proteins}
+#'     \item{omics}{10 proteins}
 #'     \item{outcome}{A continuous outcome for BMI-z score based on WHO standard,
 #'     A binary outcome for body mass index categories at 6-11 years old based on 
 #'     WHO reference (0: Thinness or Normal; 1: Overweight or Obese)}

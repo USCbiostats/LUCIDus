@@ -96,7 +96,7 @@ print.sumlucid <- function(x, ...){
 # summarize output of normal outcome
 f.normal <- function(x, K, se){
   
-  cat("(1) Y (normal outcome): mean of Y for each latent cluster (and effect of covariates) \n")
+  cat("(1) Y (normal outcome): mean of Y for each latent cluster (and effect of covariates if included) \n")
   
   if(!is.null(se)){
     y <- se
@@ -112,7 +112,7 @@ f.normal <- function(x, K, se){
 
 # summarize output of binary outcome
 f.binary <- function(x, K, se){
-  cat("(1) Y (binary outcome): log odds of Y for cluster 1 (reference) and log OR for rest cluster (and log OR of covariate)\n")
+  cat("(1) Y (binary outcome): log odds of Y for cluster 1 (reference) and log OR for rest cluster (and log OR of covariate if included)\n")
   gamma <- as.data.frame(x$beta)
   colnames(gamma) <- "gamma"
   if(is.null(se)){
