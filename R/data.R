@@ -33,12 +33,12 @@
 #' outcome (Y) and covariates (CoY)
 #' \describe{
 #'     \item{exposure}{8 variables, representing children/maternal exposure to 
-#'     organochlorines}
+#'     environmental pollutants}
 #'     \item{omics}{10 proteins}
 #'     \item{outcome}{A continuous outcome for BMI-z score based on WHO standard,
 #'     A binary outcome for body mass index categories at 6-11 years old based on 
 #'     WHO reference (0: Thinness or Normal; 1: Overweight or Obese)}
-#'     \item{covariate}{5 covariates including mother's bmi, child sex, maternal
-#'     age, study cohort and maternal education level}
+#'     \item{covariate}{3 covariates including mother's bmi, child sex, maternal
+#'     age}
 #' }
 "helix_data"

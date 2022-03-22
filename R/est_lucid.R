@@ -420,9 +420,8 @@ est.lucid <- function(G,
       check.value <- all(is.finite(new.beta), 
                          is.finite(unlist(new.mu.sigma)), 
                          check.gamma)
-      singular <- try(sapply(1:K, function(x) return(solve(new.mu.sigma$sigma[, , x]))))
-      check.singular <- "try-error" %in% class(singular)
-      if(!check.value || check.singular){
+      
+      if(!check.value){
         cat("iteration", itr,": Invalid estimates, try LUCID with another seed \n")
         break
       } else{

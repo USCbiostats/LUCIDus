@@ -81,14 +81,18 @@ print.sumlucid <- function(x, ...){
   }
   cat("\n")
   cat("(3) E: odds ratio of being assigned to each latent cluster for each exposure \n")
-  dd <- as.matrix(as.data.frame(beta)[2:K, 2:ncol(beta)])
-  g.or <- data.frame(beta = unlist(split(dd, row(dd))))
-  rownames(g.or) <- paste0(colnames(beta)[-1], ".cluster", sapply(2:K, function(x) return(rep(x, dim1))))
-  if(is.null(x$boot.se)){
-    g.or$OR <- exp(g.or$beta)
-    print(g.or)
-  } else{
-    print(x$boot.se$beta)
+  if(is.null(ncol(beta))) {
+    cat("no exposure is selected given current penalty Rho_G, please use a smaller penalty")
+  } else {
+    dd <- as.matrix(as.data.frame(beta)[2:K, 2:ncol(beta)])
+    g.or <- data.frame(beta = unlist(split(dd, row(dd))))
+    rownames(g.or) <- paste0(colnames(beta)[-1], ".cluster", sapply(2:K, function(x) return(rep(x, dim1))))
+    if(is.null(x$boot.se)){
+      g.or$OR <- exp(g.or$beta)
+      print(g.or)
+    } else{
+      print(x$boot.se$beta)
+    }
   }
 }
 

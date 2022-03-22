@@ -37,7 +37,7 @@
 #' @export
 #' 
 #' @import boot
-#' @import parallel
+#' @import progress
 #' 
 #' @examples
 #' \dontrun{
@@ -66,8 +66,7 @@ boot.lucid <- function(G,
                        CoY = NULL, 
                        model, 
                        conf = 0.95,
-                       R = 100, 
-                       ncpus = detectCores() - 1) {
+                       R = 100) {
   # prepare data for bootstrap (boot function require data in a matrix form, 
   # list data structure doesn't work)
   if(!is.null(model$selectG) | !is.null(model$selectZ)) {
@@ -85,16 +84,17 @@ boot.lucid <- function(G,
   
   # bootstrap
   cat(paste0("Use Bootstrap resampling to derive ", 100 * conf, "% CI for LUCID \n"))
+  #initialize progress bar object
+  pb <- progress::progress_bar$new(total = R + 1) 
   bootstrap <- boot(data = alldata, 
                     statistic = lucid_par, 
                     R = R, 
-                    parallel = "multicore", 
-                    ncpus = ncpus,
                     dimG = dimG, 
                     dimZ = dimZ, 
                     dimCoY = dimCoY, 
                     dimCoG = dimCoG, 
-                    model = model)
+                    model = model,
+                    prog = pb)
   
   # bootstrap CIs
   ci <- gen_ci(bootstrap,
@@ -114,7 +114,12 @@ boot.lucid <- function(G,
 
 # function to calculate parameters of LUCID model. use as statisitc input for
 # boot function.
-lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG) {
+lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG, prog) {
+  #display progress with each run of the function
+  prog$tick()
+  Sys.sleep(0.01)
+  
+  # fit lucid model
   d <- data[indices, ]
   G <- as.matrix(d[, 1:dimG])
   Z <- as.matrix(d[, (dimG + 1):(dimG + dimZ)])
@@ -129,28 +134,33 @@ lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG) {
   if(!is.null(dimCoY) && is.null(dimCoG)){
     CoY <- as.matrix(d[, (dimG + dimZ + 2):ncol(d)])
   } 
-  converge <- FALSE
-  while(!converge) {
-    seed <- sample(1:2000, 1)
-    try_lucid <- try(est.lucid(G = G, 
-                               Z = Z, 
-                               Y = Y,
-                               CoY = CoY, 
-                               CoG = CoG,
-                               family = model$family, 
-                               modelName = model$modelName, 
-                               K = model$K, 
-                               init_impute = model$init_impute,
-                               init_par = model$init_par,
-                               seed = seed))
-    if("try-error" %in% class(try_lucid)){
-      next
-    } else{
-      par_lucid <- c(try_lucid$pars$beta[-1, -1],
-                     as.vector(t(try_lucid$pars$mu)),
-                     try_lucid$pars$gamma$beta)
-      converge <- TRUE
+  seed <- sample(1:2000, 1)
+  invisible(capture.output(try_lucid <- try(est.lucid(G = G, 
+                                                      Z = Z, 
+                                                      Y = Y,
+                                                      CoY = CoY, 
+                                                      CoG = CoG,
+                                                      family = model$family, 
+                                                      # modelName = model$modelName, 
+                                                      modelName = NULL,
+                                                      K = model$K, 
+                                                      init_impute = model$init_impute,
+                                                      init_par = model$init_par,
+                                                      seed = seed))))
+  if("try-error" %in% class(try_lucid)){
+    n_par <- (K - 1) * dimG + K * dimZ + K
+    if(!is.null(dimCoG)){
+      n_par <- n_par + (K - 1) * dimCoG
+    } 
+    if(!is.null(dimCoY)){
+      n_par <- n_par + dimCoY
     }
+    par_lucid <- rep(0, n_par)
+  } else{
+    par_lucid <- c(try_lucid$pars$beta[-1, -1],
+                   as.vector(t(try_lucid$pars$mu)),
+                   try_lucid$pars$gamma$beta)
+    converge <- TRUE
   }
   return(par_lucid)
 }

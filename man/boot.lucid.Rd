@@ -4,17 +4,7 @@
 \alias{boot.lucid}
 \title{Inference of LUCID model based on bootstrap resampling}
 \usage{
-boot.lucid(
-  G,
-  Z,
-  Y,
-  CoG = NULL,
-  CoY = NULL,
-  model,
-  conf = 0.95,
-  R = 100,
-  ncpus = detectCores() - 1
-)
+boot.lucid(G, Z, Y, CoG = NULL, CoY = NULL, model, conf = 0.95, R = 100)
 }
 \arguments{
 \item{G}{Exposures, a numeric vector, matrix, or data frame. Categorical variable 
