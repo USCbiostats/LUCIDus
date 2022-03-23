@@ -54,7 +54,7 @@ for binary outcome, use "binary". Default is "normal".}
 \item{useY}{Flag to include information of outcome when estimating the latent 
 cluster. Default is TRUE.}
 
-\item{tol}{Tolerance for convergence. Default is 1e-3.}
+\item{tol}{Tolerance for convergence of EM algorithm. Default is 1e-3.}
 
 \item{max_itr}{Max number of iterations for EM algorithm.}
 

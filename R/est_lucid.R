@@ -24,7 +24,7 @@
 #' for binary outcome, use "binary". Default is "normal".
 #' @param useY Flag to include information of outcome when estimating the latent 
 #' cluster. Default is TRUE.
-#' @param tol Tolerance for convergence. Default is 1e-3.
+#' @param tol Tolerance for convergence of EM algorithm. Default is 1e-3.
 #' @param max_itr Max number of iterations for EM algorithm.
 #' @param max_tot.itr Max number of total iterations for \code{est.lucid} function.
 #' \code{est.lucid} may conduct EM algorithm for multiple times if the algorithm 

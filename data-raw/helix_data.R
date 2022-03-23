@@ -58,18 +58,26 @@ usethis::use_data(helix_data, overwrite = TRUE)
 # 2. Testing ====
 rm(list = ls())
 data("helix_data")
-exposure <- helix_data$exposure
-omics <- helix_data$omics
+exposome <- helix_data$exposure
+proteomics <- helix_data$omics
 outcome_norm <- helix_data$outcome["hs_zbmi_who"]
+outcome_binary <- helix_data$outcome["hs_bmi_c_cat"]
 covariate <- model.matrix(~., helix_data$covariate)[, -1]
 
 ## 1 - fit lucid model ====
-fit1 <- est.lucid(G = exposure,
-                  Z = omics,
+fit1 <- est.lucid(G = exposome,
+                  Z = proteomics,
                   Y = outcome_norm,
                   K = 2)
 summary_lucid(fit1)
 table(fit1$post.p[, 1] > 0.5)
+fit2 <- est.lucid(G = exposome,
+                  Z = proteomics,
+                  Y = outcome_binary,
+                  family = "binary",
+                  K = 2)
+summary_lucid(fit2)
+
 fit2 <- est.lucid(G = exposure,
                   Z = omics,
                   Y = outcome_norm,
