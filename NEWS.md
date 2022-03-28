@@ -1,3 +1,12 @@
+# LUCIDus 2.1.5
+## New features
+1. Add progress bar for `boot.lucid` function to track how many iterations are done.
+2. Add `verbose` parameter in `est.lucid` to disable automatic output in R console.
+
+## Other changes
+1. Fix bug for `boot.lucid`
+2. Fix bug for `predict_lucid`
+
 # LUCIDus 2.1.4
 ## New features
 1. `est.lucid` is enhanced to:

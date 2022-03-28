@@ -34,8 +34,6 @@ of the required interval(s).}
 If feasible, it is recommended to set R > 1000. However, the convergence speed 
 of LUCID varies greatly depending on data. If it takes very long time to run
 1000 replicates, it is recommend to set smaller values for R, such as 200.}
-
-\item{ncpus}{Integer, number of processors to be used in parallel computation.}
 }
 \value{
 A list, containing the following components:

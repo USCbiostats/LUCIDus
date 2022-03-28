@@ -226,6 +226,9 @@ fit7 <- est.lucid(G = exposome,
                   K = 2)
 
 
+
+
+
 ## 4 - inference ====
 set.seed(123)
 boot1 <- boot.lucid(G = exposome, 
@@ -239,4 +242,13 @@ plot(boot1$bootstrap, 10)
 summary_lucid(fit1, boot.se = boot1)
 
 
+## 5 - prediction ====
+pred1 <- predict_lucid(G = exposome,
+                       Z = proteomics,
+                       Y = outcome_norm,
+                       model = fit1)
+pred1 <- predict_lucid(G = exposome,
+                       Z = proteomics,
+                       # Y = outcome_norm,
+                       model = fit1)
 

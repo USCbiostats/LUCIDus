@@ -88,6 +88,24 @@ predict_lucid <- function(model,
     }
   }
   
+  if(!is.null(Y)) {
+    if(!is.matrix(Y)) {
+      Y <- as.matrix(Y)
+      if(!is.numeric(Y)) {
+        stop("Input data 'Y' should be numeric; binary outcome should be transformed them into dummies")
+      }
+      if(ncol(Y) > 1) {
+        stop("Only continuous 'Y' or binary 'Y' is accepted")
+      }
+    }
+    if(model$family == "binary") {
+      if(!(all(Y %in% c(0, 1)))) {
+        stop("Binary outcome should be coded as 0 and 1")
+      }
+    }
+  }
+  
+  
   n <- nrow(G)
   K <- model$K
   

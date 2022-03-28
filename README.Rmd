@@ -164,11 +164,12 @@ tune_lucid$best_model
 ```
 
 ## Prediction
-There are 2 predictions related to LUCID - prediction on latent cluster and prediction on outcome. User can call `predict_lucid` to finish 2 tasks at the same time. The input of outcome is optional. If not provided, `predict_lucid` use exposre `G` and omics data `Z` to make prediction on latent cluster `X`.
+There are 2 predictions related to LUCID - prediction on latent cluster and prediction on outcome. User can call `predict_lucid` to finish 2 tasks at the same time. The input of outcome is optional. If not provided, `predict_lucid` use exposre `G` and omics data `Z` to make prediction on latent cluster `X` (as shown in second example). 
 ``` {r, eval=FALSE}
 pred1 <- predict_lucid(model = fit1, G = G, Z = Z, Y = Y_normal)
-pred1 <- predict_lucid(model = fit1, G = G, Z = Z)
+pred2 <- predict_lucid(model = fit1, G = G, Z = Z)
 ```
+
 
 
 ## Bootstrap confidence interval (CI)

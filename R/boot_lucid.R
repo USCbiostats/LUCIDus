@@ -25,7 +25,6 @@
 #' If feasible, it is recommended to set R > 1000. However, the convergence speed 
 #' of LUCID varies greatly depending on data. If it takes very long time to run
 #' 1000 replicates, it is recommend to set smaller values for R, such as 200.
-#' @param ncpus Integer, number of processors to be used in parallel computation.
 #' 
 #' @return A list, containing the following components:
 #' \item{beta}{effect estimate for each exposure}
@@ -119,12 +118,13 @@ lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG, prog) {
   prog$tick()
   Sys.sleep(0.01)
   
-  # fit lucid model
+  # prepare data
   d <- data[indices, ]
   G <- as.matrix(d[, 1:dimG])
   Z <- as.matrix(d[, (dimG + 1):(dimG + dimZ)])
   Y <- as.matrix(d[, (dimG + dimZ + 1)])
   CoG <- CoY <- NULL
+  K <- model$K
   if(!is.null(dimCoG)){
     CoG <- as.matrix(d[, (dimG + dimZ + 2):(dimG + dimZ + dimCoG + 1)])
   } 
@@ -134,6 +134,8 @@ lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG, prog) {
   if(!is.null(dimCoY) && is.null(dimCoG)){
     CoY <- as.matrix(d[, (dimG + dimZ + 2):ncol(d)])
   } 
+  
+  # fit lucid model
   seed <- sample(1:2000, 1)
   invisible(capture.output(try_lucid <- try(est.lucid(G = G, 
                                                       Z = Z, 
@@ -143,7 +145,7 @@ lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG, prog) {
                                                       family = model$family, 
                                                       # modelName = model$modelName, 
                                                       modelName = NULL,
-                                                      K = model$K, 
+                                                      K = K, 
                                                       init_impute = model$init_impute,
                                                       init_par = model$init_par,
                                                       seed = seed))))
