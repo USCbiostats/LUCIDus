@@ -463,6 +463,7 @@ est.lucid <- function(G,
   if(!useY){
     res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames)
   }
+  # browser()
   res.likelihood <- Estep(beta = res.beta, 
                           mu = res.mu, 
                           sigma = res.sigma, 

@@ -4,6 +4,7 @@ rm(list = ls())
 
 
 library(tidyverse)
+library(ggplot2)
 library(naniar)
 devtools::load_all()
 
@@ -57,6 +58,7 @@ usethis::use_data(helix_data, overwrite = TRUE)
 
 # 2. Testing ====
 rm(list = ls())
+library(LUCIDus)
 data("helix_data")
 exposome <- helix_data$exposure
 proteomics <- helix_data$omics
@@ -78,27 +80,27 @@ fit2 <- est.lucid(G = exposome,
                   K = 2)
 summary_lucid(fit2)
 
-fit2 <- est.lucid(G = exposure,
-                  Z = omics,
+# unsupervised lucid
+fit3 <- est.lucid(G = exposome,
+                  Z = proteomics,
                   Y = outcome_norm,
                   K = 2,
                   useY = FALSE)
 summary_lucid(fit2)
 
 # include covariates
-fit3 <- est.lucid(G = exposure,
-                  Z = omics,
+
+fit4 <- est.lucid(G = exposome,
+                  Z = proteomics,
                   Y = outcome_norm,
                   K = 2,
                   CoY = covariate)
-summary_lucid(fit3)
-
-fit4 <- est.lucid(G = exposure,
-                  Z = omics,
+fit5 <- est.lucid(G = exposome,
+                  Z = proteomics,
                   Y = outcome_norm,
                   K = 2,
                   CoG = covariate)
-summary_lucid(fit4)
+
 
 
 # visualize lucid model
@@ -106,35 +108,68 @@ plot_lucid(fit1)
 plot_lucid(fit1, G_color = "blue")
 
 
+
+## 2 - variable selection
+fit6 <- est.lucid(G = exposome,
+                  Z = proteomics,
+                  Y = outcome_norm,
+                  K = 2,
+                  Rho_G = 0.05)
+fit6$select$selectG
+
+fit7 <- est.lucid(G = exposome,
+                  Z = proteomics,
+                  Y = outcome_norm,
+                  K = 2,
+                  Rho_Z_Mu = 7,
+                  Rho_Z_Cov = 0.1)
+fit7$select$selectZ
+
+# refit lucid model with selected variables
+fit8 <- est.lucid(G = exposome[, fit6$select$selectG],
+                  Z = proteomics[, fit7$select$selectZ],
+                  Y = outcome_norm,
+                  K = 2)
+
+
+
 ## 2 - model selection ====
-tune_K <- lucid(G = exposure,
-                Z = omics,
+tune_K <- lucid(G = exposome,
+                Z = proteomics,
                 Y = outcome_norm,
-                K = 2:6,
+                K = 2:9,
                 modelName = NULL)
-plot(x = tune_K$tune_list$K, 
-     y = tune_K$tune_list$BIC, 
-     type = "b", 
-     xlab = "K", 
-     ylab = "BIC")
+
+ggplot(data = tune_K$tune_list,
+       aes(x = K, y = BIC, label = round(BIC, 0))) + 
+  geom_point() +
+  geom_line() + 
+  geom_text(hjust = -0.2)
+  
 # optimal K = 2
 
-tune_penalty_G <- lucid(G = exposure,
-                        Z = omics,
+# tune optimal penalty in respetive to G
+tune_penalty_G <- lucid(G = exposome,
+                        Z = proteomics,
                         Y = outcome_norm,
                         K = 2,
-                        Rho_G = seq(0.01, 0.05, by = 0.01))
+                        Rho_G = seq(0.01, 0.05, by = 0.005))
 tune_penalty_G$tune_list
+tune_result_G <- tune_penalty_G$tune_list
+best_penalty_G <- tune_result_G[which.min(tune_result_G$BIC), "Rho_G"]
+
 summary_lucid(tune_penalty_G$best_model)
 exposure_select <- tune_penalty_G$best_model$select$selectG
 
-tune_penalty_Z <- lucid(G = exposure,
-                        Z = omics,
+tune_penalty_Z <- lucid(G = exposome,
+                        Z = proteomics,
                         Y = outcome_norm,
                         K = 2,
                         Rho_Z_Mu = seq(1, 10, by = 1),
                         Rho_Z_Cov = seq(0.1, 0.5, by = 0.1))
-tune_penalty_Z$tune_list
+tune_result <- tune_penalty_Z$tune_list
+best_Z_penalty <- tune_result[which.min(tune_result$BIC), c("Rho_Z_Mu", "Rho_Z_Cov")]
+best_Z_penalty
 summary_lucid(tune_penalty_Z$best_model)
 omics_select <- tune_penalty_Z$best_model$select$selectZ
 
@@ -174,18 +209,34 @@ fit8 <- est.lucid(G = exposure,
                   Y = outcome_norm,
                   K = 2)
 
+set.seed(1)
+proteomics_miss <- as.matrix(proteomics)
+index <- arrayInd(sample(1000, 0.1 * 1000), dim(proteomics))
+proteomics_miss[index] <- NA # sporadic missing pattern
+proteomics_miss[sample(1:100, 20), ] <- NA # listwise missing pattern
+vis_miss(as.data.frame(proteomics_miss))
+
+fit6 <- est.lucid(G = exposome,
+                  Z = proteomics_miss,
+                  Y = outcome_norm,
+                  K = 2)
+fit7 <- est.lucid(G = exposome,
+                  Z = proteomics_miss,
+                  Y = outcome_binary,
+                  K = 2)
+
 
 ## 4 - inference ====
 set.seed(123)
-boot1 <- boot.lucid(G = exposure, 
-                    Z = omics,
+boot1 <- boot.lucid(G = exposome, 
+                    Z = proteomics,
                     Y = outcome_norm,
                     model = fit1,
                     R = 100)
 plot(boot1$bootstrap, 10)
 
 
-
+summary_lucid(fit1, boot.se = boot1)
 
 
 

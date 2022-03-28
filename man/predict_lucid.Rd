@@ -47,6 +47,7 @@ Y_normal <- sim_data$Y_normal
 fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, K = 2, family = "normal")
 
 # prediction on training set
-pred1 <- predict_lucid(model = fit1, G = G, Z = Z)
+pred1 <- predict_lucid(model = fit1, G = G, Z = Z, Y = Y_normal)
+pred2 <- predict_lucid(model = fit1, G = G, Z = Z)
 }
 }

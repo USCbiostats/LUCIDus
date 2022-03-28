@@ -44,7 +44,7 @@ binary <- function(K, ...){
     beta <- t(t(beta) - beta[index[1], ])[index, ]
     mu <- mu[index, ]
     for (i in 1:K) {
-      var[[i]] <- sigma[, , i]
+      var[[i]] <- sigma[, , index[i]]
     }
     gamma$beta[1:K] <- gamma$beta[1:K][index]
     # transfer log odds back to log OR for LC2 to LCK

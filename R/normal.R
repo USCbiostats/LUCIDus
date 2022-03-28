@@ -47,7 +47,7 @@ normal <- function(K, ...){
     beta <- t(t(beta) - beta[index[1], ])[index, ]
     mu <- mu[index, ]
     for (i in 1:K) {
-      var[[i]] <- sigma[, , i]
+      var[[i]] <- sigma[, , index[i]]
     }
     gamma$beta[1:K] <- gamma$beta[index]
     gamma$sigma <- gamma$sigma[index]

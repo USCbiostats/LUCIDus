@@ -30,7 +30,8 @@
 #' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, K = 2, family = "normal")
 #' 
 #' # prediction on training set
-#' pred1 <- predict_lucid(model = fit1, G = G, Z = Z)
+#' pred1 <- predict_lucid(model = fit1, G = G, Z = Z, Y = Y_normal)
+#' pred2 <- predict_lucid(model = fit1, G = G, Z = Z)
 #' }
 
 predict_lucid <- function(model, 
@@ -44,9 +45,7 @@ predict_lucid <- function(model,
   if(class(model) != "lucid") {
     stop("model should be an object fitted by est.lucid")
   }
-  if(model$useY == TRUE & is.null(Y)) {
-    stop("LUCID is fitted via supervised learning, Y should be given to predict latent cluster")
-  }
+  
   
   ## 1.1 check data format ====
   if(is.null(G)) {
@@ -108,7 +107,9 @@ predict_lucid <- function(model,
   family.list <- switch(model$family, 
                         normal = normal(K = K, dimCoY), 
                         binary = binary(K = K, dimCoY))
-  
+  useY_flag <- ifelse(is.null(Y), FALSE, TRUE)
+  # browser()
+  # 1 - predict latent cluster
   res <- Estep(beta = beta, 
                mu = mu, 
                sigma = Sigma.array, 
@@ -117,12 +118,12 @@ predict_lucid <- function(model,
                Z = Z, 
                Y = Y,
                CoY = CoY, 
-               family.list, 
+               family.list = family.list, 
                K = K, 
                N = n,
                itr = 2,
                dimCoY = dimCoY, 
-               useY = model$useY, 
+               useY = useY_flag, 
                ind.na = na_pattern$indicator_na)
   
   # normalize the log-likelihood to probability
