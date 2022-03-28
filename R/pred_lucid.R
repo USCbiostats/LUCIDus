@@ -145,7 +145,7 @@ predict_lucid <- function(model,
   
   return(list(post.p = res.r,
               pred.x = pred.x, 
-              pred.y = pred.y))
+              pred.y = as.vector(pred.y)))
 }
 
 
