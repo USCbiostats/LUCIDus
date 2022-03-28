@@ -223,7 +223,20 @@ The optimal model (K = 2) is returned as
 tune_lucid$best_model
 ```
 
-## Bootstrap inference
+## Prediction
+
+There are 2 predictions related to LUCID - prediction on latent cluster
+and prediction on outcome. User can call `predict_lucid` to finish 2
+tasks at the same time. The input of outcome is optional. If not
+provided, `predict_lucid` use exposre `G` and omics data `Z` to make
+prediction on latent cluster `X`.
+
+``` r
+pred1 <- predict_lucid(model = fit1, G = G, Z = Z, Y = Y_normal)
+pred1 <- predict_lucid(model = fit1, G = G, Z = Z)
+```
+
+## Bootstrap confidence interval (CI)
 
 We use a bootstrap method to conduct inference for LUCID.
 
