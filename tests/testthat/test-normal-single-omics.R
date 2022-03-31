@@ -8,8 +8,9 @@ test_that("check estimations of LUCID with normal outcome (K = 2)", {
   Y_normal <- sim_data$Y_normal[1:200, ]
   cov <- sim_data$Covariate[1:200, ]
   X <- sim_data$X[1:200]
-  i <- sample(1:2000, 1)
-  cat(paste("test1 - seed =", i, "\n"))
+  # i <- sample(1:2000, 1)
+  i <- 1008
+  # cat(paste("test1 - seed =", i, "\n"))
   invisible(capture.output(fit1 <- est.lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
@@ -45,8 +46,9 @@ test_that("check variable selection on G", {
   Y_normal <- sim_data$Y_normal[1:200, ]
   cov <- sim_data$Covariate[1:200, ]
   X <- sim_data$X[1:200]
-  i <- sample(1:2000, 1)
-  cat(paste("test2 - seed =", i, "\n"))
+  # i <- sample(1:2000, 1)
+  i <- 1008
+  # cat(paste("test2 - seed =", i, "\n"))
   invisible(capture.output(fit1 <- est.lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
@@ -71,8 +73,9 @@ test_that("check variable selection on Z", {
   Y_normal <- sim_data$Y_normal[1:200, ]
   cov <- sim_data$Covariate[1:200, ]
   X <- sim_data$X[1:200]
-  i <- sample(1:2000, 1)
-  cat(paste("test3 - seed =", i, "\n"))
+  # i <- sample(1:2000, 1)
+  i <- 1008
+  # cat(paste("test3 - seed =", i, "\n"))
   invisible(capture.output(fit1 <- est.lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,

@@ -247,8 +247,13 @@ pred1 <- predict_lucid(G = exposome,
                        Z = proteomics,
                        Y = outcome_norm,
                        model = fit1)
-pred1 <- predict_lucid(G = exposome,
+pred2 <- predict_lucid(G = exposome,
                        Z = proteomics,
                        # Y = outcome_norm,
                        model = fit1)
+table(pred1$pred.x)
+table(pred2$pred.x)
+
+
+
 
