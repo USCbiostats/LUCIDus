@@ -7,8 +7,7 @@ test_that("check prediction of lucid", {
   Y_normal <- sim_data$Y_normal[1:200, ]
   cov <- sim_data$Covariate[1:200, ]
   X <- sim_data$X[1:200]
-  i <- sample(1:2000, 1)
-  cat(paste("test1 - seed =", i, "\n"))
+  i <- 1008
   invisible(capture.output(fit1 <- est.lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,

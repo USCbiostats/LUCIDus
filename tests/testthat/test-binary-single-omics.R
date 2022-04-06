@@ -8,8 +8,8 @@ test_that("check estimations of LUCID with binary outcome (K = 2)", {
   Y_binary <- sim_data$Y_binary[1:500, ]
   cov <- sim_data$Covariate[1:500, ]
   # i <- sample(1:2000, 1)
-  # cat(paste("test1 - seed =", i, "\n"))
   i <- 1008
+  # cat(paste("test1 - seed =", i, "\n"))
   invisible(capture.output(fit1 <- est.lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
@@ -126,9 +126,8 @@ test_that("check whether est.lucid throws an erorr with continuous outcome or ou
   Y_normal <- sim_data$Y_normal[1:500, ]
   cov <- sim_data$Covariate[1:500, ]
   # i <- sample(1:2000, 1)
-  # cat(paste("test4 - seed =", i, "\n"))
   i <- 1008
-  
+  # cat(paste("test4 - seed =", i, "\n"))
   expect_error(est.lucid(G = G,
                          Z = Z,
                          Y = Y_normal,
