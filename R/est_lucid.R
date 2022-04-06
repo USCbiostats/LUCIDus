@@ -8,8 +8,9 @@
 #' @param G Exposures, a numeric vector, matrix, or data frame. Categorical variable 
 #' should be transformed into dummy variables. If a matrix or data frame, rows 
 #' represent observations and columns correspond to variables.
-#' @param Z Omics data, a numeric matrix or data frame. Rows correspond to observations
-#' and columns correspond to variables.
+#' @param Z Omics data, a list, each element represents a type of omics data. Each 
+#' element is in matrix format, with rows correspond to observations and columns 
+#' correspond to variables.
 #' @param Y Outcome, a numeric vector. Categorical variable is not allowed. Binary 
 #' outcome should be coded as 0 and 1.
 #' @param CoG Optional, covariates to be adjusted for estimating the latent cluster.
@@ -183,21 +184,29 @@ est.lucid <- function(G,
   }
   colnames(G) <- Gnames
   
+  Znames <- vector(mode = "list", length = length(Z))
   if(is.null(Z)) {
     stop("Input data 'Z' is missing")
   } else {
-    if(!is.matrix(Z)) {
-      Z <- as.matrix(Z)
-      if(!is.numeric(Z)) {
-        stop("Input data 'Z' should be numeric")
+    if(!is.list(Z)) {
+      stop("Input data 'Z' should be a list")
+    } else {
+      for (i in 1:length(Z)) {
+        if(!is.matrix(Z[[i]])) {
+          Z[[i]] <- as.matrix(Z[[i]])
+          if(!is.numeric(Z[[i]])) {
+            stop("Input data 'Z' should be numeric")
+          }
+          if(is.null(colnames(Z[[i]]))){
+            Znames[[i]] <- paste0(paste0("Z", i, "_"), 1:ncol(Z[[i]]))
+          } else {
+            Znames[[i]] <- colnames(Z[[i]])
+          }
+        }
       }
     }
   }
-  if(is.null(colnames(Z))){
-    Znames <- paste0("Z", 1:ncol(Z))
-  } else {
-    Znames <- colnames(Z)
-  }
+  
   
   if(is.null(Y)) {
     stop("Input data 'Y' is missing")
