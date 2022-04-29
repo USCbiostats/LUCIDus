@@ -20,13 +20,14 @@ Suggests:
     testthat (>= 3.0.0),
     rmarkdown
 VignetteBuilder: knitr
-Imports:
-    mclust,
-    nnet,
-    networkD3,
+Config/testthat/edition: 3
+Imports: 
     boot,
     glasso,
     glmnet,
     jsonlite,
+    mclust,
+    mix,
+    networkD3,
+    nnet,
     progress
-Config/testthat/edition: 3
