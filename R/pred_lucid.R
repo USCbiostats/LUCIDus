@@ -42,7 +42,7 @@ predict_lucid <- function(model,
                           CoY = NULL, 
                           response = TRUE){
   
-  if(class(model) != "lucid") {
+  if(!inherits(model, "lucid")) {
     stop("model should be an object fitted by est.lucid")
   }
   
