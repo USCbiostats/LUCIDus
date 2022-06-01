@@ -1,3 +1,12 @@
+# LUCIDus 2.1.5-2
+## Minor bugs fixed
+1. Update package dependencies
+2. Fix bugs when running examples
+
+# LUCIDus 2.1.5-1
+## Minor bugs fixed
+1. Fix bugs when running tests
+
 # LUCIDus 2.1.5
 ## New features
 1. Add progress bar for `boot.lucid` function to track how many iterations are done.
