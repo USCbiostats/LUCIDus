@@ -8,7 +8,7 @@ test_that("check whether plot_lucid function could work", {
   cov <- sim_data$Covariate[1:200, ]
   X <- sim_data$X[1:200]
   i <- 1008
-  invisible(capture.output(fit1 <- est.lucid(G = G,
+  invisible(capture.output(fit1 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
                                              CoY = cov,

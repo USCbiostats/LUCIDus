@@ -11,7 +11,7 @@ test_that("check estimations of LUCID with normal outcome (K = 2)", {
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test1 - seed =", i, "\n"))
-  invisible(capture.output(fit1 <- est.lucid(G = G,
+  invisible(capture.output(fit1 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
                                              CoY = cov,
@@ -36,6 +36,11 @@ test_that("check estimations of LUCID with normal outcome (K = 2)", {
   expect_equal(gamma_causal, 1, tolerance = 0.05)
   expect_equal(gamma_non, 0, tolerance = 0.05)
   expect_equal(sigma, 1, tolerance = 0.05)
+  
+  # check summary_lucid
+  sum_fit1 <- summary_lucid(fit1)
+  expect_equal(class(fit1), "lucid")
+  expect_equal(class(sum_fit1), "sumlucid")
 })
 
 
@@ -49,7 +54,7 @@ test_that("check variable selection on G", {
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test2 - seed =", i, "\n"))
-  invisible(capture.output(fit1 <- est.lucid(G = G,
+  invisible(capture.output(fit1 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
                                              CoY = cov,
@@ -76,7 +81,7 @@ test_that("check variable selection on Z", {
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test3 - seed =", i, "\n"))
-  invisible(capture.output(fit1 <- est.lucid(G = G,
+  invisible(capture.output(fit1 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
                                              CoY = cov,

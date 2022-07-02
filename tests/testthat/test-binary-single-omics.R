@@ -10,7 +10,7 @@ test_that("check estimations of LUCID with binary outcome (K = 2)", {
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test1 - seed =", i, "\n"))
-  invisible(capture.output(fit1 <- est.lucid(G = G,
+  invisible(capture.output(fit1 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -32,6 +32,11 @@ test_that("check estimations of LUCID with binary outcome (K = 2)", {
   expect_equal(mu_causal, 2, tolerance = 0.1)
   expect_equal(mu_non, 0, tolerance = 0.1)
   expect_equal(gamma, c(-0.5, 0.9, 0.8, -0.8), tolerance = 0.2)
+  
+  # check summary_lucid
+  sum_fit1 <- summary_lucid(fit1)
+  expect_equal(class(fit1), "lucid")
+  expect_equal(class(sum_fit1), "sumlucid")
 })
 
 
@@ -44,7 +49,7 @@ test_that("check variable selection on G", {
   # i <- sample(1:2000, 1)
   # cat(paste("test2 - seed =", i, "\n"))
   i <- 1008
-  invisible(capture.output(fit1 <- est.lucid(G = G,
+  invisible(capture.output(fit1 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -71,7 +76,7 @@ test_that("check variable selection on Z", {
   # i <- sample(1:2000, 1)
   # cat(paste("test3 - seed =", i, "\n"))
   i <- 1008
-  invisible(capture.output(fit1 <- est.lucid(G = G,
+  invisible(capture.output(fit1 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -88,7 +93,7 @@ test_that("check variable selection on Z", {
 })
 
 
-test_that("check whether arguments of est.lucid work", {
+test_that("check whether arguments of est_lucid work", {
   G <- sim_data$G[1:500, ]
   Z <- sim_data$Z[1:500, ]
   Y_binary <- sim_data$Y_binary[1:500, ]
@@ -96,7 +101,7 @@ test_that("check whether arguments of est.lucid work", {
   # i <- sample(1:2000, 1)
   # cat(paste("test4 - seed =", i, "\n"))
   i <- 1008
-  invisible(capture.output(fit1 <- est.lucid(G = G,
+  invisible(capture.output(fit1 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -105,7 +110,7 @@ test_that("check whether arguments of est.lucid work", {
                                              seed = i,
                                              useY = TRUE,
                                              modelName = NULL)))
-  invisible(capture.output(fit2 <- est.lucid(G = G,
+  invisible(capture.output(fit2 <- est_lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -119,7 +124,7 @@ test_that("check whether arguments of est.lucid work", {
 })
 
 
-test_that("check whether est.lucid throws an erorr with continuous outcome or outcome coded rather than 0 and 1", {
+test_that("check whether est_lucid throws an erorr with continuous outcome or outcome coded rather than 0 and 1", {
   G <- sim_data$G[1:500, ]
   Z <- sim_data$Z[1:500, ]
   Y_binary <- sim_data$Y_binary[1:500, ]
@@ -128,7 +133,7 @@ test_that("check whether est.lucid throws an erorr with continuous outcome or ou
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test4 - seed =", i, "\n"))
-  expect_error(est.lucid(G = G,
+  expect_error(est_lucid(G = G,
                          Z = Z,
                          Y = Y_normal,
                          CoY = cov,
@@ -137,7 +142,7 @@ test_that("check whether est.lucid throws an erorr with continuous outcome or ou
                          seed = i,
                          useY = TRUE,
                          modelName = NULL))
-  expect_error(est.lucid(G = G,
+  expect_error(est_lucid(G = G,
                          Z = Z,
                          Y = Y_binary + 1,
                          CoY = cov,
