@@ -1,6 +1,6 @@
 ---
 title: "LUCIDus: Latent Unknown Clustering with Integrated Data"
-author: "Yinqi Zhao"
+author: "Yinqi Zhao, David V. Conti"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -62,14 +62,14 @@ At each iteration, in the E-step, we compute $r_{ij}$; in the M-step, parameters
 
 | Function | Description |
 |-------|------|
-| `est.lucid()`|Fit LUCID model to estimate latent clusters using multi-omics data with/without the outcome of interest. It features variable selection in exposure and omics data, covariance matrices for omics data with various geometric features, and integrated imputation of missing values in omics data| 
-|`lucid()`|A wrapper function to fit LUCID model across a grid of tuning parameters and select the optimal fucntion|
-|`boot.lucid()`|Inference on parameters of LUCID model based on bootstrap resampling method|   
-|`summary_lucid()`|Summarize the results of LUCID model produced `est.lucid()`. It presents the results in a table with detailed explanation for parameters| 
-|`plot_lucid()`|Use a Sankey diagram to visualize the LUCID model. Users can specify colors for each component in Sankey diagram|
+| `est_lucid()`|Fit LUCID model to estimate latent clusters using multi-view data with/without the outcome of interest. It features variable selection in exposure and omics data, modeling cluster variables with various geometric features, and integrated imputation of missing values in omics data| 
+|`tune_lucid()`|A wrapper function to fit LUCID model across a grid of tuning parameters (number of latent clusters $K$ and regularization penalties) and select the optimal model|
+|`boot_lucid()`|Inference on parameters of LUCID model based on bootstrap resampling method|   
+|`summary_lucid()`|Summarize the results of LUCID model returned by  `est_lucid()`. A direct call of `summary_lucid` in console will print results of LUCID model in a table with interpretation of model parameters| 
+|`plot_lucid()`|Create a Sankey diagram to visualize  LUCID model. Users can specify colors for each component in Sankey diagram|
 
 ## Fit LUCID model
-We use `est.lucid()` function to fit LUCID model. 
+We use `est_lucid()` function to fit LUCID model. 
 ```{r, eval=FALSE}
 library(LUCIDus)
 # use simulated data
@@ -80,44 +80,44 @@ Y_binary <- sim_data$Y_binary
 cov <- sim_data$Covariate
 
 # fit LUCID model with continuous outcome
-fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, seed = 1008)
+fit1 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, seed = 1008)
 
 
 # fit LUCID model with binary outcome
-fit2 <- est.lucid(G = G, Z = Z, Y = Y_binary, family = "binary", K = 2, seed = 1008)
+fit2 <- est_lucid(G = G, Z = Z, Y = Y_binary, family = "binary", K = 2, seed = 1008)
 
 # fit LUCID model with covariates
-fit3 <- est.lucid(G = G, Z = Z, Y = Y_binary, CoY = cov, family = "binary", K = 2, seed = 1008)
+fit3 <- est_lucid(G = G, Z = Z, Y = Y_binary, CoY = cov, family = "binary", K = 2, seed = 1008)
 ```
 
-User should be aware of option `useY`. By default, `useY = TRUE`, which means we fit LUCID model in a supervised fashion and incorporate information of outcome to define clusters. On the other hand, by setting `useY = FALSE`, we are fitting LUCID model in an unsupervised fashion, only using information from exposure and omics data to define clusters.
+User should be aware of option `useY`. By default, `useY = TRUE`, which means we fit LUCID model in a supervised fashion and incorporate information of outcome to define clusters. On the other hand, by setting `useY = FALSE`, we are fitting LUCID model in an unsupervised fashion, only using information from exposure and omics data to define clusters. After latent cluster are defined, LUCID will regress outcome on latent cluster to estiamte their associations.
 
 ```{r, eval=FALSE}
 # fit LUCID model without useing information from outcome
-fit4 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, useY = FALSE, seed = 1008)
+fit4 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, useY = FALSE, seed = 1008)
 ```
 
-For LUCID model, we use `mclust` method to optimize likelihood related to omcis data with respect to mean and covariance structure. By default, a `VVV` model is used to estimate covariance structure for omics data, which means the volume, shape and orientation of covariance matrices varies across different clusters. User can set `modelName = NULL` to let `est.lucid` select the optimal covariance model, or specify a specific covariance model for LUCID. Details of available models can be found in `mclust::mclustModelNames` under multivariate mixture section.
+For LUCID model, we use `mclust` method to optimize likelihood related to omcis data with respect to mean and covariance structure. By default, a `VVV` model is used to estimate covariance structure for omics data, which means the volume, shape and orientation of covariance matrices varies across different clusters. User can set `modelName = NULL` to let `est_lucid` function choose the optimal covariance model. User can also specify a specific covariance model for LUCID. Details of available models can be found in `mclust::mclustModelNames` under multivariate mixture section.
 ```{r, eval=FALSE}
 # fit LUCID model with automatic selection on optimal covariance models
-fit5 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, modelName = NULL, seed = 1008)
+fit5 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, modelName = NULL, seed = 1008)
 # check the optimal model
 fit5$modelName
 
 # fit LUCID model with a specified covariance model
-fit6 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, modelName = "EII", seed = 1008)
+fit6 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, modelName = "EII", seed = 1008)
 ```
 
-In terms of initialization of EM algorithm, `est.lucid` uses either random initialization based on uniform distribution or a heuristic method based on `mclust`. By default, initialization of EM algorithm uses `mclsut`. However, if it takes long time, we recommend user turn to random initialization by setting  `init_par = "random`.
+In terms of initialization of EM algorithm, `est_lucid` uses either random initialization based on uniform distribution or a heuristic method based on `mclust`. By default, initialization of EM algorithm uses `mclsut`. However, if it takes long time, we recommend user turn to random initialization by setting  `init_par = "random`.
 ```{r, eval=FALSE}
 # initialize EM algorithm by mclust
-fit7 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, init_par = "mclust" , seed = 1008)
+fit7 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, init_par = "mclust" , seed = 1008)
 
 # initialize EM algorithm via randomization
-fit8 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, init_par = "random" , seed = 1008)
+fit8 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, init_par = "random" , seed = 1008)
 ```
 
-To ensure replicable results, user can set random seed by using the option `seed`. The LUCID model can be summarized via `summary_lucid()`.
+To ensure replicable results, user should set random seed by using the option `seed`. The LUCID model can be summarized via `summary_lucid()`.
 ```{r, eval=FALSE}
 # summarize lucid results
 summary_lucid(fit1)
@@ -149,15 +149,15 @@ The latest version of LUCID allows missingness in omics data. We consider 2 miss
 # fit LUCID model with block-wise missing pattern in omics data
 Z_miss_1 <- Z
 Z_miss_1[sample(1:nrow(Z), 0.3 * nrow(Z)), ] <- NA
-fit9 <- est.lucid(G = G, Z = Z_miss_1, Y = Y_normal, family = "normal", K = 2)
+fit9 <- est_lucid(G = G, Z = Z_miss_1, Y = Y_normal, family = "normal", K = 2)
 
 # fit LUCID model with sporadic missing pattern in omics data
 Z_miss_2 <- Z
 index <- arrayInd(sample(length(Z_miss_2), 0.3 * length(Z_miss_2)), dim(Z_miss_2))
 Z_miss_2[index] <- NA
-fit10 <- est.lucid(G = G, Z = Z_miss_2, Y = Y_normal, family = "normal", K = 2, seed = 1008) 
+fit10 <- est_lucid(G = G, Z = Z_miss_2, Y = Y_normal, family = "normal", K = 2, seed = 1008) 
 ```
-For sporadic missing pattern, `est.lucid` uses `mclust::imputeData` to initialize the imputation. The imputed omics data is also returned by `est.lucid`.
+For sporadic missing pattern, `est_lucid` uses `mclust::imputeData` to initialize the imputation. The imputed omics data is also returned by `est_lucid`.
 ```{r, eval=FALSE}
 # imputed omics dataset
 fit10$Z
@@ -173,10 +173,10 @@ where $W = \Sigma^{-1}$.
 ```{r, eval=FALSE}
 # use LUCID model to conduct integrated variable selection
 # select exposure
-fit6 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
+fit6 <- est_lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
 K = 2, seed = 1008, Rho_G = 0.1)
 # select omics data
-fit7 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal",
+fit7 <- est_lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal",
 K = 2, seed = 1008, Rho_Z_Mu = 90, Rho_Z_Cov = 0.1, init_par = "random")
 ```
 
@@ -205,10 +205,10 @@ tune_lucid$best_model
 We use a bootstrap method to conduct inference for LUCID. 
 ```{r, eval=FALSE}
 # conduct bootstrap resampling
-boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
+boot1 <- boot_lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
 
 # use 90% CI
-boot2 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100, conf = 0.9)
+boot2 <- boot_lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100, conf = 0.9)
 ```
 Diagnostic plot for bootstranp sampling is drawn by
 ```{r, eval=FALSE}
@@ -217,7 +217,7 @@ plot(boot1$bootstrap, 1)
 ```
 
 ## Acknowledgments
-- Dr. David V. Conti
+- Dr. Jesse Goodrich
 - Dr. Cheng Peng
 - Dr. Zhao Yang
 - USC IMAGE Group^[Supported by the National Cancer Institute at the National Institutes of Health Grant P01 CA196569]
