@@ -26,8 +26,8 @@
 #' cluster. Default is TRUE.
 #' @param tol Tolerance for convergence of EM algorithm. Default is 1e-3.
 #' @param max_itr Max number of iterations for EM algorithm.
-#' @param max_tot.itr Max number of total iterations for \code{est.lucid} function.
-#' \code{est.lucid} may conduct EM algorithm for multiple times if the algorithm 
+#' @param max_tot.itr Max number of total iterations for \code{est_lucid} function.
+#' \code{est_lucid} may conduct EM algorithm for multiple times if the algorithm 
 #' fails to converge.
 #' @param Rho_G A scalar. Penalty to conduct LASSO regularization and obtain a sparse estimation
 #' for effect of exposures. If user wants to tune the penalty, use the wrapper 
@@ -94,44 +94,44 @@
 #' cov <- sim_data$Covariate
 #' 
 #' # fit LUCID model with continuous outcome
-#' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
+#' fit1 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
 #' seed = 1008)
 #' 
 #' # fit LUCID model with block-wise missing pattern in omics data
 #' Z_miss_1 <- Z
 #' Z_miss_1[sample(1:nrow(Z), 0.3 * nrow(Z)), ] <- NA
-#' fit2 <- est.lucid(G = G, Z = Z_miss_1, Y = Y_normal, family = "normal", K = 2)
+#' fit2 <- est_lucid(G = G, Z = Z_miss_1, Y = Y_normal, family = "normal", K = 2)
 #' 
 #' # fit LUCID model with sporadic missing pattern in omics data
 #' Z_miss_2 <- Z
 #' index <- arrayInd(sample(length(Z_miss_2), 0.3 * length(Z_miss_2)), dim(Z_miss_2))
 #' Z_miss_2[index] <- NA
 #' # initialize imputation by imputing 
-#' fit3 <- est.lucid(G = G, Z = Z_miss_2, Y = Y_normal, family = "normal", 
+#' fit3 <- est_lucid(G = G, Z = Z_miss_2, Y = Y_normal, family = "normal", 
 #' K = 2, seed = 1008, init_impute = "lod") 
 #' LOD
 #' # initialize imputation by mclust
-#' fit4 <- est.lucid(G = G, Z = Z_miss_2, Y = Y, family = "normal", K = 2, 
+#' fit4 <- est_lucid(G = G, Z = Z_miss_2, Y = Y, family = "normal", K = 2, 
 #' seed = 123, init_impute = "mclust") 
 #' 
 #' # fit LUCID model with binary outcome
-#' fit5 <- est.lucid(G = G, Z = Z, Y = Y_binary, family = "binary", K = 2,
+#' fit5 <- est_lucid(G = G, Z = Z, Y = Y_binary, family = "binary", K = 2,
 #' seed = 1008)
 #' 
 #' # fit LUCID model with covariates
-#' fit6 <- est.lucid(G = G, Z = Z, Y = Y_binary, CoY = cov, family = "binary", 
+#' fit6 <- est_lucid(G = G, Z = Z, Y = Y_binary, CoY = cov, family = "binary", 
 #' K = 2, seed = 1008)
 #' 
 #' # use LUCID model to conduct integrated variable selection
 #' # select exposure
-#' fit6 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
+#' fit6 <- est_lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
 #' K = 2, seed = 1008, Rho_G = 0.1)
 #' # select omics data
-#' fit7 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal",
+#' fit7 <- est_lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal",
 #' K = 2, seed = 1008, Rho_Z_Mu = 90, Rho_Z_Cov = 0.1, init_par = "random")
 #' 
 #' }
-est.lucid <- function(G, 
+est_lucid <- function(G, 
                       Z, 
                       Y, 
                       CoG = NULL, 
@@ -312,7 +312,7 @@ est.lucid <- function(G,
                                                     G = K,
                                                     modelNames = modelName)))
       if(is.null(mclust.fit)) {
-        stop("mclust failed for specified model - please set modelNames to `NULL` to conduct automatic model selection ")
+        stop("mclust failed for specified model - please set modelName to `NULL` to conduct automatic model selection ")
       }
       if(is.null(modelName)){
         model.best <- mclust.fit$modelName

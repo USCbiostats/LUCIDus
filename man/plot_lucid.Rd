@@ -16,7 +16,7 @@ plot_lucid(
 )
 }
 \arguments{
-\item{x}{A LUCID model fitted by \code{\link{est.lucid}}}
+\item{x}{A LUCID model fitted by \code{\link{est_lucid}}}
 
 \item{G_color}{Color of node for exposure}
 
@@ -52,7 +52,7 @@ Y_binary <- sim_data$Y_binary
 cov <- sim_data$Covariate
 
 # plot lucid model
-fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
+fit1 <- est_lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
 K = 2, seed = 1008)
 plot_lucid(fit1)
 

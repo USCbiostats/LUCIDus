@@ -1,10 +1,9 @@
-# Check missing patterns in omics data Z
-# @return 
-# index - indeces for missing values in omics data
-# indicator_na - missing pattern for each observation
-# impute_flag - flag to initialize imputation. Only happens when sporadic missing
-# pattern is observed
-# 
+#' Check missing patterns in omics data Z
+#' @return 
+#' 1. index:indeces for missing values in omics data
+#' 2. indicator_na: missing pattern for each observation
+#' 3. impute_flag: - flag to initialize imputation. Only happens when sporadic missing
+#' pattern is observed
 check_na <- function(Z){
   N <- nrow(Z)
   M <- ncol(Z)
@@ -24,9 +23,8 @@ check_na <- function(Z){
 
 
 
-# I-step of LUCID: impute missing data in Z by maximizing the likelihood
-# @return a complete dataset of Z
-# 
+#' I-step of LUCID: impute missing data in Z by maximizing the likelihood
+#' @return a complete dataset of Z
 Istep_Z <- function(Z, p, mu, sigma, index){
   N <- nrow(Z)
   Z_fill <- t(sapply(1:N, function(i) {

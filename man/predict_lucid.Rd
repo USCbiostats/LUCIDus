@@ -7,7 +7,7 @@
 predict_lucid(model, G, Z, Y = NULL, CoG = NULL, CoY = NULL, response = TRUE)
 }
 \arguments{
-\item{model}{A model fitted and returned by \code{\link{est.lucid}}}
+\item{model}{A model fitted and returned by \code{\link{est_lucid}}}
 
 \item{G}{Exposures, a numeric vector, matrix, or data frame. Categorical variable 
 should be transformed into dummy variables. If a matrix or data frame, rows 
@@ -44,7 +44,7 @@ Z <- sim_data$Z
 Y_normal <- sim_data$Y_normal
 
 # fit lucid model
-fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, K = 2, family = "normal")
+fit1 <- est_lucid(G = G, Z = Z, Y = Y_normal, K = 2, family = "normal")
 
 # prediction on training set
 pred1 <- predict_lucid(model = fit1, G = G, Z = Z, Y = Y_normal)

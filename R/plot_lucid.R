@@ -5,7 +5,7 @@
 #' The width of the line represents the effect size of a certain association; the
 #' color of the line represents the direction of a certain association. 
 #' 
-#' @param x A LUCID model fitted by \code{\link{est.lucid}}
+#' @param x A LUCID model fitted by \code{\link{est_lucid}}
 #' @param G_color Color of node for exposure
 #' @param X_color Color of node for latent cluster
 #' @param Z_color Color of node for omics data
@@ -31,7 +31,7 @@
 #' cov <- sim_data$Covariate
 #' 
 #' # plot lucid model
-#' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
+#' fit1 <- est_lucid(G = G, Z = Z, Y = Y_normal, CoY = NULL, family = "normal", 
 #' K = 2, seed = 1008)
 #' plot_lucid(fit1)
 #' 

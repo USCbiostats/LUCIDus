@@ -7,9 +7,9 @@
 summary_lucid(object, boot.se = NULL)
 }
 \arguments{
-\item{object}{A LUCID model fitted by \code{\link{est.lucid}}}
+\item{object}{A LUCID model fitted by \code{\link{est_lucid}}}
 
-\item{boot.se}{An object returned by \code{\link{boot.lucid}}, 
+\item{boot.se}{An object returned by \code{\link{boot_lucid}}, 
 which contains the bootstrap confidence intervals}
 }
 \description{
@@ -23,11 +23,11 @@ Z <- sim_data$Z
 Y_normal <- sim_data$Y_normal
 
 # fit lucid model
-fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
+fit1 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
 seed = 1008)
 
 # conduct bootstrap resampling
-boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
+boot1 <- boot_lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
 
 # summarize lucid model
 summary_lucid(fit1)

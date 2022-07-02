@@ -46,19 +46,19 @@
 #' Y_normal <- sim_data$Y_normal
 #' 
 #' # fit lucid model
-#' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
+#' fit1 <- est_lucid(G = G, Z = Z, Y = Y_normal, family = "normal", K = 2, 
 #' seed = 1008)
 #' 
 #' # conduct bootstrap resampling
-#' boot1 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
+#' boot1 <- boot_lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100)
 #' 
 #' # check distribution for bootstrap replicates of the variable of interest
 #' plot(boot1$bootstrap, 1)
 #' 
 #' # use 90% CI
-#' boot2 <- boot.lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100, conf = 0.9)
+#' boot2 <- boot_lucid(G = G, Z = Z, Y = Y_normal, model = fit1, R = 100, conf = 0.9)
 #' }
-boot.lucid <- function(G, 
+boot_lucid <- function(G, 
                        Z, 
                        Y, 
                        CoG = NULL, 
@@ -137,7 +137,7 @@ lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG, prog) {
   
   # fit lucid model
   seed <- sample(1:2000, 1)
-  invisible(capture.output(try_lucid <- try(est.lucid(G = G, 
+  invisible(capture.output(try_lucid <- try(est_lucid(G = G, 
                                                       Z = Z, 
                                                       Y = Y,
                                                       CoY = CoY, 

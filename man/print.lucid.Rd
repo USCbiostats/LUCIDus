@@ -2,15 +2,15 @@
 % Please edit documentation in R/est_lucid_helper.R
 \name{print.lucid}
 \alias{print.lucid}
-\title{Print the output of \code{est.lucid}}
+\title{Print the output of \code{est_lucid}}
 \usage{
 \method{print}{lucid}(x, ...)
 }
 \arguments{
-\item{x}{An object of LUCID model, returned by \code{est.lucid}}
+\item{x}{An object of LUCID model, returned by \code{est_lucid}}
 
 \item{...}{Other arguments to be passed to \code{print}}
 }
 \description{
-Print the output of \code{est.lucid}
+Print the output of \code{est_lucid}
 }

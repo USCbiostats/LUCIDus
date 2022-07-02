@@ -31,7 +31,7 @@
 #' @param Rho_Z_Cov Penalty to conduct graphic LASSO regularization and obtain a
 #' sparse estimation of cluster-specific variance-covariance matrices for omics 
 #' data. If a vector, \code{lucid} will fit lucid model over the grid of penalties.
-#' @param ... Other parameters passed to \code{est.lucid}
+#' @param ... Other parameters passed to \code{est_lucid}
 #'
 #' @export
 #' 
@@ -50,19 +50,19 @@
 #' Y_normal <- sim_data$Y_normal
 #' 
 #' # find the optimal model over the grid of K
-#' tune_K <- lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3, 
+#' tune_K <- tune_lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3, 
 #' seed = 1, K = 2:5)
 #' 
 #' # tune penalties
-#' tune_Rho_G <- lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
+#' tune_Rho_G <- tune_lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
 #' seed = 1, K = 2, Rho_G = c(0.1, 0.2, 0.3, 0.4))
-#' tune_Rho_Z_mu <- lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
+#' tune_Rho_Z_mu <- tune_lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
 #' seed = 1, K = 2, Rho_Z_mu = c(10, 20, 30, 40))
-#' tune_Rho_Z_Cov <- lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
+#' tune_Rho_Z_Cov <- tune_lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
 #' seed = 1, K = 2, Rho_Z_Cov = c(0.1, 0.2, 0.3))
 #' 
 #' }
-lucid <- function(G, 
+tune_lucid <- function(G, 
                   Z, 
                   Y, 
                   CoG = NULL, 
@@ -83,7 +83,7 @@ lucid <- function(G,
   res_model <- vector(mode = "list",
                       length = m)
   for(i in 1:m) {
-    fit <- try(est.lucid(G = G, 
+    fit <- try(est_lucid(G = G, 
                          Z = Z, 
                          Y = Y,
                          CoG = CoG, 

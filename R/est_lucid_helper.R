@@ -170,9 +170,9 @@ est_mu <- function(j, rho, z, r, mu, wi){
 }
 
 
-#' @title Print the output of \code{est.lucid}
+#' @title Print the output of \code{est_lucid}
 #'
-#' @param x An object of LUCID model, returned by \code{est.lucid}
+#' @param x An object of LUCID model, returned by \code{est_lucid}
 #' @param ... Other arguments to be passed to \code{print}
 #' 
 print.lucid <- function(x, ...){

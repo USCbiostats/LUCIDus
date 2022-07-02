@@ -1,6 +1,6 @@
 #' @title Predict cluster assignment and outcome based on LUCID model
 #'
-#' @param model A model fitted and returned by \code{\link{est.lucid}}
+#' @param model A model fitted and returned by \code{\link{est_lucid}}
 #' @param G Exposures, a numeric vector, matrix, or data frame. Categorical variable 
 #' should be transformed into dummy variables. If a matrix or data frame, rows 
 #' represent observations and columns correspond to variables.
@@ -27,7 +27,7 @@
 #' Y_normal <- sim_data$Y_normal
 #' 
 #' # fit lucid model
-#' fit1 <- est.lucid(G = G, Z = Z, Y = Y_normal, K = 2, family = "normal")
+#' fit1 <- est_lucid(G = G, Z = Z, Y = Y_normal, K = 2, family = "normal")
 #' 
 #' # prediction on training set
 #' pred1 <- predict_lucid(model = fit1, G = G, Z = Z, Y = Y_normal)
@@ -43,7 +43,7 @@ predict_lucid <- function(model,
                           response = TRUE){
   
   if(!inherits(model, "lucid")) {
-    stop("model should be an object fitted by est.lucid")
+    stop("model should be an object fitted by est_lucid")
   }
   
   
