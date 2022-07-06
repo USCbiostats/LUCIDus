@@ -100,7 +100,7 @@ print.sumlucid <- function(x, ...){
 # summarize output of normal outcome
 f.normal <- function(x, K, se){
   
-  cat("(1) Y (normal outcome): mean of Y for each latent cluster (and effect of covariates if included) \n")
+  cat("(1) Y (continuous outcome): mean of Y for each latent cluster (and effect of covariates if included) \n")
   
   if(!is.null(se)){
     y <- se
