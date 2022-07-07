@@ -1,5 +1,6 @@
 # This script documents deprecated functions. All the functions in this ducument
 # should be deleted after release of next major update
+#' @export
 lucid <- function(G, 
                        Z, 
                        Y, 
@@ -15,6 +16,7 @@ lucid <- function(G,
  stop("function `lucid` deprecated. Please use `tune_lucid`") 
 }
 
+#' @export
 est.lucid <- function(G, 
                       Z, 
                       Y, 
@@ -37,6 +39,7 @@ est.lucid <- function(G,
  stop("function `est.lucid` deprecated. Please use `est_lucid`") 
 }
 
+#' @export
 boot.lucid <- function(G, 
                        Z, 
                        Y, 

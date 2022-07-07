@@ -159,9 +159,23 @@ lucid_par <- function(data, indices, model, dimG, dimZ, dimCoY, dimCoG, prog) {
     }
     par_lucid <- rep(0, n_par)
   } else{
-    par_lucid <- c(try_lucid$pars$beta[-1, -1],
+    par_lucid <- c(as.vector(t(try_lucid$pars$beta)[-1, -1]),
                    as.vector(t(try_lucid$pars$mu)),
                    try_lucid$pars$gamma$beta)
+    G_names <- as.vector(sapply(2:K, function(x) {
+      paste0(colnames(try_lucid$pars$beta)[-1],
+             ".cluster", x)
+    }))
+    Z_names <- as.vector(sapply(1:K, function(x) {
+      paste0(colnames(try_lucid$pars$mu),
+             ".cluster", x)
+    }))
+    if(is.null(names(try_lucid$pars$beta))) {
+      Y_names <- paste0("cluster", 1:K)
+    } else {
+      Y_names <- names(try_lucid$pars$beta)
+    }
+    names(par_lucid) <- c(G_names, Z_names, Y_names)
     converge <- TRUE
   }
   return(par_lucid)
