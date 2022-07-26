@@ -1,20 +1,6 @@
 # This script documents deprecated functions. All the functions in this ducument
 # should be deleted after release of next major update
-#' @export
-lucid <- function(G, 
-                       Z, 
-                       Y, 
-                       CoG = NULL, 
-                       CoY = NULL, 
-                       family = "normal", 
-                       useY = TRUE,
-                       K = 2:5,
-                       Rho_G = 0, 
-                       Rho_Z_Mu = 0,
-                       Rho_Z_Cov = 0, 
-                       ...) {
- stop("function `lucid` deprecated. Please use `tune_lucid`") 
-}
+
 
 #' @export
 est.lucid <- function(G, 

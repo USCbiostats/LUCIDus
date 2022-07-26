@@ -11,7 +11,6 @@ tune_lucid(
   CoG = NULL,
   CoY = NULL,
   family = "normal",
-  useY = TRUE,
   K = 2:5,
   Rho_G = 0,
   Rho_Z_Mu = 0,
@@ -41,22 +40,20 @@ Categorical variable should be transformed into dummy variables.}
 \item{family}{Distribution of outcome. For continuous outcome, use "normal"; 
 for binary outcome, use "binary". Default is "normal".}
 
-\item{useY}{Flag to include information of outcome when estimating the latent 
-cluster. Default is TRUE.}
-
-\item{K}{Number of latent clusters. An integer greater or equal to 2.}
+\item{K}{Number of latent clusters. An integer greater or equal to 2. If K is
+a vector, model selection on K is performed}
 
 \item{Rho_G}{A scalar or a vector. Penalty to conduct LASSO regularization and 
-obtain a sparse estimation for effect of exposures. If a vector, \code{lucid} will 
-fit lucid model over the grid of penalties.}
+obtain a sparse estimation for effect of exposures. If a vector, \code{tune_lucid} will 
+fit lucid models over the grid of penalties.}
 
 \item{Rho_Z_Mu}{A scalar or a vector. Penalty to conduct LASSO regularization 
 and obtain a sparse estimation of cluster-specific mean for omics data. If a 
-vector, \code{lucid} will fit lucid model over the grid of penalties.}
+vector, \code{tune_lucid} will fit lucid models over the grid of penalties.}
 
 \item{Rho_Z_Cov}{Penalty to conduct graphic LASSO regularization and obtain a
 sparse estimation of cluster-specific variance-covariance matrices for omics 
-data. If a vector, \code{lucid} will fit lucid model over the grid of penalties.}
+data. If a vector, \code{tune_lucid} will fit lucid model over the grid of penalties.}
 
 \item{...}{Other parameters passed to \code{est_lucid}}
 }
@@ -87,8 +84,8 @@ seed = 1, K = 2:5)
 # tune penalties
 tune_Rho_G <- tune_lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
 seed = 1, K = 2, Rho_G = c(0.1, 0.2, 0.3, 0.4))
-tune_Rho_Z_mu <- tune_lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
-seed = 1, K = 2, Rho_Z_mu = c(10, 20, 30, 40))
+tune_Rho_Z_Mu <- tune_lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
+seed = 1, K = 2, Rho_Z_Mu = c(10, 20, 30, 40))
 tune_Rho_Z_Cov <- tune_lucid(G = G, Z = Z, Y = Y_normal, useY = FALSE, tol = 1e-3,
 seed = 1, K = 2, Rho_Z_Cov = c(0.1, 0.2, 0.3))
 

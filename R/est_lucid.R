@@ -340,7 +340,9 @@ est_lucid <- function(G,
     
     
     # start EM algorithm 
-    cat(paste0("Fitting LUCID model (K = ", K, ") \n"))
+    cat("Fitting LUCID model", 
+        paste0("K = ", K, ", Rho_G = ", Rho_G, ", Rho_Z_Mu = ", Rho_Z_Mu, ", Rho_Z_Cov = ", Rho_Z_Cov, ")"), 
+        "\n")
     res.loglik <- -Inf
     itr <- 0
     while(!convergence && itr <= max_itr){
@@ -522,7 +524,11 @@ est_lucid <- function(G,
                   useY = useY,
                   Z = Z,
                   init_impute = init_impute,
-                  init_par = init_par)
+                  init_par = init_par,
+                  Rho = list(Rho_G = Rho_G,
+                             Rho_Z_Mu = Rho_Z_Mu,
+                             Rho_Z_Cov = Rho_Z_Cov)
+                  )
   class(results) <- c("lucid")
   return(results)
 }
