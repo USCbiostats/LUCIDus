@@ -55,8 +55,10 @@
 #' fit5 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", K = 2:5)
 #' 
 #' # variable selection
-#' fit6 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", Rho_G = 0.1)
-#' fit7 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", Rho_G = c(0.01, 0.05, 0.1))
+#' fit6 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", Rho_G = seq(0.01, 0.1, by = 0.01))
+#' fit7 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", 
+#' Rho_Z_Mu = seq(10, 100, by = 10), Rho_Z_Cov = 0.5,
+#' init_par = "random", verbose_tune = TRUE)
 #' }
 
 
@@ -197,7 +199,7 @@ lucid <- function(G,
                            Rho_G = Rho_G, Rho_Z_Mu = Rho_Z_Mu, Rho_Z_Cov = Rho_Z_Cov,
                            ...)
   } else {
-    cat("Tuning LUCID model \n \n")
+    cat("Fitting LUCID model \n \n")
     invisible(capture.output(res_tune <- tune_lucid(G = G, Z = Z, Y = Y, CoG = CoG, CoY = CoY,
                                                     family = family, K = K, 
                                                     Rho_G = Rho_G, Rho_Z_Mu = Rho_Z_Mu, Rho_Z_Cov = Rho_Z_Cov,
@@ -210,24 +212,24 @@ lucid <- function(G,
   select_G <- best_model$select$selectG
   if(flag_select_G) {
     if(sum(select_G) == 0) {
-      cat("No exposure variables is selected using the given penalty Rho_G, please try a smaller one \n")
-      cat("Fit LUCID model without variable selection on exposures (G) \n \n")
+      cat("No exposure variables is selected using the given penalty Rho_G, please try a smaller one \n \n")
+      cat("Fitting LUCID model without variable selection on exposures (G) \n \n")
       select_G <- rep(TRUE, length(select_G))
     } else {
-      cat(paste0(sum(select_G), "/", length(select_G)), "exposures are selected \n")
-      cat("Re-fit LUCID model using selected exposures \n \n")
+      cat(paste0(sum(select_G), "/", length(select_G)), "exposures are selected \n \n")
+      cat("Re-fitting LUCID model using selected exposures \n \n")
     }
   }
   
   select_Z <- best_model$select$selectZ
   if(flag_select_Z) {
     if(sum(select_Z) == 0) {
-      cat("No omics variables is selected using the given penalty Rho_Z_Mu and Rho_Z_Cov, please try smaller ones \n")
-      cat("Fit LUCID model without variable selection on omics data (Z) \n \n")
+      cat("No omics variables is selected using the given penalty Rho_Z_Mu and Rho_Z_Cov, please try smaller ones \n \n")
+      cat("Fitting LUCID model without variable selection on omics data (Z) \n \n")
       select_Z <- rep(TRUE, length(select_Z))
     } else {
-      cat(paste0(sum(select_Z), "/", length(select_Z)), "omics variables are selected \n")
-      cat("Re-fit LUCID model using selected omics variables \n \n")
+      cat(paste0(sum(select_Z), "/", length(select_Z)), "omics variables are selected \n \n")
+      cat("Re-fitting LUCID model using selected omics variables \n \n")
     }
   }
   

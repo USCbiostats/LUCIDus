@@ -87,7 +87,9 @@ fit4 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", CoY = cov)
 fit5 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", K = 2:5)
 
 # variable selection
-fit6 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", Rho_G = 0.1)
-fit7 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", Rho_G = c(0.01, 0.05, 0.1))
+fit6 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", Rho_G = seq(0.01, 0.1, by = 0.01))
+fit7 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", 
+Rho_Z_Mu = seq(10, 100, by = 10), Rho_Z_Cov = 0.5,
+init_par = "random", verbose_tune = TRUE)
 }
 }
