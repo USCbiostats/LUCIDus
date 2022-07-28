@@ -47,17 +47,17 @@ on K is performed.}
 
 \item{Rho_G}{A scalar or a vector. This parameter is the LASSO penalty to regularize
 exposures. If it is a vector, \code{lucid} will call \code{tune_lucid} to conduct
-model selection and variable selection. User can try penalties from 0.01 to 0.5.}
+model selection and variable selection. User can try penalties from 0 to 1.}
 
 \item{Rho_Z_Mu}{A scalar or a vector. This parameter is the LASSO penalty to 
 regularize cluster-specific means for omics data (Z). If it is a vector, 
 \code{lucid} will call \code{tune_lucid} to conduct model selection and 
-variable selection. User can try penalties from 1 to 50.}
+variable selection. User can try penalties from 1 to 100.}
 
 \item{Rho_Z_Cov}{A scalar or a vector. This parameter is the graphical LASSO
 penalty to estimate sparse cluster-specific variance-covariance matrices for omics 
 data (Z). If it is a vector, \code{lucid} will call \code{tune_lucid} to conduct
-model selection and variable selection. User can try penalties from 0.1 to 0.5.}
+model selection and variable selection. User can try penalties from 0 to 1.}
 
 \item{...}{Other parameters passed to \code{est_lucid}}
 }

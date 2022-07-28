@@ -62,17 +62,17 @@ cluster. Default is TRUE.}
 \code{est_lucid} may conduct EM algorithm for multiple times if the algorithm 
 fails to converge.}
 
-\item{Rho_G}{A scalar. Penalty to conduct LASSO regularization and obtain a sparse estimation
-for effect of exposures. If user wants to tune the penalty, use the wrapper 
+\item{Rho_G}{A scalar. This parameter is the LASSO penalty to regularize
+exposures. If user wants to tune the penalty, use the wrapper 
 function \code{lucid}}
 
-\item{Rho_Z_Mu}{A scalar. Penalty to conduct LASSO regularization and obtain a sparse 
-estimation of cluster-specific mean for omics data. If user wants to tune the 
+\item{Rho_Z_Mu}{A scalar. This parameter is the LASSO penalty to 
+regularize cluster-specific means for omics data (Z). If user wants to tune the 
 penalty, use the wrapper function \code{lucid}}
 
-\item{Rho_Z_Cov}{A scalar. Penalty to conduct graphic LASSO regularization and obtain a
-sparse estimation of cluster-specific variance-covariance matrices for omics 
-data. If user wants to tune the penalty, use the wrapper function \code{lucid}}
+\item{Rho_Z_Cov}{A scalar. This parameter is the graphical LASSO
+penalty to estimate sparse cluster-specific variance-covariance matrices for omics 
+data (Z). If user wants to tune the penalty, use the wrapper function \code{lucid}}
 
 \item{modelName}{The variance-covariance structure for omics data. 
 See \code{mclust::mclustModelNames} for details.}

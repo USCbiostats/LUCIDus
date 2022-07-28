@@ -21,15 +21,17 @@
 #' a vector, model selection on K is performed 
 #' @param family Distribution of outcome. For continuous outcome, use "normal"; 
 #' for binary outcome, use "binary". Default is "normal".
-#' @param Rho_G A scalar or a vector. Penalty to conduct LASSO regularization and 
-#' obtain a sparse estimation for effect of exposures. If a vector, \code{tune_lucid} will 
-#' fit lucid models over the grid of penalties.
-#' @param Rho_Z_Mu A scalar or a vector. Penalty to conduct LASSO regularization 
-#' and obtain a sparse estimation of cluster-specific mean for omics data. If a 
-#' vector, \code{tune_lucid} will fit lucid models over the grid of penalties.
-#' @param Rho_Z_Cov Penalty to conduct graphic LASSO regularization and obtain a
-#' sparse estimation of cluster-specific variance-covariance matrices for omics 
-#' data. If a vector, \code{tune_lucid} will fit lucid model over the grid of penalties.
+#' @param Rho_G A scalar or a vector. This parameter is the LASSO penalty to regularize
+#' exposures. If it is a vector, \code{tune_lucid} will conduct
+#' model selection and variable selection. User can try penalties from 0 to 1.
+#' @param Rho_Z_Mu A scalar or a vector. This parameter is the LASSO penalty to 
+#' regularize cluster-specific means for omics data (Z). If it is a vector, 
+#' \code{tune_lucid} will conduct model selection and 
+#' variable selection. User can try penalties from 1 to 100.
+#' @param Rho_Z_Cov A scalar or a vector. This parameter is the graphical LASSO
+#' penalty to estimate sparse cluster-specific variance-covariance matrices for omics 
+#' data (Z). If it is a vector, \code{tune_lucid} will conduct
+#' model selection and variable selection. User can try penalties from 0 to 1.
 #' @param ... Other parameters passed to \code{est_lucid}
 #'
 #' @export

@@ -43,17 +43,19 @@ for binary outcome, use "binary". Default is "normal".}
 \item{K}{Number of latent clusters. An integer greater or equal to 2. If K is
 a vector, model selection on K is performed}
 
-\item{Rho_G}{A scalar or a vector. Penalty to conduct LASSO regularization and 
-obtain a sparse estimation for effect of exposures. If a vector, \code{tune_lucid} will 
-fit lucid models over the grid of penalties.}
+\item{Rho_G}{A scalar or a vector. This parameter is the LASSO penalty to regularize
+exposures. If it is a vector, \code{tune_lucid} will conduct
+model selection and variable selection. User can try penalties from 0 to 1.}
 
-\item{Rho_Z_Mu}{A scalar or a vector. Penalty to conduct LASSO regularization 
-and obtain a sparse estimation of cluster-specific mean for omics data. If a 
-vector, \code{tune_lucid} will fit lucid models over the grid of penalties.}
+\item{Rho_Z_Mu}{A scalar or a vector. This parameter is the LASSO penalty to 
+regularize cluster-specific means for omics data (Z). If it is a vector, 
+\code{tune_lucid} will conduct model selection and 
+variable selection. User can try penalties from 1 to 100.}
 
-\item{Rho_Z_Cov}{Penalty to conduct graphic LASSO regularization and obtain a
-sparse estimation of cluster-specific variance-covariance matrices for omics 
-data. If a vector, \code{tune_lucid} will fit lucid model over the grid of penalties.}
+\item{Rho_Z_Cov}{A scalar or a vector. This parameter is the graphical LASSO
+penalty to estimate sparse cluster-specific variance-covariance matrices for omics 
+data (Z). If it is a vector, \code{tune_lucid} will conduct
+model selection and variable selection. User can try penalties from 0 to 1.}
 
 \item{...}{Other parameters passed to \code{est_lucid}}
 }
