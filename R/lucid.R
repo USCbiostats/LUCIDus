@@ -36,7 +36,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun {
+#' \dontrun{
 #' G <- sim_data$G
 #' Z <- sim_data$Z
 #' Y_normal <- sim_data$Y_normal

@@ -9,3 +9,5 @@
 ^README\.Rmd$
 ^README\.md$
 ^check\.R$
+^doc$
+^Meta$

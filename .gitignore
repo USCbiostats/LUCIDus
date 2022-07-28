@@ -7,3 +7,5 @@
 inst
 renv/library
 CRAN-SUBMISSION
+/doc/
+/Meta/

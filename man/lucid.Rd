@@ -68,7 +68,7 @@ An optimal lucid model
 Fit a lucid model for integrated analysis on exposure, outcome and multi-omics data
 }
 \examples{
-\dontrun {
+\dontrun{
 G <- sim_data$G
 Z <- sim_data$Z
 Y_normal <- sim_data$Y_normal
