@@ -143,7 +143,7 @@ We use a Sankey diagram to visualize LUCID model. In the Sankey diagram, each no
 plot_lucid(fit1)
 ```
 
-```{r out.width="50%", include=FALSE}
+```{r out.width="50%", echo=FALSE}
 knitr::include_graphics("sankey.png")
 ```
 
