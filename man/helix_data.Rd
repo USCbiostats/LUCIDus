@@ -8,8 +8,8 @@
 A list with 4 matrices corresponding to exposures (G), omics data (Z),
 outcome (Y) and covariates (CoY)
 \describe{
-    \item{exposure}{8 variables, representing children/maternal exposure to 
-    environmental pollutants}
+    \item{exposure}{8 exposures to environmental pollutants. Variables end with
+    m represent maternal exposures; end with c represent children exposures}
     \item{omics}{10 proteins}
     \item{outcome}{A continuous outcome for BMI-z score based on WHO standard,
     A binary outcome for body mass index categories at 6-11 years old based on 

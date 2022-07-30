@@ -40,11 +40,21 @@ set.seed(123)
 index <- sample(1:nrow(full_dat), 100)
 dat_select <- full_dat[index, ]
 exposure <- dat_select[, c(2:7, 18:19)]
+head(exposure)
+# simplify names of variables
+exposure_name <- c("DDE_c", "DDE_m",
+                   "DDT_c", "DDT_m",
+                   "HCB_c", "HCB_m",
+                   "PCB_c", "PCB_m")
+colnames(exposure) <- exposure_name
 outcome <- dat_select[, 25:26]
 outcome$hs_bmi_c_cat <- ifelse(as.numeric(outcome$hs_bmi_c_cat) <= 2,
                                0, 1)
+colnames(outcome) <- c("cat_BMI", "zBMI")
 omics <- as_tibble(scale(dat_select[, c(32, 33, 37, 56:62)]))
+colnames(omics)
 covariate <- dat_select[, c(20:22)]
+colnames(covariate) <- c("BMI_m", "sex_c", "maternal_age_m")
 
 helix_data <- list(exposure = exposure,
                    outcome = outcome,
