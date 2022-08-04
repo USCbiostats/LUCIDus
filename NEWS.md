@@ -1,3 +1,9 @@
+# LUCIDus 2.2
+## New features
+1. New function: `lucid`
+## Major changes
+1. Rename `est.lucid` and `boot.lucid` to `est_lucid` and `boot_lucid`. 
+
 # LUCIDus 2.1.5-2
 ## Minor bugs fixed
 1. Update package dependencies
