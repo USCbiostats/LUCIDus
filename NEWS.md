@@ -1,8 +1,10 @@
 # LUCIDus 2.2
 ## New features
-1. New function: `lucid`
+1. New function `lucid`: an estimation function integrating model and variable selection. We recommend user to use this new function for estimating LUCID models. It calls the workhorse functions `est_lucid` and `tune_lucid` in the back-end.
 ## Major changes
 1. Rename `est.lucid` and `boot.lucid` to `est_lucid` and `boot_lucid`. 
+2. Update vignette accordingly.
+3. Use `mclust` to choose the optimal geometric model for omics data Z by default.
 
 # LUCIDus 2.1.5-2
 ## Minor bugs fixed

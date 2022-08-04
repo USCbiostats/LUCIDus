@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{LUCIDus: Latent Unknown Clustering with Integrated Data}
+  %\VignetteIndexEntry{LUCIDus: an R package to implement integrative clustering}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   markdown: 
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 library(LUCIDus)
 ```
 
-## About LUCIDus R package
+## About the LUCIDus R package
 
 Peng et al. proposed an integrative model called Latent Unknown Clustering Integrating omics Data (LUCID) (Peng et al. 2020). LUCID jointly estimates latent unknown clusters in multi-omics data and relate the latent clusters to the outcome of interest. They demonstrated performance of LUCID through extensive simulation studies and real data applications to highlight the integration of genomic, exposomic and metabolomic data. LUCID provides an integrated clustering framework to researchers, has numerous downloads (18,000 times since it was first introduced according to **dlstats**), and has been applied in several environmental epidemiological studies.
 
@@ -30,7 +30,7 @@ The **LUCIDus** R package implements integrative analysis of mulit-view data usi
 
 Genetic/environmental exposures ($\mathbf{G}$), omics data ($\mathbf{Z}$) and outcome ($\mathbf{Y}$) are integrated by using a latent cluster variable, which is illustrated by the directed acyclic graph (DAG) below. (A screenshot from [the method paper for LUCID](https://doi.org/10.1093/bioinformatics/btz667))
 
-```{r out.width="50%", echo=FALSE}
+```{r out.width="70%", echo=FALSE}
 knitr::include_graphics("DAG.png")
 ```
 
@@ -65,16 +65,20 @@ In the M-step, we maximize the expectation of joint likelihood below, in terms o
 \end{equation} 
 Details of the EM algorithm for LUDID can be found in Peng et al. (2020).
 
-## Main Functions
+## Functions
 
 | Function | Description |
-|---------------------------------------|---------------------------------|
-|`lucid()`| The main function to fit LUCID model. It combines functionality of `est_lucid()` and `tune_lucid()` |
-| `est_lucid()` | The function for estimation. It takes multi-view data as input and returns a LUCID model.|
-| `tune_lucid()` | The function for model selection. It fits LUCID models across the grid of tuning parameters, including number of latent clusters $K$ and regularization penalties. It returns the optimal model based on BIC |
-| `boot_lucid()` | The function for inference. It returns confidence intervals (CI) with given confidence level by using bootstrap resampling. |
-| `summary_lucid()` | The function for summary. It returns a table of coefficients in the LUCID model. |
-| `plot_lucid()` | The function for visualization. It creates a Sankey diagram to visualize LUCID model by using user-defined palette. |
+|------|---------------------------------|
+|`lucid()`| The main function to fit LUCID models, specified by giving integrated data and a distribution of the outcome. It also conducts model selection and variable selection. It returns an objcet of class `lucid`. |
+| `summary_lucid()` | Create tables to summarize a LUCID model. |
+| `plot_lucid()` | Visualize LUCID models through Sankey diagrams. It supports user-defined color palette. |
+| `boot_lucid()` | Derive confidence intervals based on bootstrap resampling. |
+| `pred_lucid()` | Predict latent clsuter and outcome using integrated data. |
+| `est_lucid()` | A workhorse function to fit a LUCID model|
+| `tune_lucid()` | A workhorse function to conduct variable and model selection. It fits LUCID models across the grid of tuning parameters, including number of latent clusters $K$ and regularization penalties. It returns the optimal model based on BIC |
+
+`lucid()` calls `est_lucid()` and `tune_lucid()` in the backend. The two workhorse functions are not normally called directly, but they can be useful when user wants to look into model fitting process in more details.
+
 
 ## Fit LUCID model
 We use `lucid()` function to fit LUCID model.
@@ -143,7 +147,7 @@ We use a Sankey diagram to visualize LUCID model. In the Sankey diagram, each no
 plot_lucid(fit1)
 ```
 
-```{r out.width="50%", echo=FALSE}
+```{r out.width="70%", echo=FALSE}
 knitr::include_graphics("sankey.png")
 ```
 
