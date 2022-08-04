@@ -213,11 +213,10 @@ lucid <- function(G,
   if(flag_select_G) {
     if(sum(select_G) == 0) {
       cat("No exposure variables is selected using the given penalty Rho_G, please try a smaller one \n \n")
-      cat("Fitting LUCID model without variable selection on exposures (G) \n \n")
+      cat("LUCID model will be fitted without variable selection on exposures (G) \n \n")
       select_G <- rep(TRUE, length(select_G))
     } else {
       cat(paste0(sum(select_G), "/", length(select_G)), "exposures are selected \n \n")
-      cat("Re-fitting LUCID model using selected exposures \n \n")
     }
   }
   
@@ -225,11 +224,11 @@ lucid <- function(G,
   if(flag_select_Z) {
     if(sum(select_Z) == 0) {
       cat("No omics variables is selected using the given penalty Rho_Z_Mu and Rho_Z_Cov, please try smaller ones \n \n")
-      cat("Fitting LUCID model without variable selection on omics data (Z) \n \n")
+      cat("LUCID model will be fitted without variable selection on omics data (Z) \n \n")
       select_Z <- rep(TRUE, length(select_Z))
     } else {
       cat(paste0(sum(select_Z), "/", length(select_Z)), "omics variables are selected \n \n")
-      cat("Re-fitting LUCID model using selected omics variables \n \n")
+      
     }
   }
   

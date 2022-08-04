@@ -325,7 +325,7 @@ est_lucid <- function(G,
       cat("Initialize LUCID with random values from uniform distribution \n")
       if(is.null(modelName)){
         model.best <- "VVV"
-        warning("GMM model for LUCID is not specified, 'VVV' model is used by default")
+        cat("GMM model for LUCID is not specified, 'VVV' model is used by default \n")
       } else{
         model.best <- modelName
       }

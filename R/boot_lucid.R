@@ -197,9 +197,8 @@ gen_ci <- function(x, conf = 0.95) {
     ci <- boot.ci(x, 
                   index = i, 
                   conf = conf, 
-                  type = c("norm", "basic", "perc"))
+                  type = c("norm", "perc"))
     temp_ci <- c(ci$normal[2:3],
-                 ci$basic[4:5],
                  ci$percent[4:5])
     res_ci <- rbind(res_ci,
                     temp_ci)
@@ -207,7 +206,6 @@ gen_ci <- function(x, conf = 0.95) {
   res <- cbind(t0, res_ci)
   colnames(res) <- c("t0",
                      "norm_lower", "norm_upper",
-                     "basic_lower", "basic_upper",
                      "perc_lower", "perc_upper")
   return(res)
 }

@@ -10,7 +10,7 @@ test_that("check estimations of LUCID with binary outcome (K = 2)", {
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test1 - seed =", i, "\n"))
-  invisible(capture.output(fit1 <- est_lucid(G = G,
+  invisible(capture.output(fit1 <- lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -49,7 +49,7 @@ test_that("check variable selection on G", {
   # i <- sample(1:2000, 1)
   # cat(paste("test2 - seed =", i, "\n"))
   i <- 1008
-  invisible(capture.output(fit1 <- est_lucid(G = G,
+  invisible(capture.output(fit1 <- lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -63,7 +63,7 @@ test_that("check variable selection on G", {
   # check parameters
   expect_equal(class(fit1$select$selectG), "logical")
   expect_equal(as.vector(fit1$select$selectG), 
-               c(rep(TRUE, 4), rep(FALSE, 6)))
+               rep(TRUE, 4))
 })
 
 
@@ -76,7 +76,7 @@ test_that("check variable selection on Z", {
   # i <- sample(1:2000, 1)
   # cat(paste("test3 - seed =", i, "\n"))
   i <- 1008
-  invisible(capture.output(fit1 <- est_lucid(G = G,
+  invisible(capture.output(fit1 <- lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -85,15 +85,15 @@ test_that("check variable selection on Z", {
                                              seed = i,
                                              useY = TRUE,
                                              modelName = "VVV",
-                                             Rho_Z_Mu =  25,
-                                             Rho_Z_Cov = 0.15)))
+                                             Rho_Z_Mu =  50,
+                                             Rho_Z_Cov = 0.5)))
   
   # check parameters
-  expect_equal(class(fit1$select$selectG), "logical")
+  expect_equal(class(fit1$select$selectZ), "logical")
 })
 
 
-test_that("check whether arguments of est_lucid work", {
+test_that("check whether arguments of lucid work", {
   G <- sim_data$G[1:500, ]
   Z <- sim_data$Z[1:500, ]
   Y_binary <- sim_data$Y_binary[1:500, ]
@@ -101,7 +101,7 @@ test_that("check whether arguments of est_lucid work", {
   # i <- sample(1:2000, 1)
   # cat(paste("test4 - seed =", i, "\n"))
   i <- 1008
-  invisible(capture.output(fit1 <- est_lucid(G = G,
+  invisible(capture.output(fit1 <- lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -110,7 +110,7 @@ test_that("check whether arguments of est_lucid work", {
                                              seed = i,
                                              useY = TRUE,
                                              modelName = NULL)))
-  invisible(capture.output(fit2 <- est_lucid(G = G,
+  invisible(capture.output(fit2 <- lucid(G = G,
                                              Z = Z,
                                              Y = Y_binary,
                                              CoY = cov,
@@ -124,7 +124,7 @@ test_that("check whether arguments of est_lucid work", {
 })
 
 
-test_that("check whether est_lucid throws an erorr with continuous outcome or outcome coded rather than 0 and 1", {
+test_that("check whether lucid throws an erorr with continuous outcome or outcome coded rather than 0 and 1", {
   G <- sim_data$G[1:500, ]
   Z <- sim_data$Z[1:500, ]
   Y_binary <- sim_data$Y_binary[1:500, ]

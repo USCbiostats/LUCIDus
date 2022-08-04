@@ -11,7 +11,7 @@ test_that("check estimations of LUCID with normal outcome (K = 2)", {
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test1 - seed =", i, "\n"))
-  invisible(capture.output(fit1 <- est_lucid(G = G,
+  invisible(capture.output(fit1 <- lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
                                              CoY = cov,
@@ -54,7 +54,7 @@ test_that("check variable selection on G", {
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test2 - seed =", i, "\n"))
-  invisible(capture.output(fit1 <- est_lucid(G = G,
+  invisible(capture.output(fit1 <- lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
                                              CoY = cov,
@@ -67,7 +67,7 @@ test_that("check variable selection on G", {
   # check parameters
   expect_equal(class(fit1$select$selectG), "logical")
   expect_equal(as.vector(fit1$select$selectG), 
-               c(rep(TRUE, 4), rep(FALSE, 6)))
+               rep(TRUE, 4))
 })
 
 
@@ -81,7 +81,7 @@ test_that("check variable selection on Z", {
   # i <- sample(1:2000, 1)
   i <- 1008
   # cat(paste("test3 - seed =", i, "\n"))
-  invisible(capture.output(fit1 <- est_lucid(G = G,
+  invisible(capture.output(fit1 <- lucid(G = G,
                                              Z = Z,
                                              Y = Y_normal,
                                              CoY = cov,
@@ -96,3 +96,4 @@ test_that("check variable selection on Z", {
   # check parameters
   expect_equal(class(fit1$select$selectG), "logical")
 })
+
