@@ -6,6 +6,9 @@
 \usage{
 check_na(Z)
 }
+\arguments{
+\item{Z}{A data matrix representing omics data}
+}
 \value{
 1. index:indeces for missing values in omics data
 2. indicator_na: missing pattern for each observation

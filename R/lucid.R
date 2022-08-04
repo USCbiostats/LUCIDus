@@ -30,6 +30,7 @@
 #' penalty to estimate sparse cluster-specific variance-covariance matrices for omics 
 #' data (Z). If it is a vector, \code{lucid} will call \code{tune_lucid} to conduct
 #' model selection and variable selection. User can try penalties from 0 to 1.
+#' @param verbose_tune A flag to print details of tuning process.
 #' @param ... Other parameters passed to \code{est_lucid}
 #'
 #' @return An optimal lucid model

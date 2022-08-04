@@ -31,9 +31,7 @@ Categorical variable should be transformed into dummy variables.}
 of the required interval(s).}
 
 \item{R}{An integer to specify number of bootstrap replicates for LUCID model.
-If feasible, it is recommended to set R > 1000. However, the convergence speed 
-of LUCID varies greatly depending on data. If it takes very long time to run
-1000 replicates, it is recommend to set smaller values for R, such as 200.}
+If feasible, it is recommended to set R >= 1000.}
 }
 \value{
 A list, containing the following components:

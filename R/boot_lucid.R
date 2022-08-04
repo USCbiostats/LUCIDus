@@ -22,9 +22,7 @@
 #' @param conf A numeric scalar between 0 and 1 to specify confidence level(s) 
 #' of the required interval(s).
 #' @param R An integer to specify number of bootstrap replicates for LUCID model.
-#' If feasible, it is recommended to set R > 1000. However, the convergence speed 
-#' of LUCID varies greatly depending on data. If it takes very long time to run
-#' 1000 replicates, it is recommend to set smaller values for R, such as 200.
+#' If feasible, it is recommended to set R >= 1000. 
 #' 
 #' @return A list, containing the following components:
 #' \item{beta}{effect estimate for each exposure}
