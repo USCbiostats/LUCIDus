@@ -75,6 +75,7 @@
 #' @importFrom glasso glasso
 #' @import stats
 #' @import utils
+#' @import mix
 #' @export
 #'
 #' @references
