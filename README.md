@@ -20,6 +20,10 @@ multi-view data, including exposures, omics data with/without outcome.
 omics data, visualization of LUCID model via Sankey diagram, bootstrap
 inference and functions for tuning model parameters.
 
+If you are interested in integration of omic data to estiamte mediator
+or latent structures, please check out [Conti
+Lab](https://contilab.usc.edu/about/) to learn more.
+
 ## Installation
 
 You can install the development version of LUCIDus from
@@ -28,6 +32,7 @@ You can install the development version of LUCIDus from
 ``` r
 # install.packages("devtools")
 devtools::install_github("USCbiostats/LUCIDus")
+
 # install package with vignettes
 devtools::install_github("USCbiostats/LUCIDus", build_vignettes = TRUE)
 ```
@@ -35,12 +40,12 @@ devtools::install_github("USCbiostats/LUCIDus", build_vignettes = TRUE)
 ## Usage
 
 Please refer to the
-[website](https://yinqi93.github.io/LUCIDus/articles/LUCID_vignette.html).
+[tutorial](https://yinqi93.github.io/LUCIDus/articles/LUCID_vignette.html).
 
 ## Acknowledgments
 
--   Dr. David V. Conti
--   Dr. Cheng Peng
--   Dr. Zhao Yang
--   USC IMAGE Group(Supported by the National Cancer Institute at the
+-   Dr. Lida Chatzi and awesome researchers from [Chatzi
+    Lab](https://twitter.com/chatzilab?lang=en)
+-   USC IMAGE Group (Supported by the National Cancer Institute at the
     National Institutes of Health Grant P01 CA196569)
+-   Dr. Zhao Yang
