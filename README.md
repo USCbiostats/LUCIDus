@@ -46,7 +46,7 @@ devtools::install_github("USCbiostats/LUCIDus", build_vignettes = TRUE)
 ## Usage
 
 Please refer to the
-[tutorial](https://yinqi93.github.io/LUCIDus/articles/LUCID_vignette.html).
+[tutorial](https://yinqi93.github.io/LUCIDus/articles/LUCIDus.html).
 
 ## Acknowledgments
 
