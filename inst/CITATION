@@ -15,3 +15,20 @@ citEntry(
         "Bioinformatics, btz667.",
         "URL https://doi.org/10.1093/bioinformatics/btz667")
 )
+
+
+citEntry(
+  entry = "Manual", 
+  title = "Using the LUCIDus package",
+  author = "Yinqi Zhao",
+  publisher = "CRAN",
+  year = "2022",
+  note = "2.2.0",
+  url = "https://yinqi93.github.io/LUCIDus/index.html",
+  textVersion = paste("Yinqi Zhao (2022).",
+        "Using the LUCIDus package.",
+        "CRAN.",
+        "R package version 2.2",
+        "URL https://yinqi93.github.io/LUCIDus/index.html"),
+  header = "Vignette(s):"
+)
