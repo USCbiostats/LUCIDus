@@ -33,6 +33,11 @@ devtools::install_github("USCbiostats/LUCIDus")
 devtools::install_github("USCbiostats/LUCIDus", build_vignettes = TRUE)
 ```
 
+## Usage
+
+Please refer to the
+[website](https://yinqi93.github.io/LUCIDus/articles/LUCID_vignette.html).
+
 ## Acknowledgments
 
 -   Dr. David V. Conti
