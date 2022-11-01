@@ -30,7 +30,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="index.html">LUCIDus</a>
 
@@ -92,145 +92,6 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"USCbiostats/LUCIDus"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="fit-lucid-model">Fit LUCID model<a class="anchor" aria-label="anchor" href="#fit-lucid-model"></a>
-</h2>
-<p>We use <code><a href="reference/est.lucid.html">est.lucid()</a></code> function to fit LUCID model.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/LUCIDus" class="external-link">LUCIDus</a></span><span class="op">)</span></span>
-<span><span class="co"># use simulated data</span></span>
-<span><span class="va">G</span> <span class="op">&lt;-</span> <span class="va">sim_data</span><span class="op">$</span><span class="va">G</span></span>
-<span><span class="va">Z</span> <span class="op">&lt;-</span> <span class="va">sim_data</span><span class="op">$</span><span class="va">Z</span></span>
-<span><span class="va">Y_normal</span> <span class="op">&lt;-</span> <span class="va">sim_data</span><span class="op">$</span><span class="va">Y_normal</span></span>
-<span><span class="va">Y_binary</span> <span class="op">&lt;-</span> <span class="va">sim_data</span><span class="op">$</span><span class="va">Y_binary</span></span>
-<span><span class="va">cov</span> <span class="op">&lt;-</span> <span class="va">sim_data</span><span class="op">$</span><span class="va">Covariate</span></span>
-<span></span>
-<span><span class="co"># fit LUCID model with continuous outcome</span></span>
-<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, family <span class="op">=</span> <span class="st">"normal"</span>, K <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="co"># fit LUCID model with binary outcome</span></span>
-<span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_binary</span>, family <span class="op">=</span> <span class="st">"binary"</span>, K <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># fit LUCID model with covariates</span></span>
-<span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_binary</span>, CoY <span class="op">=</span> <span class="va">cov</span>, family <span class="op">=</span> <span class="st">"binary"</span>, K <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span></span></code></pre></div>
-<p>User should be aware of option <code>useY</code>. By default, <code>useY = TRUE</code>, which means we fit LUCID model in a supervised fashion and incorporate information of outcome to define clusters. On the other hand, by setting <code>useY = FALSE</code>, we are fitting LUCID model in an unsupervised fashion, only using information from exposure and omics data to define clusters.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># fit LUCID model without useing information from outcome</span></span>
-<span><span class="va">fit4</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, family <span class="op">=</span> <span class="st">"normal"</span>, K <span class="op">=</span> <span class="fl">2</span>, useY <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span></span></code></pre></div>
-<p>For LUCID model, we use <code>mclust</code> method to optimize likelihood related to omcis data with respect to mean and covariance structure. By default, a <code>VVV</code> model is used to estimate covariance structure for omics data, which means the volume, shape and orientation of covariance matrices varies across different clusters. User can set <code>modelName = NULL</code> to let <code>est.lucid</code> select the optimal covariance model, or specify a specific covariance model for LUCID. Details of available models can be found in <code><a href="https://mclust-org.github.io/mclust/reference/mclustModelNames.html" class="external-link">mclust::mclustModelNames</a></code> under multivariate mixture section.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># fit LUCID model with automatic selection on optimal covariance models</span></span>
-<span><span class="va">fit5</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, family <span class="op">=</span> <span class="st">"normal"</span>, K <span class="op">=</span> <span class="fl">2</span>, modelName <span class="op">=</span> <span class="cn">NULL</span>, seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span></span>
-<span><span class="co"># check the optimal model</span></span>
-<span><span class="va">fit5</span><span class="op">$</span><span class="va">modelName</span></span>
-<span></span>
-<span><span class="co"># fit LUCID model with a specified covariance model</span></span>
-<span><span class="va">fit6</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, family <span class="op">=</span> <span class="st">"normal"</span>, K <span class="op">=</span> <span class="fl">2</span>, modelName <span class="op">=</span> <span class="st">"EII"</span>, seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span></span></code></pre></div>
-<p>In terms of initialization of EM algorithm, <code>est.lucid</code> uses either random initialization based on uniform distribution or a heuristic method based on <code>mclust</code>. By default, initialization of EM algorithm uses <code>mclsut</code>. However, if it takes long time, we recommend user turn to random initialization by setting <code>init_par = "random</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># initialize EM algorithm by mclust</span></span>
-<span><span class="va">fit7</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, family <span class="op">=</span> <span class="st">"normal"</span>, K <span class="op">=</span> <span class="fl">2</span>, init_par <span class="op">=</span> <span class="st">"mclust"</span> , seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># initialize EM algorithm via randomization</span></span>
-<span><span class="va">fit8</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, family <span class="op">=</span> <span class="st">"normal"</span>, K <span class="op">=</span> <span class="fl">2</span>, init_par <span class="op">=</span> <span class="st">"random"</span> , seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span></span></code></pre></div>
-<p>To ensure replicable results, user can set random seed by using the option <code>seed</code>. The LUCID model can be summarized via <code><a href="reference/summary_lucid.html">summary_lucid()</a></code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># summarize lucid results</span></span>
-<span><span class="fu"><a href="reference/summary_lucid.html">summary_lucid</a></span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="visualization-of-lucid-model">Visualization of LUCID model<a class="anchor" aria-label="anchor" href="#visualization-of-lucid-model"></a>
-</h2>
-<p>We use a Sankey diagram to visualize LUCID model. In the Sankey diagram, each node represents a variable in LUCID model (exposure, omics data and outcome), each line corresponds to an association between two variables. The color of line indicates the direction of association (by default, dark blue refers to positive association while light blue refers to negative association) and the width of line indicates the magnitude of association (large effect corresponds to wider line).</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># visualze lucid model via a Snakey diagram</span></span>
-<span><span class="fu"><a href="reference/plot_lucid.html">plot_lucid</a></span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"man/figures/sankey.png"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/sankey.png" width="50%"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># change node color</span></span>
-<span><span class="fu"><a href="reference/plot_lucid.html">plot_lucid</a></span><span class="op">(</span><span class="va">fit1</span>, G_color <span class="op">=</span> <span class="st">"yellow"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/plot_lucid.html">plot_lucid</a></span><span class="op">(</span><span class="va">fit1</span>, Z_color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># change link color</span></span>
-<span><span class="fu"><a href="reference/plot_lucid.html">plot_lucid</a></span><span class="op">(</span><span class="va">fit1</span>, pos_link_color <span class="op">=</span> <span class="st">"red"</span>, neg_link_color <span class="op">=</span> <span class="st">"green"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="lucid-incorporating-missing-omics-data">LUCID incorporating missing omics data<a class="anchor" aria-label="anchor" href="#lucid-incorporating-missing-omics-data"></a>
-</h2>
-<p>The latest version of LUCID allows missingness in omics data. We consider 2 missing patterns in omics data: (1) list-wise missing pattern that only a subset of observations have measured omics data and (2) sporadic missing pattern that missingness is completely at random. We implement a likelihood partition for (1) and an integrated imputation based EM algorithm for (2).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># fit LUCID model with block-wise missing pattern in omics data</span></span>
-<span><span class="va">Z_miss_1</span> <span class="op">&lt;-</span> <span class="va">Z</span></span>
-<span><span class="va">Z_miss_1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Z</span><span class="op">)</span>, <span class="fl">0.3</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Z</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
-<span><span class="va">fit9</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z_miss_1</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, family <span class="op">=</span> <span class="st">"normal"</span>, K <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># fit LUCID model with sporadic missing pattern in omics data</span></span>
-<span><span class="va">Z_miss_2</span> <span class="op">&lt;-</span> <span class="va">Z</span></span>
-<span><span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">arrayInd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Z_miss_2</span><span class="op">)</span>, <span class="fl">0.3</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Z_miss_2</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">Z_miss_2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">Z_miss_2</span><span class="op">[</span><span class="va">index</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
-<span><span class="va">fit10</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z_miss_2</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, family <span class="op">=</span> <span class="st">"normal"</span>, K <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1008</span><span class="op">)</span> </span></code></pre></div>
-<p>For sporadic missing pattern, <code>est.lucid</code> uses <code><a href="https://mclust-org.github.io/mclust/reference/imputeData.html" class="external-link">mclust::imputeData</a></code> to initialize the imputation. The imputed omics data is also returned by <code>est.lucid</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># imputed omics dataset</span></span>
-<span><span class="va">fit10</span><span class="op">$</span><span class="va">Z</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="variable-selection">Variable selection<a class="anchor" aria-label="anchor" href="#variable-selection"></a>
-</h2>
-<p>In many situations, using all variables for clustering analysis is not an optimal option. For example, some variables may not possess any information related to cluster structure. Including these non-informative variables only add ”noises” to cluster assignment and unnecessarily increases the model complexity. For situations of moderate or low dimensionality, variable selection is able to facilitate model interpretation and identify the correct cluster structure. The integrated variable selection for LUCID is built upon penalized EM algorithm. We adapt the penalty function proposed by Zhou et al. (Electronic journal of statistics, 2009)</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># use LUCID model to conduct integrated variable selection</span></span>
-<span><span class="co"># select exposure</span></span>
-<span><span class="va">fit6</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, CoY <span class="op">=</span> <span class="cn">NULL</span>, family <span class="op">=</span> <span class="st">"normal"</span>, </span>
-<span>K <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1008</span>, Rho_G <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="co"># select omics data</span></span>
-<span><span class="va">fit7</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/est.lucid.html">est.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, CoY <span class="op">=</span> <span class="cn">NULL</span>, family <span class="op">=</span> <span class="st">"normal"</span>,</span>
-<span>K <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1008</span>, Rho_Z_Mu <span class="op">=</span> <span class="fl">90</span>, Rho_Z_Cov <span class="op">=</span> <span class="fl">0.1</span>, init_par <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="model-selection">Model selection<a class="anchor" aria-label="anchor" href="#model-selection"></a>
-</h2>
-<p>For clustering analysis, usually we need to specify the number of clusters a priori. For LUCID, we use Bayesian Information Criteria (BIC) to choose the optimal number of latent clusters. The strategy is to fit LUCID model over a grid of <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;K" title="K" alt="K">, and choose the optimal model with lowest BIC. This can be done via the wrapper function <code>lucid</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># tune lucid over a grid of K (note this function may take time to run)</span></span>
-<span><span class="va">tune_lucid</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lucid.html">lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, K <span class="op">=</span><span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div>
-<p>Check the tuning process by</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> tune_lucid<span class="sc">$</span>tune_list</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  K Rho_G Rho_Z_Mu Rho_Z_Cov      BIC</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="dv">2</span>     <span class="dv">0</span>        <span class="dv">0</span>         <span class="dv">0</span> <span class="fl">46917.94</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="dv">3</span>     <span class="dv">0</span>        <span class="dv">0</span>         <span class="dv">0</span> <span class="fl">47716.94</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span> <span class="dv">4</span>     <span class="dv">0</span>        <span class="dv">0</span>         <span class="dv">0</span> <span class="fl">48520.86</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span> <span class="dv">5</span>     <span class="dv">0</span>        <span class="dv">0</span>         <span class="dv">0</span> <span class="fl">49276.93</span></span></code></pre></div>
-<p>The optimal model (K = 2) is returned as</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tune_lucid</span><span class="op">$</span><span class="va">best_model</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="prediction">Prediction<a class="anchor" aria-label="anchor" href="#prediction"></a>
-</h2>
-<p>There are 2 predictions related to LUCID - prediction on latent cluster and prediction on outcome. User can call <code>predict_lucid</code> to finish 2 tasks at the same time. The input of outcome is optional. If not provided, <code>predict_lucid</code> use exposre <code>G</code> and omics data <code>Z</code> to make prediction on latent cluster <code>X</code> (as shown in second example).</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pred1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/predict_lucid.html">predict_lucid</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">fit1</span>, G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span><span class="op">)</span></span>
-<span><span class="va">pred2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/predict_lucid.html">predict_lucid</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">fit1</span>, G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="bootstrap-confidence-interval-ci">Bootstrap confidence interval (CI)<a class="anchor" aria-label="anchor" href="#bootstrap-confidence-interval-ci"></a>
-</h2>
-<p>We use a bootstrap method to conduct inference for LUCID.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># conduct bootstrap resampling</span></span>
-<span><span class="va">boot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/boot.lucid.html">boot.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, model <span class="op">=</span> <span class="va">fit1</span>, R <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># use 90% CI</span></span>
-<span><span class="va">boot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/boot.lucid.html">boot.lucid</a></span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, Z <span class="op">=</span> <span class="va">Z</span>, Y <span class="op">=</span> <span class="va">Y_normal</span>, model <span class="op">=</span> <span class="va">fit1</span>, R <span class="op">=</span> <span class="fl">100</span>, conf <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
-<p>Diagnostic plot for bootstranp sampling is drawn by</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># check distribution for bootstrap replicates of the variable of interest</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">boot1</span><span class="op">$</span><span class="va">bootstrap</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="acknowledgments">Acknowledgments<a class="anchor" aria-label="anchor" href="#acknowledgments"></a>
 </h2>
 <ul>
@@ -275,7 +136,6 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://cran.r-project.org/package=LUCIDus" class="external-link"><img src="http://www.r-pkg.org/badges/version/LUCIDus?color=green" alt="CRAN_Status_Badge"></a></li>
-<li><a href="https://cran.r-project.org/package=LUCIDus" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/LUCIDus?color=orange"></a></li>
 <li><a href="https://image.usc.edu" class="external-link"><img src="https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg"></a></li>
 </ul>
 </div>
