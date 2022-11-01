@@ -26,7 +26,13 @@ Lab](https://contilab.usc.edu/about/) to learn more.
 
 ## Installation
 
-You can install the development version of LUCIDus from
+You can install the stable release from CRAN by:
+
+``` r
+install.packages("LUCIDus")
+```
+
+or install the development version of LUCIDus from
 [GitHub](https://github.com/) with:
 
 ``` r

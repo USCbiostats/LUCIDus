@@ -26,8 +26,12 @@ The **LUCIDus** package implements the statistical method LUCID proposed in the 
 If you are interested in integration of omic data to estiamte mediator or latent structures, please check out [Conti Lab](https://contilab.usc.edu/about/) to learn more.
 
 ## Installation
+You can install the stable release from CRAN by:
+``` r
+install.packages("LUCIDus")
+```
 
-You can install the development version of LUCIDus from [GitHub](https://github.com/) with:
+or install the development version of LUCIDus from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
