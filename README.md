@@ -20,9 +20,19 @@ multi-view data, including exposures, omics data with/without outcome.
 omics data, visualization of LUCID model via Sankey diagram, bootstrap
 inference and functions for tuning model parameters.
 
+If you are interested in integration of omic data to estiamte mediator
+or latent structures, please check out [Conti
+Lab](https://contilab.usc.edu/about/) to learn more.
+
 ## Installation
 
-You can install the development version of LUCIDus from
+You can install the stable release from CRAN by:
+
+``` r
+install.packages("LUCIDus")
+```
+
+or install the development version of LUCIDus from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -40,8 +50,8 @@ Please refer to the
 
 ## Acknowledgments
 
--   Dr. David V. Conti
--   Dr. Cheng Peng
--   Dr. Zhao Yang
--   USC IMAGE Group(Supported by the National Cancer Institute at the
+-   Dr. Lida Chatzi and awesome researchers from [Chatzi
+    Lab](https://twitter.com/chatzilab?lang=en)
+-   USC IMAGE Group (Supported by the National Cancer Institute at the
     National Institutes of Health Grant P01 CA196569)
+-   Dr. Zhao Yang
