@@ -2,6 +2,6 @@ pandoc: '2.18'
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
-  LUCID_vignette: LUCID_vignette.html
-last_built: 2022-11-01T04:18Z
+  LUCIDus: LUCIDus.html
+last_built: 2022-11-01T16:58Z
 
