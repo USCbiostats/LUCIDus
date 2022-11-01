@@ -11,3 +11,6 @@
 ^check\.R$
 ^doc$
 ^Meta$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
