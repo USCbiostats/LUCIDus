@@ -33,7 +33,7 @@ install.packages("LUCIDus")
 ```
 
 or install the development version of LUCIDus from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/USCbiostats/LUCIDus) with:
 
 ``` r
 # install.packages("devtools")
@@ -46,7 +46,7 @@ devtools::install_github("USCbiostats/LUCIDus", build_vignettes = TRUE)
 ## Usage
 
 Please refer to the
-[tutorial](https://yinqi93.github.io/LUCIDus/articles/LUCIDus.html).
+[tutorial](https://USCbiostats.github.io/LUCIDus/articles/LUCIDus.html).
 
 ## Acknowledgments
 
