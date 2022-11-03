@@ -20,11 +20,10 @@ knitr::opts_chunk$set(
 library(LUCIDus)
 ```
 
-## About the LUCIDus R package
+## Introduction
+Many studies are leveraging current technologies to obtain multiple omics measurements on the same individuals. Guided by biology or the temporal sequence of measurements, these studies often share a common structure that relates long term exposures to intermediate measures capturing transitional processes that ultimately result in an outcome. In this context, we have previously introduced an integrative model to estimate latent unknown clusters (LUCID) aiming to both distinguish unique exposure effects and informative omic effects while jointly estimating subgroups of individuals relevant to the outcome of interest (Peng et al. 2020). **LUCIDus** is an R package to implement the LUCID model. It provides an integrated clustering framework to researchers, and has numerous downloads (around 20,000 times since it was first introduced according to dlstats (Yu, 2022)). It has also been applied in several environmental epidemiological studies (Jin et al., 2020; Stratakis et al., 2020; Matta et al., 2022). 
 
-Peng et al. proposed an integrative model called Latent Unknown Clustering Integrating omics Data (LUCID) (Peng et al. 2020). LUCID jointly estimates latent unknown clusters in multi-omics data and relate the latent clusters to the outcome of interest. They demonstrated performance of LUCID through extensive simulation studies and real data applications to highlight the integration of genomic, exposomic and metabolomic data. LUCID provides an integrated clustering framework to researchers, has numerous downloads (18,000 times since it was first introduced according to **dlstats**), and has been applied in several environmental epidemiological studies.
-
-The **LUCIDus** R package implements integrative analysis of mulit-view data using the LUCID model. The toolbox of **LUCIDus** contains estimation, prediction, visualization, model selection and inference. It also allows missingness in omics data and adjustment for covariates.
+In this tutorial, we briefly review the statistical background of the model and introduce the workflow of LUCIDus, including model fitting, model selection, interpretation, inference, and prediction. Throughout, we use a realistic but simulated dataset based on an ongoing study, the Human Early Life Exposome study (HELIX) to illustrate the workflow
 
 ## Introduction to the LUCID model
 
@@ -63,22 +62,26 @@ In the M-step, we maximize the expectation of joint likelihood below, in terms o
         Q(\mathbf{\Theta}) = \sum_{i = 1}^n\sum_{j = 1}^k r_{ij}\log\frac{S(\mathbf{G}_i; \boldsymbol{\beta}_j)}{r_{ij}} + \sum_{i = 1}^n\sum_{j = 1}^k r_{ij}\log\frac{\phi(\mathbf{Z}_i; \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)}{r_{ij}} + \sum_{i = 1}^n\sum_{j = 1}^k r_{ij}\log\frac{f(Y_i; \boldsymbol{\Theta}_j)}{r_{ij}}
     \end{aligned}
 \end{equation} 
-Details of the EM algorithm for LUDID can be found in Peng et al. (2020).
 
-## Functions
+
+For more statistical details, please refer to Peng (2020).
+
+## General workflow
+```{r out.width="70%", echo=FALSE}
+knitr::include_graphics("workflow.png")
+```
+
+The LUCIDus package includes five main functions and two auxiliary functions to implement the analysis framework based on LUCID. Brief descriptions of each function are listed in the table below. Below we describe the typical workflow of analyzing integrated data using the LUCID model. The function `lucid()` is the primary function in the package, which fits a LUCID model based on an exposure matrix (argument `G`), omics data (argument `Z`), outcome data (argument `Y`), the number of latent clusters (`K`; default is 2), and the family of the outcome (argument `family`; default is "normal"). If a vector of `K` and/or $L_1$ penalties are supplied, `lucid()` will automatically conduct model selection on number of clusters `K`, select informative variables in `G` or `Z`, or both, and returns a LUCID model (an R object of class "lucid") with optimal `K` and selected variables in `G` and/or `Z`. Several additional functions can then be applied to a fitted LUCID object. `summary_lucid()` summarizes the fitted LUCID model by producing summary tables of parameter estimation and interpretation. Visualization is performed via the `plot_lucid()` function to create a Sankey diagram showing the interplay among the three components (`G`, `Z` and `Y`). In addition, statistical inference can be accomplished for LUCID by constructing confidence intervals (CIs) based on bootstrap resampling. This is achieved by the function `boot_lucid()`. Finally, predictions on the cluster assignment and the outcome can be obtained by calling the function `predict_lucid()`. In practice, it might not be necessary to implement the entire workflow above. For instance, if we have prior knowledge on the number of latent clusters K, model selection for the number of clusters can be skipped. If a given dataset has limited variables (for example, variables selected based on biological annotations), then variable selection may not be necessary. `lucid()` calls `est_lucid()` and `tune_lucid()` in the backend. The two workhorse functions are not normally called directly, but they can be useful when user wants to look into model fitting process in more details.
 
 | Function | Description |
 |------|---------------------------------|
-|`lucid()`| The main function to fit LUCID models, specified by giving integrated data and a distribution of the outcome. It also conducts model selection and variable selection. It returns an objcet of class `lucid`. |
+|`lucid()`| Main function to fit LUCID models, specified by giving integrated data and a distribution of the outcome. It also conducts model selection and variable selection. |
 | `summary_lucid()` | Create tables to summarize a LUCID model. |
 | `plot_lucid()` | Visualize LUCID models through Sankey diagrams. It supports user-defined color palette. |
 | `boot_lucid()` | Derive confidence intervals based on bootstrap resampling. |
 | `pred_lucid()` | Predict latent clsuter and outcome using integrated data. |
 | `est_lucid()` | A workhorse function to fit a LUCID model|
 | `tune_lucid()` | A workhorse function to conduct variable and model selection. It fits LUCID models across the grid of tuning parameters, including number of latent clusters $K$ and regularization penalties. It returns the optimal model based on BIC |
-
-`lucid()` calls `est_lucid()` and `tune_lucid()` in the backend. The two workhorse functions are not normally called directly, but they can be useful when user wants to look into model fitting process in more details.
-
 
 ## Fit LUCID model
 We use `lucid()` function to fit LUCID model.
@@ -244,10 +247,3 @@ fit15 <- lucid(G = G, Z = Z_miss_2, Y = Y_normal, family = "normal", K = 2, seed
 # check the imputed omics dataset
 head(fit15$Z)
 ```
-
-
-## Acknowledgments
-- Dr. Nikos Stratakis
-- Dr. Jesse Goodrich
-- Dr. Cheng Peng
-- Dr. Leda Chatzi and her lab memebers

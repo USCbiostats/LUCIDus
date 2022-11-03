@@ -1,23 +1,19 @@
-citHeader("To cite LUCIDus in publications use:")
-
-citEntry(
+c(citEntry(
   entry = "Article",
-  title        = "A latent unknown clustering integrating multi-omics data (LUCID) with phenotypic traits",
-  author       = "Peng, Cheng and Wang, Jun and Asante, Isaac and Louie, Stan and Jin, Ran and Chatzi, Lida and Casey, Graham and Thomas, Duncan C and Conti, David V",
-  journal      = "Bioinformatics",
-  year         = "2019",
-  issn         = "1367-4803",
-  url          = "https://academic.oup.com/bioinformatics/article/36/3/842/5556107",
-
-  textVersion  =
-  paste("Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti (2019).",
+  title = "A latent unknown clustering integrating multi-omics data (LUCID) with phenotypic traits",
+  author = "Peng, Cheng and Wang, Jun and Asante, Isaac and Louie, Stan and Jin, Ran and Chatzi, Lida and Casey, Graham and Thomas, Duncan C and Conti, David V",
+  journal = "Bioinformatics",
+  year = "2019",
+  issn = "1367-4803",
+  url = "https://academic.oup.com/bioinformatics/article/36/3/842/5556107",
+  textVersion  = paste("Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi, Graham Casey, Duncan C Thomas, David V Conti (2019).",
         "A latent unknown clustering integrating multi-omics data (LUCID) with phenotypic traits.",
         "Bioinformatics, btz667.",
-        "URL https://doi.org/10.1093/bioinformatics/btz667")
-)
-
-
-citEntry(
+        "URL https://doi.org/10.1093/bioinformatics/btz667"),
+  header = "To cite LUCID methods, please use:"
+),
+  
+  citEntry(
   entry = "Manual", 
   title = "Using the LUCIDus package",
   author = "Yinqi Zhao",
@@ -30,5 +26,7 @@ citEntry(
         "CRAN.",
         "R package version 2.2",
         "URL https://yinqi93.github.io/LUCIDus/index.html"),
-  header = "Vignette(s):"
+  header = "To cite LUCIDus R package, please use:"
+)
+
 )

@@ -54,4 +54,3 @@ Please refer to the
     Lab](https://twitter.com/chatzilab?lang=en)
 -   USC IMAGE Group (Supported by the National Cancer Institute at the
     National Institutes of Health Grant P01 CA196569)
--   Dr. Zhao Yang

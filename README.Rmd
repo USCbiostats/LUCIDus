@@ -48,4 +48,3 @@ Please refer to the [tutorial](https://USCbiostats.github.io/LUCIDus/articles/LU
 ## Acknowledgments
 - Dr. Lida Chatzi and awesome researchers from [Chatzi Lab](https://twitter.com/chatzilab?lang=en)
 - USC IMAGE Group (Supported by the National Cancer Institute at the National Institutes of Health Grant P01 CA196569)
-- Dr. Zhao Yang
