@@ -81,23 +81,28 @@ David V. Conti</h4>
     
     
 <div class="section level2">
-<h2 id="about-the-lucidus-r-package">About the LUCIDus R package<a class="anchor" aria-label="anchor" href="#about-the-lucidus-r-package"></a>
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Peng et al. proposed an integrative model called Latent Unknown
-Clustering Integrating omics Data (LUCID) (Peng et al. 2020). LUCID
-jointly estimates latent unknown clusters in multi-omics data and relate
-the latent clusters to the outcome of interest. They demonstrated
-performance of LUCID through extensive simulation studies and real data
-applications to highlight the integration of genomic, exposomic and
-metabolomic data. LUCID provides an integrated clustering framework to
-researchers, has numerous downloads (18,000 times since it was first
-introduced according to <strong>dlstats</strong>), and has been applied
-in several environmental epidemiological studies.</p>
-<p>The <strong>LUCIDus</strong> R package implements integrative
-analysis of mulit-view data using the LUCID model. The toolbox of
-<strong>LUCIDus</strong> contains estimation, prediction, visualization,
-model selection and inference. It also allows missingness in omics data
-and adjustment for covariates.</p>
+<p>Many studies are leveraging current technologies to obtain multiple
+omics measurements on the same individuals. Guided by biology or the
+temporal sequence of measurements, these studies often share a common
+structure that relates long term exposures to intermediate measures
+capturing transitional processes that ultimately result in an outcome.
+In this context, we have previously introduced an integrative model to
+estimate latent unknown clusters (LUCID) aiming to both distinguish
+unique exposure effects and informative omic effects while jointly
+estimating subgroups of individuals relevant to the outcome of interest
+(Peng et al. 2020). <strong>LUCIDus</strong> is an R package to
+implement the LUCID model. It provides an integrated clustering
+framework to researchers, and has numerous downloads (around 20,000
+times since it was first introduced according to dlstats (Yu, 2022)). It
+has also been applied in several environmental epidemiological studies
+(Jin et al., 2020; Stratakis et al., 2020; Matta et al., 2022).</p>
+<p>In this tutorial, we briefly review the statistical background of the
+model and introduce the workflow of LUCIDus, including model fitting,
+model selection, interpretation, inference, and prediction. Throughout,
+we use a realistic but simulated dataset based on an ongoing study, the
+Human Early Life Exposome study (HELIX) to illustrate the workflow</p>
 </div>
 <div class="section level2">
 <h2 id="introduction-to-the-lucid-model">Introduction to the LUCID model<a class="anchor" aria-label="anchor" href="#introduction-to-the-lucid-model"></a>
@@ -165,12 +170,49 @@ r_{ij}\log\frac{S(\mathbf{G}_i; \boldsymbol{\beta}_j)}{r_{ij}} + \sum_{i
 1}^n\sum_{j = 1}^k r_{ij}\log\frac{f(Y_i;
 \boldsymbol{\Theta}_j)}{r_{ij}}
     \end{aligned}
-\end{equation}\]</span> Details of the EM algorithm for LUDID can be
-found in Peng et al. (2020).</p>
+\end{equation}\]</span></p>
+<p>For more statistical details, please refer to Peng (2020).</p>
 </div>
 <div class="section level2">
-<h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a>
+<h2 id="general-workflow">General workflow<a class="anchor" aria-label="anchor" href="#general-workflow"></a>
 </h2>
+<p><img src="workflow.png" width="70%"></p>
+<p>The LUCIDus package includes five main functions and two auxiliary
+functions to implement the analysis framework based on LUCID. Brief
+descriptions of each function are listed in the table below. Below we
+describe the typical workflow of analyzing integrated data using the
+LUCID model. The function <code><a href="../reference/lucid.html">lucid()</a></code> is the primary function
+in the package, which fits a LUCID model based on an exposure matrix
+(argument <code>G</code>), omics data (argument <code>Z</code>), outcome
+data (argument <code>Y</code>), the number of latent clusters
+(<code>K</code>; default is 2), and the family of the outcome (argument
+<code>family</code>; default is “normal”). If a vector of <code>K</code>
+and/or <span class="math inline">\(L_1\)</span> penalties are supplied,
+<code><a href="../reference/lucid.html">lucid()</a></code> will automatically conduct model selection on
+number of clusters <code>K</code>, select informative variables in
+<code>G</code> or <code>Z</code>, or both, and returns a LUCID model (an
+R object of class “lucid”) with optimal <code>K</code> and selected
+variables in <code>G</code> and/or <code>Z</code>. Several additional
+functions can then be applied to a fitted LUCID object.
+<code><a href="../reference/summary_lucid.html">summary_lucid()</a></code> summarizes the fitted LUCID model by
+producing summary tables of parameter estimation and interpretation.
+Visualization is performed via the <code><a href="../reference/plot_lucid.html">plot_lucid()</a></code> function to
+create a Sankey diagram showing the interplay among the three components
+(<code>G</code>, <code>Z</code> and <code>Y</code>). In addition,
+statistical inference can be accomplished for LUCID by constructing
+confidence intervals (CIs) based on bootstrap resampling. This is
+achieved by the function <code><a href="../reference/boot_lucid.html">boot_lucid()</a></code>. Finally, predictions
+on the cluster assignment and the outcome can be obtained by calling the
+function <code><a href="../reference/predict_lucid.html">predict_lucid()</a></code>. In practice, it might not be
+necessary to implement the entire workflow above. For instance, if we
+have prior knowledge on the number of latent clusters K, model selection
+for the number of clusters can be skipped. If a given dataset has
+limited variables (for example, variables selected based on biological
+annotations), then variable selection may not be necessary.
+<code><a href="../reference/lucid.html">lucid()</a></code> calls <code><a href="../reference/est_lucid.html">est_lucid()</a></code> and
+<code><a href="../reference/tune_lucid.html">tune_lucid()</a></code> in the backend. The two workhorse functions
+are not normally called directly, but they can be useful when user wants
+to look into model fitting process in more details.</p>
 <table class="table">
 <colgroup>
 <col width="15%">
@@ -183,10 +225,9 @@ found in Peng et al. (2020).</p>
 <tbody>
 <tr class="odd">
 <td><code><a href="../reference/lucid.html">lucid()</a></code></td>
-<td>The main function to fit LUCID models, specified by giving
-integrated data and a distribution of the outcome. It also conducts
-model selection and variable selection. It returns an objcet of class
-<code>lucid</code>.</td>
+<td>Main function to fit LUCID models, specified by giving integrated
+data and a distribution of the outcome. It also conducts model selection
+and variable selection.</td>
 </tr>
 <tr class="even">
 <td><code><a href="../reference/summary_lucid.html">summary_lucid()</a></code></td>
@@ -218,10 +259,6 @@ regularization penalties. It returns the optimal model based on BIC</td>
 </tr>
 </tbody>
 </table>
-<p><code><a href="../reference/lucid.html">lucid()</a></code> calls <code><a href="../reference/est_lucid.html">est_lucid()</a></code> and
-<code><a href="../reference/tune_lucid.html">tune_lucid()</a></code> in the backend. The two workhorse functions
-are not normally called directly, but they can be useful when user wants
-to look into model fitting process in more details.</p>
 </div>
 <div class="section level2">
 <h2 id="fit-lucid-model">Fit LUCID model<a class="anchor" aria-label="anchor" href="#fit-lucid-model"></a>
@@ -408,16 +445,6 @@ based EM algorithm for (2).</p>
 <span></span>
 <span><span class="co"># check the imputed omics dataset</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit15</span><span class="op">$</span><span class="va">Z</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="acknowledgments">Acknowledgments<a class="anchor" aria-label="anchor" href="#acknowledgments"></a>
-</h2>
-<ul>
-<li>Dr. Nikos Stratakis</li>
-<li>Dr. Jesse Goodrich</li>
-<li>Dr. Cheng Peng</li>
-<li>Dr. Leda Chatzi and her lab memebers</li>
-</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
