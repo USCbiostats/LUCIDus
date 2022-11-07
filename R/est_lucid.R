@@ -322,6 +322,8 @@ est_lucid <- function(G,
       }
       res.mu <- t(mclust.fit$parameters$mean)
       res.sigma <- mclust.fit$parameters$variance$sigma
+      # browser()
+      
     } else { # initialize by random guess
       cat("Initialize LUCID with random values from uniform distribution \n")
       if(is.null(modelName)){
@@ -466,7 +468,7 @@ est_lucid <- function(G,
   if(!useY){
     res.gamma <- Mstep_Y(Y = Y, r = res.r, CoY = CoY, K = K, CoYnames = CoYnames)
   }
-  # browser()
+  
   res.likelihood <- Estep(beta = res.beta, 
                           mu = res.mu, 
                           sigma = res.sigma, 
@@ -493,6 +495,7 @@ est_lucid <- function(G,
   if(Select_Z) {
     res.loglik <- res.loglik - Rho_Z_Mu * sum(abs(res.mu)) - Rho_Z_Cov * sum(abs(res.sigma))
   }
+  # browser()
   pars <- switch_Y(beta = res.beta, mu = res.mu, sigma = res.sigma, gamma = res.gamma, K = K)
   res.r <- res.r[, pars$index]
   colnames(pars$beta) <- c("intercept", Gnames)

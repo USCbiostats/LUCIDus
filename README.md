@@ -48,9 +48,34 @@ devtools::install_github("USCbiostats/LUCIDus", build_vignettes = TRUE)
 Please refer to the
 [tutorial](https://USCbiostats.github.io/LUCIDus/articles/LUCIDus.html).
 
+## Citation
+
+    #> 
+    #> To cite LUCID methods, please use:
+    #> 
+    #>   Cheng Peng, Jun Wang, Isaac Asante, Stan Louie, Ran Jin, Lida Chatzi,
+    #>   Graham Casey, Duncan C Thomas, David V Conti (2019). A latent unknown
+    #>   clustering integrating multi-omics data (LUCID) with phenotypic
+    #>   traits. Bioinformatics, btz667. URL
+    #>   https://doi.org/10.1093/bioinformatics/btz667
+    #> 
+    #> To cite LUCIDus R package, please use:
+    #> 
+    #>   Yinqi Zhao (2022). LUCIDus: an R package to implement the LUCID
+    #>   model. CRAN. R package version 2.2 URL
+    #>   https://yinqi93.github.io/LUCIDus/index.html
+    #> 
+    #> To see these entries in BibTeX format, use 'print(<citation>,
+    #> bibtex=TRUE)', 'toBibtex(.)', or set
+    #> 'options(citation.bibtex.max=999)'.
+
 ## Acknowledgments
 
 -   Dr. Lida Chatzi and awesome researchers from [Chatzi
     Lab](https://twitter.com/chatzilab?lang=en)
--   USC IMAGE Group (Supported by the National Cancer Institute at the
-    National Institutes of Health Grant P01 CA196569)
+-   [Dr. Nikos
+    Stratakis](https://www.isglobal.org/en/our-team/-/profiles/29105)
+-   Dr. Cheng Peng
+-   [USC IMAGE Group](https://p01.uscbiostatistics.org/) (Supported by
+    the National Cancer Institute at the National Institutes of Health
+    Grant P01 CA196569)

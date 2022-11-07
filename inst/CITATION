@@ -15,14 +15,14 @@ c(citEntry(
   
   citEntry(
   entry = "Manual", 
-  title = "Using the LUCIDus package",
+  title = "LUCIDus: an R package to implement the LUCID model",
   author = "Yinqi Zhao",
   publisher = "CRAN",
   year = "2022",
   note = "2.2.0",
   url = "https://yinqi93.github.io/LUCIDus/index.html",
   textVersion = paste("Yinqi Zhao (2022).",
-        "Using the LUCIDus package.",
+        "LUCIDus: an R package to implement the LUCID model.",
         "CRAN.",
         "R package version 2.2",
         "URL https://yinqi93.github.io/LUCIDus/index.html"),
