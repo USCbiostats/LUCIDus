@@ -1,4 +1,8 @@
-# LUCIDus 2.2
+# LUCIDus 2.2.1
+1. Update vignette; create package website; update citations.
+
+
+# LUCIDus 2.2.0
 ## New features
 1. New function `lucid`: an estimation function integrating model and variable selection. We recommend user to use this new function for estimating LUCID models. It calls the workhorse functions `est_lucid` and `tune_lucid` in the back-end.
 ## Major changes

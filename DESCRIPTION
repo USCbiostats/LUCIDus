@@ -1,16 +1,16 @@
 Package: LUCIDus
 Type: Package
-Title: Latent Unknown Clustering Integrating Multi-view Data
-Version: 2.2
+Title: Latent unknown clustering integrating multi-view data
+Version: 2.2.1
 Authors@R: c(
     person(given = "Yinqi", family = "Zhao", 
            email = "yinqiz@usc.edu", 
            role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2413-732X")),
-    person(given = "David", middle = "V.", family = "Conti", 
+    person(given = "David", family = "Conti", 
            email = "dconti@usc.med.edu", role = "ths",
            comment = c(ORCID = "0000-0002-2941-7833")),
-    person(given = "Jesse", middle = "A.", family = "Goodrich", 
+    person(given = "Jesse", family = "Goodrich", 
            role = "ctb",
            comment = c(ORCID = "0000-0001-6615-0472")),
     person(given = "Cheng", family = "Peng", role = "ctb")

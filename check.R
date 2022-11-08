@@ -7,7 +7,7 @@ check_win_devel()
 check_win_release()
 check_win_oldrelease()
 # check package on mac
-# check_mac_release() # bad gateway(HTTP 502)
+check_mac_release() 
 # check package on Rhub
 check_rhub()
 

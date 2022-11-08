@@ -1,5 +1,8 @@
 ## R CMD check results
 
+### LUCIDus 2.2.1
+0 errors | 0 warnings | 0 note
+
 ### LUCIDus 2.2
 0 errors | 0 warnings | 0 note
 
