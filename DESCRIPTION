@@ -18,7 +18,7 @@ Authors@R: c(
 Description: An implementation of the LUCID model (Peng (2019) <doi:10.1093/bioinformatics/btz667>).
   LUCID conducts integrated clustering using exposures, omics data (and outcome 
   as an option). An EM algorithm is implemented to estimate MLE of the LUCID model.
-  LUCIDus features integrated variable selection, incorporation of missing omics
+  'LUCIDus' features integrated variable selection, incorporation of missing omics
   data, bootstrap inference, prediction and visualization of the model.
 Depends: R (>= 3.6.0)
 License: GPL-3
