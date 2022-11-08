@@ -1,6 +1,6 @@
 Package: LUCIDus
 Type: Package
-Title: Latent unknown clustering integrating multi-view data
+Title: Latent Unknown Clustering Integrating Multi-View Data
 Version: 2.2.1
 Authors@R: c(
     person(given = "Yinqi", family = "Zhao", 
