@@ -25,15 +25,20 @@ binary <- function(K, ...){
   }
   # update parameters for M step
   f.maxY <- function(Y, r, CoY, K, CoYnames){
-    if(is.null(CoY)) {
-      beta <- apply(r, 2, function(x) return(log(sum(x * Y) / (sum(x) - sum(x * Y)))))
-    } else {
+    # if(is.null(CoY)) {
+    #   beta <- apply(r, 2, function(x) return(log(sum(x * Y) / (sum(x) - sum(x * Y)))))
+    # } else {
+    #   Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
+    #   colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
+    #   Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family ="binomial")
+    #   beta <- coef(Yfit) 
+    #   beta[2:K] <- beta[2:K] + beta[1] # log odds for all latent cluster
+    # }
       Set0 <- as.data.frame(cbind(Y, r[, -1], CoY))
       colnames(Set0) <- c("Y", paste0("LC", 2:K), CoYnames)
       Yfit <- glm(as.formula(paste("Y~", paste(colnames(Set0)[-1], collapse = "+"))), data = Set0, family ="binomial")
-      beta <- coef(Yfit) 
+      beta <- coef(Yfit)
       beta[2:K] <- beta[2:K] + beta[1] # log odds for all latent cluster
-    }
     return(structure(list(beta = beta,
                           sigma = NULL)))
   }
