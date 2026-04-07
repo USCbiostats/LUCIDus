@@ -1,12 +1,13 @@
 # LUCIDus2: Integreted clustering with multi-view data
 
 🚀 **Looking for the latest version?**  
-The **LUCIDus** package is now actively maintained and extended in  
-**[LUCIDus3](https://github.com/USCbiostats/LUCIDus3)**.  
-We recommend using LUCIDus3 for new projects, as it includes improved
-features, expanded functionality, and ongoing updates.  
-This repository remains available for reproducibility of the original
-published method.
+The **LUCIDus** package is now actively maintained and extended in
+**[LUCIDus3](https://github.com/USCbiostats/LUCIDus3)**, which serves as
+the repository for the current CRAN package **LUCIDus 3.1.0**. We
+recommend using the LUCIDus3 repository for new projects, as it includes
+improved features for multi-omics integration, expanded functionality,
+and ongoing updates. This repository remains available for
+reproducibility of the original published method.
 
 The **LUCIDus** package implements the statistical method LUCID proposed
 in the research paper [A Latent Unknown Clustering Integrating
