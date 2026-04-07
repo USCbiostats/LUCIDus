@@ -1,0 +1,129 @@
+# Fit a lucid model for integrated analysis on exposure, outcome and multi-omics data
+
+Fit a lucid model for integrated analysis on exposure, outcome and
+multi-omics data
+
+## Usage
+
+``` r
+lucid(
+  G,
+  Z,
+  Y,
+  CoG = NULL,
+  CoY = NULL,
+  family = "normal",
+  K = 2,
+  Rho_G = 0,
+  Rho_Z_Mu = 0,
+  Rho_Z_Cov = 0,
+  verbose_tune = FALSE,
+  ...
+)
+```
+
+## Arguments
+
+- G:
+
+  Exposures, a numeric vector, matrix, or data frame. Categorical
+  variable should be transformed into dummy variables. If a matrix or
+  data frame, rows represent observations and columns correspond to
+  variables.
+
+- Z:
+
+  Omics data, a numeric matrix or data frame. Rows correspond to
+  observations and columns correspond to variables.
+
+- Y:
+
+  Outcome, a numeric vector. Categorical variable is not allowed. Binary
+  outcome should be coded as 0 and 1.
+
+- CoG:
+
+  Optional, covariates to be adjusted for estimating the latent cluster.
+  A numeric vector, matrix or data frame. Categorical variable should be
+  transformed into dummy variables.
+
+- CoY:
+
+  Optional, covariates to be adjusted for estimating the association
+  between latent cluster and the outcome. A numeric vector, matrix or
+  data frame. Categorical variable should be transformed into dummy
+  variables.
+
+- family:
+
+  Distribution of outcome. For continuous outcome, use "normal"; for
+  binary outcome, use "binary". Default is "normal".
+
+- K:
+
+  Number of latent clusters (should be greater or equal than 2). Either
+  an integer or a vector of integer. If K is a vector, model selection
+  on K is performed.
+
+- Rho_G:
+
+  A scalar or a vector. This parameter is the LASSO penalty to
+  regularize exposures. If it is a vector, `lucid` will call
+  `tune_lucid` to conduct model selection and variable selection. User
+  can try penalties from 0 to 1.
+
+- Rho_Z_Mu:
+
+  A scalar or a vector. This parameter is the LASSO penalty to
+  regularize cluster-specific means for omics data (Z). If it is a
+  vector, `lucid` will call `tune_lucid` to conduct model selection and
+  variable selection. User can try penalties from 1 to 100.
+
+- Rho_Z_Cov:
+
+  A scalar or a vector. This parameter is the graphical LASSO penalty to
+  estimate sparse cluster-specific variance-covariance matrices for
+  omics data (Z). If it is a vector, `lucid` will call `tune_lucid` to
+  conduct model selection and variable selection. User can try penalties
+  from 0 to 1.
+
+- verbose_tune:
+
+  A flag to print details of tuning process.
+
+- ...:
+
+  Other parameters passed to `est_lucid`
+
+## Value
+
+An optimal lucid model
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+G <- sim_data$G
+Z <- sim_data$Z
+Y_normal <- sim_data$Y_normal
+Y_binary <- sim_data$Y_binary
+cov <- sim_data$Covariate
+
+# fit lucid model
+fit1 <- lucid(G = G, Z = Z, Y = Y_normal, family = "normal")
+fit2 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", useY = FALSE)
+
+# including covariates
+fit3 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", CoG = cov)
+fit4 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", CoY = cov)
+
+# tune K
+fit5 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", K = 2:5)
+
+# variable selection
+fit6 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", Rho_G = seq(0.01, 0.1, by = 0.01))
+fit7 <- lucid(G = G, Z = Z, Y = Y_binary, family = "binary", 
+Rho_Z_Mu = seq(10, 100, by = 10), Rho_Z_Cov = 0.5,
+init_par = "random", verbose_tune = TRUE)
+} # }
+```

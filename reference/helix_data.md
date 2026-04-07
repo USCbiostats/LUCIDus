@@ -1,0 +1,38 @@
+# HELIX data
+
+The Human Early-Life Exposome (HELIX) project is multi-center research
+project that aims to characterize early-life environmental exposures and
+associate these with omics biomarkers and child health outcomes
+(Vrijheid, 2014. doi: 10.1289/ehp.1307204). We used a subset of HELIX
+data from Exposome Data Challenge 2021 (hold by ISGlobal) as an example
+to illustrate LUCID model.
+
+## Usage
+
+``` r
+helix_data
+```
+
+## Format
+
+A list with 4 matrices corresponding to exposures (G), omics data (Z),
+outcome (Y) and covariates (CoY)
+
+- exposure:
+
+  8 exposures to environmental pollutants. Variables end with m
+  represent maternal exposures; end with c represent children exposures
+
+- omics:
+
+  10 proteins
+
+- outcome:
+
+  A continuous outcome for BMI-z score based on WHO standard, A binary
+  outcome for body mass index categories at 6-11 years old based on WHO
+  reference (0: Thinness or Normal; 1: Overweight or Obese)
+
+- covariate:
+
+  3 covariates including mother's bmi, child sex, maternal age
