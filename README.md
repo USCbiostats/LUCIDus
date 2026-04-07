@@ -1,7 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# LUCIDus: Integreted clustering with multi-view data
+# LUCIDus2: Integreted clustering with multi-view data
+
+🚀 **Looking for the latest version?**  
+The **LUCIDus** package is now actively maintained and extended in  
+**[LUCIDus3](https://github.com/USCbiostats/LUCIDus3)**.  
+We recommend using LUCIDus3 for new projects, as it includes improved features, expanded functionality, and ongoing updates.  
+This repository remains available for reproducibility of the original published method.
 
 <!-- badges: start -->
 
